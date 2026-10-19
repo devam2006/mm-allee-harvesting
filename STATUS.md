@@ -5,8 +5,8 @@ Initial state: repository scaffold prepared; scientific work packages are **not 
 <!-- team-sync:status:start -->
 | Package | Owner | State | PR/evidence |
 |---|---|---|---|
-| WP01 | Unclaimed | Not started | Fill after assignment |
-| WP02 | Unclaimed | Not started | Fill after assignment |
+| WP01 | @RaghavSinghal15 | Not started | Fill after assignment |
+| WP02 | @AshChan07 | Not started | Fill after assignment |
 | WP03 | @devam2006 | Not started | Fill after assignment |
 | WP04 | @Prem-Mehta03 | Not started | Fill after assignment |
 | WP05 | @rohanagrawal28 | Not started | Fill after assignment |

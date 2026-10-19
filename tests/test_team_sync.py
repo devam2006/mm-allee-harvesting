@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -74,11 +75,15 @@ def test_choices_update_every_ownership_surface_and_preserve_progress(tmp_path):
     value["members"][0]["work_package"] = "WP05"
     value["members"][3]["work_package"] = "WP01"
     status = root / "STATUS.md"
-    status.write_text(
-        status.read_text().replace(
-            "| WP01 | Unclaimed | Not started |", "| WP01 | Unclaimed | In progress |"
-        )
+    # Set fixture progress independently of the live roster's current owner/state.
+    text, count = re.subn(
+        r"(?m)^(\| WP01 \|[^|\n]*\|)[^|\n]*(\|)",
+        r"\1 In progress \2",
+        status.read_text(),
+        count=1,
     )
+    assert count == 1
+    status.write_text(text)
     updates = MODULE.render_updates(root, value)
     assert len(updates) == 9
     for name in ["README.md", "docs/tasks/README.md", "presentation/outline.md"]:

@@ -79,6 +79,7 @@ Human-facing onboarding and a copyable first message are in [START_HERE.md](docs
 
 - Keep logic in `src/`; notebooks explain and invoke it. Use plain Python, NumPy/SciPy/Matplotlib and optional PyTorch. Avoid web services and unnecessary frameworks.
 - Add meaningful deterministic tests, including edge cases and numerical convergence where appropriate. Slow training is a separate experiment with an explicit budget.
+- Follow the [required evidence for every task](docs/TESTING.md#required-evidence-for-every-task): map completed core claims to named tests/recorded experiments, use independent expectations, justify tolerances and expose missing coverage. Never substitute a large test count or a passing starter suite for the task's mathematical acceptance criteria.
 - Write plots to PNG + EPS with opaque fills. Commit only small curated outputs with provenance; ignore environments, bulk runs and weights.
 - Update your report section, notebook fragment, AI-use log, package checklist and STATUS.md with the same PR. Record actual commands and outcomes in the PR body.
 - Explain the equations and algorithms in language the member can defend. Mark code/test completion separately from the human's own understanding/review; do not certify understanding on their behalf.

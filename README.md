@@ -51,8 +51,8 @@ Choose tasks with the group; record one distinct `work_package` (WP01–WP05) pe
 
 | Task | Owner |
 |---|---|
-| [WP01: Foundations and Model A](docs/tasks/WP01_foundations.md) | Unclaimed |
-| [WP02: Model B and history](docs/tasks/WP02_model_b.md) | Unclaimed |
+| [WP01: Foundations and Model A](docs/tasks/WP01_foundations.md) | @RaghavSinghal15 |
+| [WP02: Model B and history](docs/tasks/WP02_model_b.md) | @AshChan07 |
 | [WP03: Collapse and numerical references](docs/tasks/WP03_collapse.md) | @devam2006 |
 | [WP04: Forward PINNs](docs/tasks/WP04_forward_pinn.md) | @Prem-Mehta03 |
 | [WP05: Inverse PINNs](docs/tasks/WP05_inverse_pinn.md) | @rohanagrawal28 |

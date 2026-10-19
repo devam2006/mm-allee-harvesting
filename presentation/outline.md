@@ -5,8 +5,8 @@
 <!-- team-sync:presentation:start -->
 | Time | Speaker | Story and evidence |
 |---|---|---|
-| 0–5 min | Unclaimed (WP01) | Motivation, assumptions, logistic baseline, scaling and Model A |
-| 5–10 min | Unclaimed (WP02) | Model B, fair comparisons, harvesting history and restocking |
+| 0–5 min | @RaghavSinghal15 (WP01) | Motivation, assumptions, logistic baseline, scaling and Model A |
+| 5–10 min | @AshChan07 (WP02) | Model B, fair comparisons, harvesting history and restocking |
 | 10–15 min | @devam2006 (WP03) | Thresholds, finite-time extinction, basins and reference generation |
 | 15–20 min | @Prem-Mehta03 (WP04) | PINN construction, forward results, errors, runtime and a difficult case |
 | 20–25 min | @rohanagrawal28 (WP05) | Inverse identifiability, noise, held-out validation, failures and conclusions |

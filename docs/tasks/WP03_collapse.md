@@ -14,6 +14,8 @@ You will calculate how much harvesting the population can tolerate, which starti
 
 **Using an agent?** It should read this full brief, explain a small example first, then work through one meaningful piece at a time: explain -> implement -> test -> interpret. Tell it whether you want guided implementation, explanation only or hints while you code. See the [first-session guide](../START_HERE.md); the shared agent workflow is [AGENTS.md](../../AGENTS.md). The detailed deliverables below are its checklist as well as yours.
 
+**Testing requirement:** implement this brief's core acceptance tests and follow the [shared evidence rules](../TESTING.md#required-evidence-for-every-task). Map each completed claim to named tests or reproducible experiments, use independent checks and justify tolerances; report/notebook/figure and integration duties are also required.
+
 ## Goal and scope
 
 Own finite-time extinction (item 3), threshold derivations (4), basins (5), and the reliable numerical data used by both PINN packages. Sensitivity (9) and sustainable-yield safety margins (11) are optional extensions. Own the final independent reproduction and submission bundle.

@@ -6,6 +6,24 @@
 
 No unimplemented feature is marked as a fake passing test or hidden behind permanent xfail. When adding a feature, implement its acceptance tests in the same PR. `STATUS.md` remains not started/in progress until its core evidence exists.
 
+## Required evidence for every task
+
+Every owner and coding agent must turn the task brief's core acceptance checklist into implemented tests and reproducible scientific evidence. This is part of the deliverable, not an optional clean-up step.
+
+1. **Map claims to evidence.** In the task PR, map each completed core acceptance item to named test cases or a saved experiment with its command, config, manifest and observed result. Long training/performance claims belong in recorded experiments; deterministic correctness and small smoke cases belong in CI. Leave unsupported items unchecked.
+2. **Use independent expectations.** Check against hand calculations, derived identities, independently expanded equations, quadrature or another numerical method as appropriate. Calling the same implementation to generate both actual and expected values cannot independently establish mathematical correctness. Derivations in the report/notebook must explain the identity being tested.
+3. **Cover meaningful regimes.** Use representative parameter scales and initial populations, zero harvest/zero population, invalid inputs, exact equilibria and below/at/above threshold cases where relevant. Include near-boundary cases without pretending numerical rounding resolves every critical classification. Each brief lists the task-specific cases.
+4. **Justify numerical comparisons.** Explain tolerances using units, scale, solver error or statistical uncertainty. Check convergence where a numerical reference supports a conclusion. For stochastic training, fix seeds, retain all run statuses and separate a short behaviour test from final measured accuracy.
+5. **Make tests able to detect mistakes.** Inspect whether a wrong sign, wrong scale, mislabelled branch, detached parameter or leaked split would be caught by the relevant assertion. Do not pad counts with repeated assertions, assert only that code runs, loosen tolerances merely to obtain green CI, or skip required tests to hide a failure. Test quantity is not a substitute for coverage of the mathematical claims.
+6. **Check the delivered product.** Run the task command, inspect figures/tables and their interpretation, execute the notebook from a clean kernel, and obtain another member's reproduction. Report, EPS exports, notebook, citations, AI/data disclosure and the speaking contribution remain required alongside tests; see [integration](INTEGRATION.md).
+
+Use a compact evidence table in each project PR:
+
+| Core claim or acceptance item | Independent check / test name | Command and config / manifest | Observed result and limitation |
+|---|---|---|---|
+
+Populate the table with actual evidence; an empty template or passing starter suite does not complete a task. Reviewers check both the assertions and the scientific argument. Agents must explain what the tests establish and what remains untested, without certifying the human's understanding for them.
+
 ## Commands
 
 ```bash
