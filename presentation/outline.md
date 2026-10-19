@@ -7,7 +7,7 @@
 |---|---|---|
 | 0–5 min | Unclaimed (WP01) | Motivation, assumptions, logistic baseline, scaling and Model A |
 | 5–10 min | Unclaimed (WP02) | Model B, fair comparisons, harvesting history and restocking |
-| 10–15 min | Unclaimed (WP03) | Thresholds, finite-time extinction, basins and reference generation |
+| 10–15 min | @devam2006 (WP03) | Thresholds, finite-time extinction, basins and reference generation |
 | 15–20 min | Unclaimed (WP04) | PINN construction, forward results, errors, runtime and a difficult case |
 | 20–25 min | Unclaimed (WP05) | Inverse identifiability, noise, held-out validation, failures and conclusions |
 | 25–30 min | All five | Questions and individual understanding |

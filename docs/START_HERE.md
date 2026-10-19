@@ -28,11 +28,11 @@ The repository is private: your agent needs an authorised repository connection 
 | [4: Forward PINNs](tasks/WP04_forward_pinn.md) | Can a neural network solve a known population equation as well as a standard solver? | A shared neural engine and prediction/error comparisons for both models. |
 | [5: Inverse PINNs](tasks/WP05_inverse_pinn.md) | Can noisy observations tell us the unknown model parameters, and where does that fail? | Parameter/noise studies and held-out validation; assemble the notebook and acknowledgements. |
 
-All five are initially unclaimed. Agree choices with the group, then record them in [team.json](../team.json) and the [task board](tasks/README.md). The current files, not this introductory wording, determine whether a task has since been claimed. Do not assume roster position chooses your task.
+Check [team.json](../team.json) and the [task board](tasks/README.md) for current owners and open choices. Agree choices with the group; do not assume roster position chooses your task.
 
-## After everyone chooses
+## When someone chooses
 
-Send Devam the five choices, for example “WP01 → username”, in one message. The member rows are already in `team.json`; no tasks are selected yet. An agent can update each `work_package` and run:
+Send Devam each choice, for example “WP01 → username”; choices can be recorded individually or together. The member rows are already in `team.json`. An agent can update the chosen member's `work_package`, leave undecided members as `null`, and run:
 
 ```bash
 python scripts/sync_team.py

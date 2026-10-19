@@ -1,7 +1,7 @@
 # WP03 — Collapse thresholds, basins and numerical reference
 
 <!-- team-sync:owner:start -->
-**Owner:** Unclaimed. See [team.json](../../team.json) for the current choice.
+**Owner:** @devam2006. See [team.json](../../team.json) for the current choice.
 <!-- team-sync:owner:end -->
 
 **Effort guide:** 18–22 h including reproducibility/package audit. **Dependencies:** agree foundations with WP01. Deliver reference data early to WP04/WP05.
@@ -9,6 +9,8 @@
 ## Task 3 in plain language
 
 You will calculate how much harvesting the population can tolerate, which starting populations survive, and how long extinction takes when collapse occurs. You will check those calculations against a reliable numerical solver and generate the synthetic data used by the neural-network tasks. You also check that the final submission can be reproduced and packaged.
+
+**Background:** no PINN training experience is required. This task uses calculus and numerical ODE solving with NumPy/SciPy. Tasks 4 and 5 own neural-network training; agree the reference-data format with them. The main care is in classifying boundary cases and checking numerical accuracy.
 
 **Using an agent?** It should read this full brief, explain a small example first, then work through one meaningful piece at a time: explain -> implement -> test -> interpret. Tell it whether you want guided implementation, explanation only or hints while you code. See the [first-session guide](../START_HERE.md); the shared agent workflow is [AGENTS.md](../../AGENTS.md). The detailed deliverables below are its checklist as well as yours.
 
@@ -63,3 +65,11 @@ Deliver future command `python experiments/wp03/run.py --config configs/wp03.jso
 - [ ] Owner can derive both thresholds, explain finite versus asymptotic extinction and demonstrate why the quadrature is valid only on a reaching-zero path.
 
 **Presentation:** 10–15 min: thresholds, finite-time collapse, basin boundary and reference generation. Use extras only if core story and timing are clear.
+
+## Current handoff
+
+- **Owner:** Devam (`devam2006`) selected Task 3 on 19 October 2026.
+- **Branch / PR:** `docs/agent-onboarding`, [PR #1](https://github.com/devam2006/mm-allee-harvesting/pull/1), records the choice and shared setup; scientific implementation has not started.
+- **Completed:** task selection only; the acceptance checkboxes above remain open.
+- **Next:** begin the WP03 derivation and review the existing solver/event tests, following the agent playbook. Coordinate roots with WP01/WP02 and an early reference-data fixture with WP04/WP05 once those owners choose.
+- **Explanation to cover first:** why a positive constant catch permits finite-time extinction, and why the zero-harvest case is different.

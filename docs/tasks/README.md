@@ -9,7 +9,7 @@ The five contributors are recorded in [team.json](../../team.json); tasks stay o
 |---|---|---|---|
 | [WP01: Foundations and Model A](WP01_foundations.md) | Find the steady population levels under a fixed catch and check their stability | Report assembly and EPS audit | Unclaimed |
 | [WP02: Model B and history](WP02_model_b.md) | Compare catch policies and show why reducing harvest may not undo collapse | Presentation assembly and timing | Unclaimed |
-| [WP03: Collapse and numerical references](WP03_collapse.md) | Calculate when collapse occurs, which starts survive and extinction time | Independent reproduction and submission bundle | Unclaimed |
+| [WP03: Collapse and numerical references](WP03_collapse.md) | Calculate when collapse occurs, which starts survive and extinction time | Independent reproduction and submission bundle | @devam2006 |
 | [WP04: Forward PINNs](WP04_forward_pinn.md) | Train a network to solve the known equations and compare it with a solver | Shared neural engine and forward benchmark | Unclaimed |
 | [WP05: Inverse PINNs](WP05_inverse_pinn.md) | Estimate unknown parameters from noisy observations and test what is learnable | Notebook assembly and acknowledgement audit | Unclaimed |
 <!-- team-sync:board:end -->

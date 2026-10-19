@@ -7,7 +7,7 @@ Initial state: repository scaffold prepared; scientific work packages are **not 
 |---|---|---|---|
 | WP01 | Unclaimed | Not started | Fill after assignment |
 | WP02 | Unclaimed | Not started | Fill after assignment |
-| WP03 | Unclaimed | Not started | Fill after assignment |
+| WP03 | @devam2006 | Not started | Fill after assignment |
 | WP04 | Unclaimed | Not started | Fill after assignment |
 | WP05 | Unclaimed | Not started | Fill after assignment |
 <!-- team-sync:status:end -->
