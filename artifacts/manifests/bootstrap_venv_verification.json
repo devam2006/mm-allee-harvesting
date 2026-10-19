@@ -1,0 +1,35 @@
+{
+  "scope": "Scaffold verification only; scientific task work remains unclaimed and not started",
+  "verified_at_utc": "2026-10-19T07:47:56.578569+00:00",
+  "python": "3.12.14",
+  "environment": ".venv",
+  "inherits_system_packages": false,
+  "user_site_enabled": false,
+  "git_ignored": true,
+  "tests": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 41,
+    "skipped": 0
+  },
+  "dependency_check": "No broken requirements found",
+  "lint": "passed",
+  "format": "passed",
+  "notebook": {
+    "schema_validation": "passed",
+    "assembly": "deterministic",
+    "direct_code_cells_executed": 6,
+    "jupyter_kernel": "blocked by execution-environment socket binding policy; not verified"
+  },
+  "solver_smoke": "passed for A/B; PNG/EPS exported",
+  "dependencies": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2",
+    "torch": "2.14.1+cpu",
+    "pytest": "9.1.1",
+    "ruff": "0.17.1",
+    "nbformat": "5.11.1",
+    "nbconvert": "7.17.2"
+  },
+  "github_creation": "User-created repo devam2006/mm-allee-harvesting- verified private; scaffold upload in progress"
+}

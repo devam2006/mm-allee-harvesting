@@ -1,0 +1,42 @@
+# Repository administration
+
+Requested owner/repository: `devam2006/mm-allee-harvesting-`; visibility **private**. Account identity was checked through the connected GitHub account. Creation and server-side settings are separate from this scaffold; do not claim they are active until verified.
+
+## Bootstrap
+
+After an authenticated private repository is created, push this scaffold as its initial commit. For a locally unpacked copy with no Git metadata:
+
+```bash
+git init -b main
+git add .
+git commit -m "Bootstrap five-member Allee harvesting project"
+git remote add origin https://github.com/devam2006/mm-allee-harvesting-.git
+git push -u origin main
+```
+
+If a README was created on GitHub already, clone that repo and copy the scaffold into it; preserve history. Do not force-push over an existing branch. If using GitHub CLI to create from this directory, `gh repo create devam2006/mm-allee-harvesting- --private --source . --remote origin --push` is an alternative **after** initialising and committing locally; do not run both flows or create a duplicate repository.
+
+## Four-person review policy
+
+1. Invite the other four verified handles, grant write access, and wait for acceptance. Fill all names/handles in `team.json` without making guesses.
+2. In repository Settings -> Branches/rules, protect `main` where the account's private-repository plan supports it. Require a PR, **4 approving reviews**, stale-approval dismissal, resolved conversations, current branches, and the unique `core` and `pinn` checks after they have appeared once. Disable force pushes and deletions; apply protections to administrators where supported. Do not add a bypass for agents.
+3. Disable automatic merging for this project workflow; use squash merges and delete merged branches. Never treat a completed CI run as a human approval.
+4. All four other group members are requested on each PR by `scripts/open_pr.py`. A numeric four-approval rule alone can count other collaborators; keep the roster exact and manually verify that the required four people approved.
+5. If the account cannot enforce private branch protection, record that limitation below and follow the same **manual** four-approval policy. Keep the repo private; changing visibility is not a workaround.
+
+GitHub documents private protected branches on eligible paid plans; this does not prove which plan this account has. See [official branch protection documentation](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches).
+
+`CODEOWNERS` is intentionally not populated with fake handles. It can be added after the roster is known; listing multiple owners does not itself require every owner to approve, so it cannot replace the four-member review rule.
+
+## Actual configuration record
+
+- Private repository created/verified: **verified private** via the connected GitHub API on 19 October 2026: `devam2006/mm-allee-harvesting-`. The user created the repository and supplied its exact URL.
+- Initial scaffold upload: **in progress**; verify the resulting branch/tree before marking complete.
+- Four collaborator invitations accepted: **pending handles**.
+- CI completed remotely: **pending**.
+- Branch protections/rules enabled: **not yet configured**.
+- Manual fallback, if needed: **not yet determined**.
+
+Only update these with observed evidence/links. Creating issues or assigning tasks to unknown teammates is deferred until the roster is supplied.
+
+The user supplied the created repository URL; the connected GitHub API verified its owner and private visibility. Browser sign-in is no longer required. The actual name includes a trailing hyphen, which is preserved in all remote URLs and team configuration.

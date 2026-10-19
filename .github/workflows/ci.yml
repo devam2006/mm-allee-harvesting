@@ -1,0 +1,40 @@
+name: Project checks
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -e ".[dev,notebook]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: python -m pytest -q -m "not pinn and not slow"
+      - run: python scripts/smoke.py
+      - run: python scripts/assemble_notebook.py
+      - run: git diff --exit-code -- notebooks/project.ipynb
+      - run: jupyter nbconvert --to notebook --execute notebooks/project.ipynb --output project.executed.ipynb --output-dir results
+  pinn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install -e ".[dev,pinn]"
+      - run: python -c "import torch; print(torch.__version__)"
+      - run: python -m pytest -q -m "pinn and not slow"

@@ -1,0 +1,55 @@
+# WP03 — Collapse thresholds, basins and numerical reference
+
+**Owner:** Unclaimed — whoever chooses Task 3; record in `team.json`. **Effort guide:** 18–22 h including reproducibility/package audit. **Dependencies:** agree foundations with WP01. Deliver reference data early to WP04/WP05.
+
+## Goal and scope
+
+Own finite-time extinction (item 3), threshold derivations (4), basins (5), and the reliable numerical data used by both PINN packages. Sensitivity (9) and sustainable-yield safety margins (11) are optional extensions. Own the final independent reproduction and submission bundle.
+
+## Subtasks
+
+1. Differentiate the production cubic, choose the maximum in `(A,K)`, derive `N_star,H_c`. Derive B's `h_c` using its per-capita growth maximum; check the logistic `rK/4` limit/reference separately. Convert consistently to dimensionless thresholds.
+2. Extend/review the event-aware RK45 wrapper and derive the extinction quadrature. Classify starts/harvests before integration: below/at/above fold and basin boundaries, `H=0`, `N0=0`. Never integrate through an equilibrium pole or label a finite horizon as proof of no extinction.
+3. Compute extinction-time curves/maps versus `N0,H` in extinction regimes, compare RK45 event times with quadrature, and verify tolerance convergence. Plot the bottleneck close to the threshold. B time to a small cutoff must be distinctly named if included.
+4. Produce basin diagrams with initial state and harvest; mark the unstable root, fold cases and exact equilibria. Share root interfaces with WP01/WP02.
+5. Implement the **synthetic reference generator**: regular persistence, subthreshold/extinction and near-fold regimes for A/B, high-accuracy independent reference checks, train/validation/test observation IDs, fixed noise seeds and manifests. Agree units/scales with WP05; hand over an early small fixture before a large sweep.
+6. **Optional:** threshold elasticities checked by finite differences; MSY for A/B and harvest/basin safety margins. Distinguish B maximum sustainable realised yield from maximum admissible effort. Keep extras short if core or integration needs attention.
+7. Freeze a successful clean environment, rerun all final commands independently, execute the final notebook, audit output manifests and build the submission zip using `scripts/package_submission.py`. Check its contents against course requirements.
+
+## Deliverables
+
+| Output | Content |
+|---|---|
+| `src/mm_allee/thresholds.py`, `collapse.py`, `datasets.py` | Thresholds, certified extinction quadrature/basins, synthetic generator |
+| `experiments/wp03/run.py`, `configs/wp03.json` | Reproduce threshold/extinction/basin results and reference data |
+| `tests/wp03/test_*.py` | Existing event checks plus independent acceptance below |
+| `artifacts/figures/wp03_extinction.png/.eps` | Extinction time vs state/harvest with impossible/no-event cases labelled |
+| `artifacts/figures/wp03_basins.png/.eps` | Basin boundary and regime interpretation |
+| `artifacts/tables/wp03_thresholds.csv` | Analytic/numeric threshold and event/quadrature comparisons |
+| `artifacts/manifests/wp03_reference.json` | Reference generator provenance and split/noise contract |
+| `report/sections/03_collapse.tex`, `notebooks/sections/03_collapse.ipynb` | Proofs, algorithms, evidence and interpretations |
+| `artifacts/manifests/final_environment.txt`, reproduction log | Actual successful clean versions and commands |
+| `submission/mm-allee-submission.zip` | Complete tested hand-in bundle, after all packages integrate |
+
+Deliver future command `python experiments/wp03/run.py --config configs/wp03.json --output results/wp03`. Generated bulk observations stay under ignored `data/generated/` or `results/`; commit only a small documented fixture and manifests.
+
+## Acceptance tests
+
+- [ ] Threshold formulas match independent bounded numerical maximisation over the correct intervals for several a values; critical RHS and derivative vanish within stated tolerances.
+- [ ] A event time agrees with independently evaluated quadrature; convergence checked at two tolerances and at least one alternate solver/reference.
+- [ ] `q=0` subthreshold decline has no finite zero event; equilibrium/supercritical/fold cases classified correctly. At the fold, distinguish starts above and below the double root.
+- [ ] Solver never emits negative physical populations and includes the exact event endpoint; initial zero and invalid inputs handled explicitly.
+- [ ] Basin labels agree with long-enough trajectories away from boundaries and exact roots are not misclassified by numerical drift.
+- [ ] Same generator seed/config gives identical observations and splits; different seeds change noise; truth/units/noise are explicit and all split IDs disjoint.
+- [ ] Synthetic fixture contains both models and nontrivial dynamics; evaluation reference is not passed to training as labels by accident.
+- [ ] Optional sensitivity and MSY claims have numerical checks and correct units/holding-fixed conventions.
+
+## Handoff and done
+
+- [ ] Early reference fixture/schema delivered to WP04/WP05; thresholds delivered to WP01/WP02.
+- [ ] Paired plots/table, report/notebook and tests complete; threshold/extinction claims independently checked.
+- [ ] Final bundle contains all required `.tex/.bib/.pdf/.eps/.ipynb` files, reproduction instructions and no credentials or bulk weights.
+- [ ] Four approvals, other member reproduction, AI log/citations/status current.
+- [ ] Owner can derive both thresholds, explain finite versus asymptotic extinction and demonstrate why the quadrature is valid only on a reaching-zero path.
+
+**Presentation:** 10–15 min: thresholds, finite-time collapse, basin boundary and reference generation. Use extras only if core story and timing are clear.

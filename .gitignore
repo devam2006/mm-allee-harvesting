@@ -1,0 +1,57 @@
+# Environments and Python builds
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+# Jupyter/editor/OS noise
+.ipynb_checkpoints/
+*.executed.ipynb
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+# Secrets/local PR drafts
+.env
+.env.*
+*.pem
+*.key
+pr-body.md
+# Bulk/generated experiment outputs and weights
+results/*
+!results/README.md
+data/raw/*
+!data/raw/README.md
+data/generated/*
+!data/generated/README.md
+*.pt
+*.pth
+*.ckpt
+wandb/
+runs/
+submission/
+# LaTeX build products (do not globally ignore PDFs/EPS figures)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+report/main.pdf
+*-eps-converted-to.pdf
+
+# Process crash dumps
+core
+core.*
+*.core

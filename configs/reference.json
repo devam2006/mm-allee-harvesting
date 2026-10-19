@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "scope": "scaffold fixture, not final experiment design",
+  "a": 0.2,
+  "x0": 0.8,
+  "tau_end": 10,
+  "n_points": 301,
+  "rtol": 1e-09,
+  "atol": 1e-11,
+  "max_step": 0.1,
+  "controls": {
+    "A": 1.0,
+    "B": 0.3
+  },
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "noise_sigma": [
+    0.0,
+    0.01,
+    0.05
+  ],
+  "noise_scale": "fixed N_ref, explicitly recorded per inverse design"
+}
