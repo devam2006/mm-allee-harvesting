@@ -1,35 +1,35 @@
 {
-  "repository": "devam2006/mm-allee-harvesting-",
+  "repository": "devam2006/mm-allee-harvesting",
   "presentation_datetime_ist": null,
   "members": [
     {
       "id": "member1",
-      "name": null,
-      "github": null,
-      "work_package": null
+      "name": "Devam Jatin Bhavsar",
+      "github": "devam2006",
+      "work_package": "WP03"
     },
     {
       "id": "member2",
       "name": null,
-      "github": null,
-      "work_package": null
+      "github": "Prem-Mehta03",
+      "work_package": "WP04"
     },
     {
       "id": "member3",
       "name": null,
-      "github": null,
-      "work_package": null
+      "github": "rohanagrawal28",
+      "work_package": "WP05"
     },
     {
       "id": "member4",
       "name": null,
-      "github": null,
+      "github": "AshChan07",
       "work_package": null
     },
     {
       "id": "member5",
       "name": null,
-      "github": null,
+      "github": "RaghavSinghal15",
       "work_package": null
     }
   ]

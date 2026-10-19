@@ -1,6 +1,16 @@
 # WP02 — Model B, fair comparison and harvesting history
 
-**Owner:** Unclaimed — whoever chooses Task 2; record in `team.json`. **Effort guide:** 18–22 h including presentation assembly. **Dependencies:** shared conventions from WP01, threshold helpers from WP03; begin symbolic derivations immediately.
+<!-- team-sync:owner:start -->
+**Owner:** Unclaimed. See [team.json](../../team.json) for the current choice.
+<!-- team-sync:owner:end -->
+
+**Effort guide:** 18–22 h including presentation assembly. **Dependencies:** shared conventions from WP01, threshold helpers from WP03; begin symbolic derivations immediately.
+
+## Task 2 in plain language
+
+You will compare catching a fixed number with catching a fraction of the current population. Then you will raise harvesting and lower it again to see what the population does. The important question is whether a collapsed population recovers by itself; keep any restocking clearly labelled. You also bring the group’s slides together.
+
+**Using an agent?** It should read this full brief, explain a small example first, then work through one meaningful piece at a time: explain -> implement -> test -> interpret. Tell it whether you want guided implementation, explanation only or hints while you code. See the [first-session guide](../START_HERE.md); the shared agent workflow is [AGENTS.md](../../AGENTS.md). The detailed deliverables below are its checklist as well as yours.
 
 ## Goal and scope
 

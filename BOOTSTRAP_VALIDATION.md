@@ -1,6 +1,6 @@
 # Bootstrap verification — 19 October 2026
 
-This file records checks on the **repository scaffold**. All five scientific tasks remain unclaimed and not started. No trained forward/inverse PINN, final scientific report, final result figures or final presentation is claimed.
+This file records historical checks on the **repository scaffold at bootstrap**, when all five tasks were unclaimed and not started. For current choices/access see `team.json` and `docs/REPOSITORY_ADMIN.md`. No trained forward/inverse PINN, final scientific report, final result figures or final presentation is claimed by these scaffold checks.
 
 ## Passed locally, including isolated virtual-environment verification
 
@@ -20,8 +20,8 @@ This file records checks on the **repository scaffold**. All five scientific tas
 
 ## Local limitation and remaining team setup
 
-- Standard clean-kernel Jupyter execution could not start here: this execution environment prohibits local socket binding (`Operation not permitted` for TCP and IPC). Direct fresh-process cell execution passed, but it is **not claimed as full kernel execution**. The documented `nbconvert --execute` command subsequently **passed in the GitHub Actions core job**: [verified run](https://github.com/devam2006/mm-allee-harvesting-/actions/runs/39220681098). This resolves notebook kernel verification for the scaffold; final scientific notebook content still needs its own acceptance run.
-- The user supplied `devam2006/mm-allee-harvesting-`; the connected GitHub API verified owner `devam2006`, private visibility and write access on 19 October 2026. The 86-file scaffold upload is verified by matching Git tree hashes; both remote Actions jobs passed, including full notebook execution. Collaborator invitations and server-enforced branch protections remain pending. See `docs/REPOSITORY_ADMIN.md` for actual status.
+- Standard clean-kernel Jupyter execution could not start here: this execution environment prohibits local socket binding (`Operation not permitted` for TCP and IPC). Direct fresh-process cell execution passed, but it is **not claimed as full kernel execution**. The documented `nbconvert --execute` command subsequently **passed in the GitHub Actions core job**: [verified run](https://github.com/devam2006/mm-allee-harvesting/actions/runs/39220681098). This resolves notebook kernel verification for the scaffold; final scientific notebook content still needs its own acceptance run.
+- The user supplied `devam2006/mm-allee-harvesting`; the connected GitHub API verified owner `devam2006`, private visibility and write access on 19 October 2026. The 86-file scaffold upload is verified by matching Git tree hashes; both remote Actions jobs passed, including full notebook execution. The supplied five-person roster is recorded; the other four accounts still lack collaborator access and server-enforced branch protections remain pending. See `docs/REPOSITORY_ADMIN.md` for actual status.
 - Browser creation was initially blocked by sign-in. The user subsequently created the private repository and supplied its link, allowing upload through the already-authenticated GitHub plugin. No collaborator invitations have been sent.
 - Full task-specific acceptance tests and experiment outputs are still to be implemented by their chosen owners.
 

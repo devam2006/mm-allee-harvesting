@@ -1,5 +1,5 @@
 {
-  "repository": "devam2006/mm-allee-harvesting-",
+  "repository": "devam2006/mm-allee-harvesting",
   "visibility": "private",
   "verified_scaffold_commit": "04332ecd913a808929fcb08fa9b2567aeb3e89b3",
   "verified_scaffold_tree": "576787bad8bd55fa7f84141728c479d18c6346a3",
@@ -7,7 +7,7 @@
   "local_tree_matches_remote": true,
   "venv_tracked": false,
   "workflow_run_id": 39220681098,
-  "workflow_url": "https://github.com/devam2006/mm-allee-harvesting-/actions/runs/39220681098",
+  "workflow_url": "https://github.com/devam2006/mm-allee-harvesting/actions/runs/39220681098",
   "python": "3.11",
   "jobs": {
     "core": "success",

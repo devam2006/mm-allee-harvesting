@@ -1,10 +1,18 @@
 # Team workflow
 
+## Working with a coding agent
+
+Start with [AGENTS.md](AGENTS.md) or the [first-session guide](docs/START_HERE.md). The agent reads the chosen task, explains it, implements in stages and prepares the same code/tests/report/notebook handoff as a person working manually. Keep task choices with the humans; ask short understanding questions at useful milestones, not for approval of each edit.
+
+For project work, if the roster is incomplete, continue useful local work on a branch and open a reviewable PR when ready. List reviewer requests as pending until real handles are available. Do not invent accounts or bypass the four-human approval rule. At session end, update the chosen task's **Current handoff** with the branch/PR, verified results and exact next step so another agent can resume.
+
 ## One-time setup
 
-Repository owner adds all four other GitHub accounts as collaborators with write access. Each person accepts before working. Fill exactly five distinct handles in `team.json`; let each person choose one of the five unclaimed work packages and record it. Member IDs are placeholders, not GitHub usernames. Set up your own Git credentials; never commit tokens or reuse someone else's login.
+Repository owner adds all four other GitHub accounts as collaborators with write access. Each person accepts before working. The five supplied handles are recorded in `team.json`; let each person choose one of the five work packages and record it. Leave `work_package: null` until then, run `python scripts/sync_team.py`, and include its generated docs in the same PR. CI checks ownership stays in sync. Member IDs are placeholders, not GitHub usernames. Set up your own Git credentials; never commit tokens or reuse someone else's login.
 
-## Branch -> pull request -> four reviewers -> merge
+**Setup exception, clarified by Devam on 19 October 2026:** the four-member approval rule applies to work during the project. Owner-authorised repository setup and task-assignment administration can be applied or merged by the owner or their agent without four teammate approvals. Check the changes and keep the JSON/generated docs consistent. This exception does not cover scientific implementation, experiment configurations, results, report/notebook content or integration work; those follow the project PR workflow below.
+
+## Project work: branch -> pull request -> four reviewers -> merge
 
 ```bash
 git switch main
@@ -31,7 +39,7 @@ Every reviewer checks the equations, interpretation, changed code and tests. At 
 
 **Merge policy:** all four non-author members approve the latest changes, required CI passes, conversations are resolved, and the branch contains current main. A non-author human performs squash merge and deletes the branch. Agents never merge their own PR. Do not bypass failed checks or count a comment as approval. For a five-person roster this means four distinct approvals; a new extra collaborator does not replace a missing teammate's approval.
 
-The initial bootstrap commit may seed an empty repository. After that, use PRs for every change, including documentation and integration. Record actual branch-protection configuration in `docs/REPOSITORY_ADMIN.md`; files alone do not enable it. If private-repository protections are unavailable on the account's plan, the **same manual four-review policy still applies** and the owner merges only after checking it.
+Use PRs for every project change, including its documentation and integration. Repository setup and assignment administration follow the explicit setup exception above. Record actual branch-protection configuration in `docs/REPOSITORY_ADMIN.md`; files alone do not enable it. If private-repository protections are unavailable on the account's plan, the **same manual four-review policy still applies to project work** and the owner merges only after checking it.
 
 ## Avoiding conflicts
 

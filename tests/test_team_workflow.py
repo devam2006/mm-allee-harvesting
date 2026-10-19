@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -21,3 +22,13 @@ def test_missing_duplicate_or_incomplete_roster_is_rejected(handles):
     roster = {"members": [{"github": handle} for handle in handles]}
     with pytest.raises(ValueError):
         MODULE.reviewers_for(roster, "a")
+
+
+def test_actual_roster_selects_reviewers_without_any_task_assignment():
+    roster = json.loads((SCRIPT.parents[1] / "team.json").read_text())
+    assert MODULE.reviewers_for(roster, "devam2006") == [
+        "Prem-Mehta03",
+        "rohanagrawal28",
+        "AshChan07",
+        "RaghavSinghal15",
+    ]

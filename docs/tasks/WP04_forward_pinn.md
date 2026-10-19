@@ -1,6 +1,16 @@
 # WP04 — Forward PINNs and the shared neural engine
 
-**Owner:** Unclaimed — whoever chooses Task 4; record in `team.json`. **Effort guide:** 18–22 h, focused on implementation and evaluation. **Dependencies:** WP01 conventions, WP03 reference fixtures. Freeze the engine interface with WP05 early.
+<!-- team-sync:owner:start -->
+**Owner:** @Prem-Mehta03. See [team.json](../../team.json) for the current choice.
+<!-- team-sync:owner:end -->
+
+**Effort guide:** 18–22 h, focused on implementation and evaluation. **Dependencies:** WP01 conventions, WP03 reference fixtures. Freeze the engine interface with WP05 early.
+
+## Task 4 in plain language
+
+Here the equation and its parameters are known. Your job is to train a small neural network to predict the population over time while respecting that equation, then compare its answers with a standard numerical solver. Explain what the network’s loss means before tuning it, and show failures honestly. Task 5 will reuse your neural engine.
+
+**Using an agent?** It should read this full brief, explain a small example first, then work through one meaningful piece at a time: explain -> implement -> test -> interpret. Tell it whether you want guided implementation, explanation only or hints while you code. See the [first-session guide](../START_HERE.md); the shared agent workflow is [AGENTS.md](../../AGENTS.md). The detailed deliverables below are its checklist as well as yours.
 
 ## Goal and scope
 

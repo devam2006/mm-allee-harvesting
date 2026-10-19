@@ -1,6 +1,16 @@
 # WP01 — Foundations, logistic baseline and Model A
 
-**Owner:** Unclaimed — whoever chooses Task 1; record in `team.json`. **Effort guide:** 18–22 h including report integration. **Dependencies:** none for initial work; freeze interfaces with WP03 before consumers merge.
+<!-- team-sync:owner:start -->
+**Owner:** Unclaimed. See [team.json](../../team.json) for the current choice.
+<!-- team-sync:owner:end -->
+
+**Effort guide:** 18–22 h including report integration. **Dependencies:** none for initial work; freeze interfaces with WP03 before consumers merge.
+
+## Task 1 in plain language
+
+You will explain the basic population model and ask: if we keep catching the same amount, what population levels can remain steady? You will work out which steady levels recover after a small disturbance and which move away from it. Start with one simple population-versus-growth sketch, then connect it to the equations, tests and branch plot. You also help assemble the final report.
+
+**Using an agent?** It should read this full brief, explain a small example first, then work through one meaningful piece at a time: explain -> implement -> test -> interpret. Tell it whether you want guided implementation, explanation only or hints while you code. See the [first-session guide](../START_HERE.md); the shared agent workflow is [AGENTS.md](../../AGENTS.md). The detailed deliverables below are its checklist as well as yours.
 
 ## Goal and scope
 
