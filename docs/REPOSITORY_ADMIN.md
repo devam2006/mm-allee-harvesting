@@ -31,11 +31,11 @@ GitHub documents private protected branches on eligible paid plans; this does no
 ## Actual configuration record
 
 - Private repository created/verified: **verified private** via the connected GitHub API on 19 October 2026: `devam2006/mm-allee-harvesting-`. The user created the repository and supplied its exact URL.
-- Initial scaffold upload: **in progress**; verify the resulting branch/tree before marking complete.
+- Initial scaffold uploaded/verified: **complete**. Commit `04332ecd913a808929fcb08fa9b2567aeb3e89b3`; all 86 source files match local Git tree `576787bad8bd55fa7f84141728c479d18c6346a3`. Subsequent bootstrap documentation records this verification.
 - Four collaborator invitations accepted: **pending handles**.
-- CI completed remotely: **pending**.
-- Branch protections/rules enabled: **not yet configured**.
-- Manual fallback, if needed: **not yet determined**.
+- CI completed remotely: **passed**, both `core` and `pinn` on Python 3.11, including full notebook kernel execution. [Verified run](https://github.com/devam2006/mm-allee-harvesting-/actions/runs/39220681098).
+- Branch protections/rules enabled: **not configured**; GitHub reports `main` as unprotected. The four-person review policy is documented and assisted by the PR helper, not yet enforced server-side.
+- Current review gate: **manual four-member approval policy** until the repository owner configures available protections. Actual member handles are still missing.
 
 Only update these with observed evidence/links. Creating issues or assigning tasks to unknown teammates is deferred until the roster is supplied.
 
