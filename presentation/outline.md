@@ -2,14 +2,16 @@
 
 **25-minute talk + 5-minute Q&A.** User confirmed this extension arrangement on 19 October 2026. Exact presentation date/time is still unrecorded. Every member has approximately five speaking minutes and contributes 2–3 slides; keep backup derivations for questions.
 
+<!-- team-sync:presentation:start -->
 | Time | Speaker | Story and evidence |
 |---|---|---|
-| 0–5 | WP01 owner | Motivation, assumptions, class logistic result, nondimensionalisation and A equilibria |
-| 5–10 | WP02 owner | B equilibria, fair comparisons, history dependence and explicit restocking |
-| 10–15 | WP03 owner | Collapse thresholds, finite-time extinction, basins and trusted numerical reference |
-| 15–20 | WP04 owner | PINN construction/loss, forward A/B results, errors/runtime and one difficulty |
-| 20–25 | WP05 owner | Inverse identifiability, noise/held-out validation, failures and conclusions |
-| 25–30 | All five | Questions, including personal contribution and complete-project understanding |
+| 0–5 min | Unclaimed (WP01) | Motivation, assumptions, logistic baseline, scaling and Model A |
+| 5–10 min | Unclaimed (WP02) | Model B, fair comparisons, harvesting history and restocking |
+| 10–15 min | Unclaimed (WP03) | Thresholds, finite-time extinction, basins and reference generation |
+| 15–20 min | Unclaimed (WP04) | PINN construction, forward results, errors, runtime and a difficult case |
+| 20–25 min | Unclaimed (WP05) | Inverse identifiability, noise, held-out validation, failures and conclusions |
+| 25–30 min | All five | Questions and individual understanding |
+<!-- team-sync:presentation:end -->
 
 Optional slowing/sensitivity/MSY fit within existing allocations only if clear; otherwise backup slides. Do not spend five extra minutes on extras and remove the Q&A.
 

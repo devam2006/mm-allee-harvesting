@@ -1,6 +1,6 @@
 # Repository administration
 
-Requested owner/repository: `devam2006/mm-allee-harvesting-`; visibility **private**. Account identity was checked through the connected GitHub account. Creation and server-side settings are separate from this scaffold; do not claim they are active until verified.
+Requested owner/repository: `devam2006/mm-allee-harvesting`; visibility **private**. Account identity was checked through the connected GitHub account. Creation and server-side settings are separate from this scaffold; do not claim they are active until verified.
 
 ## Bootstrap
 
@@ -10,11 +10,11 @@ After an authenticated private repository is created, push this scaffold as its 
 git init -b main
 git add .
 git commit -m "Bootstrap five-member Allee harvesting project"
-git remote add origin https://github.com/devam2006/mm-allee-harvesting-.git
+git remote add origin https://github.com/devam2006/mm-allee-harvesting.git
 git push -u origin main
 ```
 
-If a README was created on GitHub already, clone that repo and copy the scaffold into it; preserve history. Do not force-push over an existing branch. If using GitHub CLI to create from this directory, `gh repo create devam2006/mm-allee-harvesting- --private --source . --remote origin --push` is an alternative **after** initialising and committing locally; do not run both flows or create a duplicate repository.
+If a README was created on GitHub already, clone that repo and copy the scaffold into it; preserve history. Do not force-push over an existing branch. If using GitHub CLI to create from this directory, `gh repo create devam2006/mm-allee-harvesting --private --source . --remote origin --push` is an alternative **after** initialising and committing locally; do not run both flows or create a duplicate repository.
 
 ## Four-person review policy
 
@@ -30,13 +30,18 @@ GitHub documents private protected branches on eligible paid plans; this does no
 
 ## Actual configuration record
 
-- Private repository created/verified: **verified private** via the connected GitHub API on 19 October 2026: `devam2006/mm-allee-harvesting-`. The user created the repository and supplied its exact URL.
+- Private repository created/verified: **verified private** via the connected GitHub API on 19 October 2026: `devam2006/mm-allee-harvesting`. The user created the repository and supplied its exact URL.
 - Initial scaffold uploaded/verified: **complete**. Commit `04332ecd913a808929fcb08fa9b2567aeb3e89b3`; all 86 source files match local Git tree `576787bad8bd55fa7f84141728c479d18c6346a3`. Subsequent bootstrap documentation records this verification.
-- Four collaborator invitations accepted: **pending handles**.
-- CI completed remotely: **passed**, both `core` and `pinn` on Python 3.11, including full notebook kernel execution. [Verified run](https://github.com/devam2006/mm-allee-harvesting-/actions/runs/39220681098).
+- Roster supplied: `devam2006`, `Prem-Mehta03`, `rohanagrawal28`, `AshChan07`, `RaghavSinghal15`; all task choices remain null.
+- Collaborator access: owner `devam2006` has admin; the other four accounts currently report `none` through the connected GitHub API. Invitations/acceptance are **not complete**. The plugin exposes no collaborator-invitation action.
+- CI completed remotely: **passed**, both `core` and `pinn` on Python 3.11, including full notebook kernel execution. [Verified run](https://github.com/devam2006/mm-allee-harvesting/actions/runs/39220681098).
 - Branch protections/rules enabled: **not configured**; GitHub reports `main` as unprotected. The four-person review policy is documented and assisted by the PR helper, not yet enforced server-side.
-- Current review gate: **manual four-member approval policy** until the repository owner configures available protections. Actual member handles are still missing.
+- Current review gate: **manual four-member approval policy** until the repository owner configures available protections. The actual handles are now recorded; reviewer requests require the other four to have collaborator access.
 
-Only update these with observed evidence/links. Creating issues or assigning tasks to unknown teammates is deferred until the roster is supplied.
+Only update these with observed evidence/links. Task assignment remains deferred until the group chooses; recording a handle does not give that account repository access.
 
-The user supplied the created repository URL; the connected GitHub API verified its owner and private visibility. Browser sign-in is no longer required. The actual name includes a trailing hyphen, which is preserved in all remote URLs and team configuration.
+The user supplied the created repository URL; the connected GitHub API verified its owner and private visibility. Browser sign-in is no longer required. The repository was subsequently renamed to `devam2006/mm-allee-harvesting` (without the trailing hyphen); the stable repository ID is `1425301318`, and all active URLs/configuration now use its canonical name.
+
+## Grant the supplied teammates access
+
+The owner uses GitHub repository Settings -> Collaborators -> Add people to invite each of the four non-owner handles listed in `team.json` with write access. Each person accepts their invitation. This is separate from adding roster metadata and separate from being listed as a Git commit contributor. No collaborator invitations were sent by the agent. After access is active, `scripts/open_pr.py` can request all four other roster members as reviewers even before task selection.

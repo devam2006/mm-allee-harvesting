@@ -18,6 +18,7 @@ jobs:
           python-version: '3.11'
           cache: pip
       - run: python -m pip install -e ".[dev,notebook]"
+      - run: python scripts/sync_team.py --check
       - run: ruff check .
       - run: ruff format --check .
       - run: python -m pytest -q -m "not pinn and not slow"

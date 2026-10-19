@@ -1,14 +1,18 @@
 # Choose one of five unclaimed tasks
 
-No person is assigned yet. Devam and the team choose freely. Agree choices together, then update this table and each person's `work_package` in `team.json` in one coordination PR. Each task has one human owner; AI agents assist that owner. Names/handles and task choices do not have to follow roster order.
+You can ask your agent to read this page, explain the choices, and guide the task you choose. The [first-session guide](../START_HERE.md) has a message you can paste; agents start at [AGENTS.md](../../AGENTS.md).
 
-| Task | Choose if you want to own | Extra shared duty | Claimed by |
+The five contributors are recorded in [team.json](../../team.json); tasks stay open until each person chooses. Agree choices together, update their `work_package`, then run `python scripts/sync_team.py` from the root. The generated table below and each brief will show the owners. Each task has one human owner; AI agents assist that owner. Roster order does not select a task.
+
+<!-- team-sync:board:start -->
+| Task | In plain language | Shared duty | Claimed by |
 |---|---|---|---|
-| [1 — Foundations and Model A](WP01_foundations.md) | Scaling, logistic recap, A equilibria/stability | Report assembly and EPS audit | Unclaimed |
-| [2 — Model B and history](WP02_model_b.md) | B equilibria, comparisons, ramps and restocking | Presentation assembly/timing | Unclaimed |
-| [3 — Collapse and references](WP03_collapse.md) | Thresholds, extinction, basins, numerical data | Independent reproduction and bundle | Unclaimed |
-| [4 — Forward PINNs](WP04_forward_pinn.md) | Shared neural engine and forward A/B benchmark | Forward section and inverse-engine handoff | Unclaimed |
-| [5 — Inverse PINNs](WP05_inverse_pinn.md) | Parameter recovery, noise, held-out tests | Notebook assembly and disclosure audit | Unclaimed |
+| [WP01: Foundations and Model A](WP01_foundations.md) | Find the steady population levels under a fixed catch and check their stability | Report assembly and EPS audit | Unclaimed |
+| [WP02: Model B and history](WP02_model_b.md) | Compare catch policies and show why reducing harvest may not undo collapse | Presentation assembly and timing | Unclaimed |
+| [WP03: Collapse and numerical references](WP03_collapse.md) | Calculate when collapse occurs, which starts survive and extinction time | Independent reproduction and submission bundle | Unclaimed |
+| [WP04: Forward PINNs](WP04_forward_pinn.md) | Train a network to solve the known equations and compare it with a solver | Shared neural engine and forward benchmark | Unclaimed |
+| [WP05: Inverse PINNs](WP05_inverse_pinn.md) | Estimate unknown parameters from noisy observations and test what is learnable | Notebook assembly and acknowledgement audit | Unclaimed |
+<!-- team-sync:board:end -->
 
 Every chosen owner writes their report/notebook section, tests, figure interpretation, references and AI-use entry; prepares about five minutes of the confirmed 25+5-minute presentation; and reviews the other four owners' PRs. Integration duties belong to the task and move with the choice.
 

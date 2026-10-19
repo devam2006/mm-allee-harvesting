@@ -22,7 +22,7 @@
     "remote_kernel_verification": {
       "status": "passed",
       "runner_python": "3.11",
-      "workflow_url": "https://github.com/devam2006/mm-allee-harvesting-/actions/runs/39220681098"
+      "workflow_url": "https://github.com/devam2006/mm-allee-harvesting/actions/runs/39220681098"
     }
   },
   "solver_smoke": "passed for A/B; PNG/EPS exported",
@@ -36,5 +36,5 @@
     "nbformat": "5.11.1",
     "nbconvert": "7.17.2"
   },
-  "github_creation": "User-created private repository verified and scaffold uploaded: devam2006/mm-allee-harvesting-"
+  "github_creation": "User-created private repository verified and scaffold uploaded: devam2006/mm-allee-harvesting"
 }

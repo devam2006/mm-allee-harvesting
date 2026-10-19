@@ -1,6 +1,16 @@
 # WP03 — Collapse thresholds, basins and numerical reference
 
-**Owner:** Unclaimed — whoever chooses Task 3; record in `team.json`. **Effort guide:** 18–22 h including reproducibility/package audit. **Dependencies:** agree foundations with WP01. Deliver reference data early to WP04/WP05.
+<!-- team-sync:owner:start -->
+**Owner:** Unclaimed. See [team.json](../../team.json) for the current choice.
+<!-- team-sync:owner:end -->
+
+**Effort guide:** 18–22 h including reproducibility/package audit. **Dependencies:** agree foundations with WP01. Deliver reference data early to WP04/WP05.
+
+## Task 3 in plain language
+
+You will calculate how much harvesting the population can tolerate, which starting populations survive, and how long extinction takes when collapse occurs. You will check those calculations against a reliable numerical solver and generate the synthetic data used by the neural-network tasks. You also check that the final submission can be reproduced and packaged.
+
+**Using an agent?** It should read this full brief, explain a small example first, then work through one meaningful piece at a time: explain -> implement -> test -> interpret. Tell it whether you want guided implementation, explanation only or hints while you code. See the [first-session guide](../START_HERE.md); the shared agent workflow is [AGENTS.md](../../AGENTS.md). The detailed deliverables below are its checklist as well as yours.
 
 ## Goal and scope
 

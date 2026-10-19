@@ -63,6 +63,7 @@ def main():
             "STATUS.md",
             "CONTRIBUTING.md",
             "AGENTS.md",
+            "CLAUDE.md",
             "team.json",
             "pyproject.toml",
             "requirements.txt",

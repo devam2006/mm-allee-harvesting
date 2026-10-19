@@ -7,7 +7,7 @@ Use Python 3.11 for team runs and CI. The scaffold also supports Python 3.12; ke
 After the private repository exists and your invitation is accepted:
 
 ```bash
-git clone https://github.com/devam2006/mm-allee-harvesting-.git
+git clone https://github.com/devam2006/mm-allee-harvesting.git mm-allee-harvesting
 cd mm-allee-harvesting
 ```
 
@@ -43,6 +43,7 @@ For a specifically CPU-only PyTorch wheel use the official install selector link
 ## Verify
 
 ```bash
+python scripts/sync_team.py --check
 python -m pytest -q
 ruff check .
 ruff format --check .

@@ -1,6 +1,16 @@
 # WP05 — Inverse PINNs, identifiability and held-out validation
 
-**Owner:** Unclaimed — whoever chooses Task 5; record in `team.json`. **Effort guide:** 18–22 h using WP04's shared engine; reduce optional joint fits before increasing compute. **Dependencies:** WP03 datasets, WP04 PINN API. Begin algebra, splits and the conventional fit baseline immediately.
+<!-- team-sync:owner:start -->
+**Owner:** Unclaimed. See [team.json](../../team.json) for the current choice.
+<!-- team-sync:owner:end -->
+
+**Effort guide:** 18–22 h using WP04's shared engine; reduce optional joint fits before increasing compute. **Dependencies:** WP03 datasets, WP04 PINN API. Begin algebra, splits and the conventional fit baseline immediately.
+
+## Task 5 in plain language
+
+Here you start with noisy population observations and try to infer unknown model parameters. You will ask both whether predictions are good and whether the parameters are actually determined by the data—these are different questions. Reuse Task 3’s data and Task 4’s neural engine. You also combine the notebook and acknowledgements.
+
+**Using an agent?** It should read this full brief, explain a small example first, then work through one meaningful piece at a time: explain -> implement -> test -> interpret. Tell it whether you want guided implementation, explanation only or hints while you code. See the [first-session guide](../START_HERE.md); the shared agent workflow is [AGENTS.md](../../AGENTS.md). The detailed deliverables below are its checklist as well as yours.
 
 ## Goal and scope
 

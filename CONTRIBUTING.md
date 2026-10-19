@@ -1,8 +1,14 @@
 # Team workflow
 
+## Working with a coding agent
+
+Start with [AGENTS.md](AGENTS.md) or the [first-session guide](docs/START_HERE.md). The agent reads the chosen task, explains it, implements in stages and prepares the same code/tests/report/notebook handoff as a person working manually. Keep task choices with the humans; ask short understanding questions at useful milestones, not for approval of each edit.
+
+If the roster is incomplete, continue useful local work on a branch and open a reviewable PR when ready. List reviewer requests as pending until real handles are available. Do not invent accounts or bypass the four-human approval rule. At session end, update the chosen task's **Current handoff** with the branch/PR, verified results and exact next step so another agent can resume.
+
 ## One-time setup
 
-Repository owner adds all four other GitHub accounts as collaborators with write access. Each person accepts before working. Fill exactly five distinct handles in `team.json`; let each person choose one of the five unclaimed work packages and record it. Member IDs are placeholders, not GitHub usernames. Set up your own Git credentials; never commit tokens or reuse someone else's login.
+Repository owner adds all four other GitHub accounts as collaborators with write access. Each person accepts before working. The five supplied handles are recorded in `team.json`; let each person choose one of the five work packages and record it. Leave `work_package: null` until then, run `python scripts/sync_team.py`, and include its generated docs in the same PR. CI checks ownership stays in sync. Member IDs are placeholders, not GitHub usernames. Set up your own Git credentials; never commit tokens or reuse someone else's login.
 
 ## Branch -> pull request -> four reviewers -> merge
 

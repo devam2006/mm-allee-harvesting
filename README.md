@@ -4,19 +4,37 @@
 
 Private, five-person Mathematical Modelling project. Humans own and explain the work; AI agents assist with implementation, checking and writing. This repository starts as a **tested scaffold and work plan**, not a completed scientific project. See [STATUS.md](STATUS.md).
 
-## Start here
+## Start here — with your coding agent or on your own
 
-1. Read [course requirements](docs/COURSE_REQUIREMENTS.md) and [scientific conventions](docs/SCIENTIFIC_CONTRACT.md).
-2. Choose tasks, then fill the five names and GitHub handles in [team.json](team.json), then follow [SETUP.md](docs/SETUP.md).
-3. Choose one unclaimed task in the [task board](docs/tasks/README.md) or the table below. Give your AI agent [AGENTS.md](AGENTS.md), that package, and [interfaces](docs/INTERFACES.md).
-4. Make a branch and PR; request **all other four members as reviewers**. Merge only after all four approve the current changes and checks pass. See [CONTRIBUTING.md](CONTRIBUTING.md).
-5. Deliver your code, tests, reproducible experiment outputs, report section and notebook section together. Finish with the [integration plan](docs/INTEGRATION.md).
+**Using Codex, Claude Code or another coding agent?** Give it this repo and paste:
+
+```text
+Read AGENTS.md. Help me choose a task if I have not chosen one.
+Explain my task with a small example, then help me implement it in stages
+while explaining the maths, code, tests and results. Prepare a PR for review.
+```
+
+If you already chose a task, add **“I chose Task 3 (WP03)”**, changing the number. Your agent should read the task brief itself and explain the relevant parts to you. It should help you learn as it builds. You can also ask for explanation only, hints while you code, or shorter implementation updates.
+
+**[New to the project? Start here](docs/START_HERE.md)** · **[Choose a task](docs/tasks/README.md)** · **[Set up Python](docs/SETUP.md)**
+
+| Coding tool | Entry file |
+|---|---|
+| Codex | [AGENTS.md](AGENTS.md): the shared task, teaching and implementation playbook |
+| Claude Code | [CLAUDE.md](CLAUDE.md): imports the same playbook |
+| Other agents/chat tools | Ask them to open `AGENTS.md` explicitly after obtaining repository access |
+
+The repo is private: the agent needs an authorised connection or your local checkout; the link alone does not grant access.
+
+**Working manually?** Choose a task below, read its plain-language introduction and checklist, then use the setup guide. Read the [scientific conventions](docs/SCIENTIFIC_CONTRACT.md) for common equations and the [interfaces](docs/INTERFACES.md) when connecting your code to another task.
+
+Whichever way you work, choose tasks with the group and record the choices in [team.json](team.json); the five GitHub handles are already listed there. Make changes on a branch, request **all other four members as PR reviewers**, and merge only after four approvals and passing checks: [workflow](CONTRIBUTING.md). Your task includes code, tests, figures, a report section, a notebook section and a contribution to the final [integration](docs/INTEGRATION.md).
 
 ## Five work packages
 
 The original split overloaded the forward-PINN owner. Hysteresis moves to WP02; sensitivity and sustainable yield move to WP03. Each person owns one substantial analysis/computation package plus one integration responsibility. Suggested effort is roughly 18–22 focused hours each; revise after the first smoke run. These are estimates, not course requirements.
 
-| Task (unclaimed) | Package and original items | Main deliverables | Integration responsibility |
+| Task | Package and original items | Main deliverables | Integration responsibility |
 |---|---|---|---|
 | Task 1 | [WP01: foundations and Model A](docs/tasks/WP01_foundations.md), items 1, 2(A), 6(A), logistic recap | Nondimensionalisation, Model A equilibria/stability and branch plot, shared math interfaces | LaTeX report assembly and EPS audit |
 | Task 2 | [WP02: Model B and harvesting history](docs/tasks/WP02_model_b.md), items 2(B), 6(B), 7, 10; item 8 optional | B equilibria, fair comparisons, ramp/restocking experiment; slowing down if time permits | Slide assembly and rehearsal timing |
@@ -24,7 +42,23 @@ The original split overloaded the forward-PINN owner. Hysteresis moves to WP02; 
 | Task 4 | [WP04: forward PINNs](docs/tasks/WP04_forward_pinn.md), item 12 | Shared PyTorch PINN engine, both models, RK45 comparisons and error/runtime tables | Forward notebook section and shared PINN handoff |
 | Task 5 | [WP05: inverse PINNs and validation](docs/tasks/WP05_inverse_pinn.md), items 13, 14 | Identifiable inverse designs, noise study, held-out tests, collapse failure cases | Notebook assembly, data provenance and AI acknowledgements |
 
-All five tasks are **unclaimed**. You and your teammates choose freely; then fill `work_package` in `team.json` with one distinct WP01–WP05 per person. No task is preassigned to Devam or anyone else. All five contribute references, AI-use records, report text, notebook explanations and their own presentation content.
+Choose tasks with the group; record one distinct `work_package` (WP01–WP05) per person in `team.json`. Use `null` until a person chooses. The ownership display below is generated from that file; no task is preassigned by roster order. All five contribute references, AI-use records, report text, notebook explanations and their own presentation content.
+
+## Team and task owners
+
+<!-- team-sync:owners:start -->
+**Contributors:** @devam2006, @Prem-Mehta03, @rohanagrawal28, @AshChan07, @RaghavSinghal15
+
+| Task | Owner |
+|---|---|
+| [WP01: Foundations and Model A](docs/tasks/WP01_foundations.md) | Unclaimed |
+| [WP02: Model B and history](docs/tasks/WP02_model_b.md) | Unclaimed |
+| [WP03: Collapse and numerical references](docs/tasks/WP03_collapse.md) | Unclaimed |
+| [WP04: Forward PINNs](docs/tasks/WP04_forward_pinn.md) | Unclaimed |
+| [WP05: Inverse PINNs](docs/tasks/WP05_inverse_pinn.md) | Unclaimed |
+<!-- team-sync:owners:end -->
+
+**When choices are settled:** update `team.json`, run `python scripts/sync_team.py`, and commit the updated JSON and docs together. This refreshes the README, task board, all five task briefs, status owners and presentation speakers. CI checks that they agree. The changes appear on `main` once the PR is merged. Repository access is managed separately in GitHub Settings.
 
 ## Model and scope
 
@@ -100,7 +134,7 @@ The group has confirmed an **extension slot of 30 minutes including Q&A** (user 
 ## First team actions
 
 1. Confirm presentation date/time and record it in `docs/INTEGRATION.md`.
-2. Assign the five packages and fill `team.json`; owner adds the four collaborators with write access.
+2. Choose the five packages, update `team.json` and run `python scripts/sync_team.py`; the repo owner grants the other four accounts write access.
 3. Enable the available branch protections and review gates described in [REPOSITORY_ADMIN.md](docs/REPOSITORY_ADMIN.md). They are **not enabled by these files**.
 4. WP01/WP03 settle model/solver/data interfaces first; WP04 starts the shared PINN engine; WP05 develops its inverse design and data checks in parallel.
 5. Use the package-level checklists; a green scaffold CI is not a completed project.
