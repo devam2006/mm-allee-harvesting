@@ -2,6 +2,8 @@
 
 **Implemented milestone:** clean, independently checked numerical references for Models A and B. Task 3 remains in progress. No PINN training, noisy observation files, split selection, full basin maps or threshold study is claimed here. Devam's detailed understanding/review is still pending.
 
+[PR #2](https://github.com/devam2006/mm-allee-harvesting/pull/2) contains this handoff on `wp03/rk45-reference-data`; it is open for Rohan's initial review and has not been merged.
+
 ## Start with these files
 
 | Need | Location |

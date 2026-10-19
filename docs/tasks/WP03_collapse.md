@@ -71,7 +71,7 @@ Deliver future command `python experiments/wp03/run.py --config configs/wp03.jso
 ## Current handoff
 
 - **Owner:** Devam (`devam2006`) selected Task 3 on 19 October 2026.
-- **Branch / PR:** `wp03/rk45-reference-data`; the PR is assigned to `rohanagrawal28` with only his initial review requested per Devam. Its description links all handoff files; remaining project approvals are required before merge.
+- **Branch / PR:** `wp03/rk45-reference-data`; [PR #2](https://github.com/devam2006/mm-allee-harvesting/pull/2) is assigned to `rohanagrawal28` with only his initial review requested per Devam. Its description links all handoff files; remaining project approvals are required before merge.
 - **Completed milestone:** clean A/B references (six cases, 606 points), configurable sampling, independent dimensional DOP853/tighter-RK45/quadrature evidence, reference tests, paired figure/table, and methods content in report/notebook. See [handoff and actual evidence](../WP03_RK45_HANDOFF.md). Full Task 3 is not complete.
 - **Next:** Rohan prepares his own noisy observations/splits and inverse fitting; Devam later reviews the numerical method and completes full threshold/basin/extinction analysis. Shared root APIs still need coordination with WP01/WP02.
 - **Human understanding:** explicitly pending. First explanation to revisit: why a positive constant catch permits finite-time extinction, why zero-yield decline is different, and how embedded error control differs from a global error guarantee.
