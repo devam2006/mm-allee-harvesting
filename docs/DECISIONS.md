@@ -12,4 +12,6 @@
 
 Add interface changes, chosen experiment budgets, fixed inverse parameters, final environment lock and presentation date here as reviewed decisions.
 
-Task choice clarification (user, 19 October 2026): tasks stay unclaimed; Devam and the group choose which task each person takes. Integration duties and speaking slots follow the chosen WP, not roster order.
+Task choice clarification (user, 19 October 2026): tasks stay unclaimed until Devam and the group choose which task each person takes. Integration duties and speaking slots follow the chosen WP, not roster order. Choices reported so far: Devam → WP03, Prem → WP04, Rohan → WP05; `team.json` remains the current ownership source.
+
+Review scope clarification (user, 19 October 2026): the four-other-member approval rule applies to PRs raised during project work. Owner-authorised repository configuration and task-assignment administration do not require those approvals. The current setup PR may be merged by the owner's agent after checks; scientific code, experiments, results and final deliverable integration keep the four-review rule.

@@ -1,7 +1,7 @@
 # WP04 — Forward PINNs and the shared neural engine
 
 <!-- team-sync:owner:start -->
-**Owner:** Unclaimed. See [team.json](../../team.json) for the current choice.
+**Owner:** @Prem-Mehta03. See [team.json](../../team.json) for the current choice.
 <!-- team-sync:owner:end -->
 
 **Effort guide:** 18–22 h, focused on implementation and evaluation. **Dependencies:** WP01 conventions, WP03 reference fixtures. Freeze the engine interface with WP05 early.

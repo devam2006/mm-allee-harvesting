@@ -1,7 +1,7 @@
 # WP05 — Inverse PINNs, identifiability and held-out validation
 
 <!-- team-sync:owner:start -->
-**Owner:** Unclaimed. See [team.json](../../team.json) for the current choice.
+**Owner:** @rohanagrawal28. See [team.json](../../team.json) for the current choice.
 <!-- team-sync:owner:end -->
 
 **Effort guide:** 18–22 h using WP04's shared engine; reduce optional joint fits before increasing compute. **Dependencies:** WP03 datasets, WP04 PINN API. Begin algebra, splits and the conventional fit baseline immediately.

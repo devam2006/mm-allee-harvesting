@@ -57,12 +57,14 @@ Human-facing onboarding and a copyable first message are in [START_HERE.md](docs
 
 ## Scope and ownership
 
-- `team.json` owns membership and task assignments. After any roster/choice edit run `python scripts/sync_team.py`; commit all generated ownership updates together. Do not hand-edit the `team-sync` blocks. Use `--check` to check for drift. Assignment displays reach `main` through the normal reviewed PR, not an automatic write to main.
+- `team.json` owns membership and task assignments. After any roster/choice edit run `python scripts/sync_team.py`; commit all generated ownership updates together. Do not hand-edit the `team-sync` blocks. Use `--check` to check for drift. The script does not publish changes; apply or merge them under the workflow below.
+
+- **Owner-authorised setup exception:** Devam clarified on 19 October 2026 that repository setup and task-assignment administration do not need four teammate approvals. The owner or their agent can apply/merge these verified changes. Scientific implementation, experiment configurations, results and report/notebook/integration work still require the project review process. Never use a setup label to bypass reviews of project work.
 
 - Work only on the assigned package and its report/notebook/test files. Shared-interface changes need a focused PR and review from affected owners. Record interface decisions in docs/DECISIONS.md.
 - Reuse `mm_allee.models` and `mm_allee.solver`; do not copy model equations into notebooks or experiment scripts. Torch equations belong in `mm_allee.pinn` and require parity tests against NumPy functions.
 - The scaffold is not the final solution. Do not mark a work package complete because starter tests pass. Implement every core acceptance item, and list deferred extras explicitly.
-- Use small task branches and PRs. The human member is PR author/assignee, and all other four humans review. Never self-approve, impersonate reviewers, auto-merge, force-push main or push directly to main after bootstrap.
+- For project work, use small task branches and PRs. The human member is PR author/assignee, and all other four humans review. Never self-approve, impersonate reviewers, auto-merge, force-push main or push project work directly to main. The setup exception above does not supply any scientific approval.
 - Never invent member names, numerical results, datasets, references, approvals or CI outcomes. Do not call synthetic data real observations.
 
 ## Scientific correctness
@@ -86,4 +88,4 @@ Human-facing onboarding and a copyable first message are in [START_HERE.md](docs
 
 Leave a brief **Current handoff** section in the chosen task brief (or update its existing one): chosen task/owner if known; branch and PR; completed checklist items and actual evidence; exact next command/step; dependencies or blockers; decisions about interfaces; the key explanation and any still-open understanding question. This lets a different agent resume without another chat's memory.
 
-In the user-facing handoff, state the result in plain language, files/figures produced, exact reproduction commands, tests and observed outcomes, limitations and unfinished work. Prepare/open the PR when implementation is ready; request all four other humans once their handles are known. If the roster is incomplete, keep useful work on a branch/open PR and report that reviewer requests remain pending. **Do not stop local implementation just because names are missing, invent reviewers, merge your own PR or push directly to main.**
+In the user-facing handoff, state the result in plain language, files/figures produced, exact reproduction commands, tests and observed outcomes, limitations and unfinished work. For project implementation, prepare/open the PR when ready; request all four other humans once their handles are known. If the roster is incomplete, keep useful work on a branch/open PR and report that reviewer requests remain pending. **Do not stop local implementation just because names are missing, invent reviewers, merge your own project PR or push project work directly to main.** Verified setup/assignment administration follows the owner-authorised exception above.

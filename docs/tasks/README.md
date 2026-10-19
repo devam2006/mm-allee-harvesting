@@ -1,4 +1,4 @@
-# Choose one of five unclaimed tasks
+# Task board — choose an open task
 
 You can ask your agent to read this page, explain the choices, and guide the task you choose. The [first-session guide](../START_HERE.md) has a message you can paste; agents start at [AGENTS.md](../../AGENTS.md).
 
@@ -10,8 +10,8 @@ The five contributors are recorded in [team.json](../../team.json); tasks stay o
 | [WP01: Foundations and Model A](WP01_foundations.md) | Find the steady population levels under a fixed catch and check their stability | Report assembly and EPS audit | Unclaimed |
 | [WP02: Model B and history](WP02_model_b.md) | Compare catch policies and show why reducing harvest may not undo collapse | Presentation assembly and timing | Unclaimed |
 | [WP03: Collapse and numerical references](WP03_collapse.md) | Calculate when collapse occurs, which starts survive and extinction time | Independent reproduction and submission bundle | @devam2006 |
-| [WP04: Forward PINNs](WP04_forward_pinn.md) | Train a network to solve the known equations and compare it with a solver | Shared neural engine and forward benchmark | Unclaimed |
-| [WP05: Inverse PINNs](WP05_inverse_pinn.md) | Estimate unknown parameters from noisy observations and test what is learnable | Notebook assembly and acknowledgement audit | Unclaimed |
+| [WP04: Forward PINNs](WP04_forward_pinn.md) | Train a network to solve the known equations and compare it with a solver | Shared neural engine and forward benchmark | @Prem-Mehta03 |
+| [WP05: Inverse PINNs](WP05_inverse_pinn.md) | Estimate unknown parameters from noisy observations and test what is learnable | Notebook assembly and acknowledgement audit | @rohanagrawal28 |
 <!-- team-sync:board:end -->
 
 Every chosen owner writes their report/notebook section, tests, figure interpretation, references and AI-use entry; prepares about five minutes of the confirmed 25+5-minute presentation; and reviews the other four owners' PRs. Integration duties belong to the task and move with the choice.

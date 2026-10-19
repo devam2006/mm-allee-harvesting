@@ -1,6 +1,6 @@
 # Bootstrap verification — 19 October 2026
 
-This file records checks on the **repository scaffold**. All five scientific tasks remain unclaimed and not started. No trained forward/inverse PINN, final scientific report, final result figures or final presentation is claimed.
+This file records historical checks on the **repository scaffold at bootstrap**, when all five tasks were unclaimed and not started. For current choices/access see `team.json` and `docs/REPOSITORY_ADMIN.md`. No trained forward/inverse PINN, final scientific report, final result figures or final presentation is claimed by these scaffold checks.
 
 ## Passed locally, including isolated virtual-environment verification
 

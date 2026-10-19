@@ -39,7 +39,7 @@ python scripts/sync_team.py
 python scripts/sync_team.py --check
 ```
 
-This updates the owner shown in the root README, task board, five briefs, status table and presentation outline without copying names around by hand. It does not change scientific progress or grant GitHub access. The JSON and generated docs are reviewed together; ownership appears on `main` after merge. CI fails if a JSON edit leaves the displayed ownership stale.
+This updates the owner shown in the root README, task board, five briefs, status table and presentation outline without copying names around by hand. It does not change scientific progress or grant GitHub access. Keep the JSON and generated docs together; ownership appears on `main` after the owner applies or merges the administration update. This setup step does not need four teammate approvals. CI fails if a JSON edit leaves the displayed ownership stale.
 
 ## What should the first session look like?
 
@@ -63,7 +63,7 @@ Use the [integration plan](INTEGRATION.md) when combining the report, notebook, 
 
 ## How do I share my work?
 
-Work on a branch and open a pull request. Request the other four members as reviewers once their actual GitHub handles are recorded. All four approve before a non-author human merges; an AI review does not replace their approval. Missing names should not block useful local implementation, but reviewer requests remain pending until the roster is complete.
+For project work, work on a branch and open a pull request. Request the other four members as reviewers once their actual GitHub handles are recorded. All four approve before a non-author human merges; an AI review does not replace their approval. Missing names should not block useful local implementation, but reviewer requests remain pending until the roster is complete. Owner-authorised repository setup and task-assignment administration are exempt, as explained in [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 Your agent handles the detailed [setup](SETUP.md), [interfaces](INTERFACES.md), [tests](TESTING.md) and [Git workflow](../CONTRIBUTING.md). If you work manually, these are the relevant guides.
 

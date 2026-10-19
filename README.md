@@ -28,7 +28,7 @@ The repo is private: the agent needs an authorised connection or your local chec
 
 **Working manually?** Choose a task below, read its plain-language introduction and checklist, then use the setup guide. Read the [scientific conventions](docs/SCIENTIFIC_CONTRACT.md) for common equations and the [interfaces](docs/INTERFACES.md) when connecting your code to another task.
 
-Whichever way you work, choose tasks with the group and record the choices in [team.json](team.json); the five GitHub handles are already listed there. Make changes on a branch, request **all other four members as PR reviewers**, and merge only after four approvals and passing checks: [workflow](CONTRIBUTING.md). Your task includes code, tests, figures, a report section, a notebook section and a contribution to the final [integration](docs/INTEGRATION.md).
+Whichever way you work, choose tasks with the group and record the choices in [team.json](team.json); the five GitHub handles are already listed there. For project work, make changes on a branch, request **all other four members as PR reviewers**, and merge only after four approvals and passing checks: [workflow](CONTRIBUTING.md). Owner-authorised repository setup and task-assignment administration do not need four approvals. Your task includes code, tests, figures, a report section, a notebook section and a contribution to the final [integration](docs/INTEGRATION.md).
 
 ## Five work packages
 
@@ -54,11 +54,11 @@ Choose tasks with the group; record one distinct `work_package` (WP01–WP05) pe
 | [WP01: Foundations and Model A](docs/tasks/WP01_foundations.md) | Unclaimed |
 | [WP02: Model B and history](docs/tasks/WP02_model_b.md) | Unclaimed |
 | [WP03: Collapse and numerical references](docs/tasks/WP03_collapse.md) | @devam2006 |
-| [WP04: Forward PINNs](docs/tasks/WP04_forward_pinn.md) | Unclaimed |
-| [WP05: Inverse PINNs](docs/tasks/WP05_inverse_pinn.md) | Unclaimed |
+| [WP04: Forward PINNs](docs/tasks/WP04_forward_pinn.md) | @Prem-Mehta03 |
+| [WP05: Inverse PINNs](docs/tasks/WP05_inverse_pinn.md) | @rohanagrawal28 |
 <!-- team-sync:owners:end -->
 
-**When choices are settled:** update `team.json`, run `python scripts/sync_team.py`, and commit the updated JSON and docs together. This refreshes the README, task board, all five task briefs, status owners and presentation speakers. CI checks that they agree. The changes appear on `main` once the PR is merged. Repository access is managed separately in GitHub Settings.
+**When someone chooses:** update `team.json`, run `python scripts/sync_team.py`, and commit the updated JSON and docs together. This refreshes the README, task board, all five task briefs, status owners and presentation speakers. CI checks that they agree. Ownership appears on `main` after the owner applies or merges the administration update; no four-member review is needed for this setup step. Repository access is managed separately in GitHub Settings.
 
 ## Model and scope
 
