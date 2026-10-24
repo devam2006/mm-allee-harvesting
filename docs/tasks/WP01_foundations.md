@@ -45,19 +45,29 @@ Implement the future reproduction command `python experiments/wp01/run.py --conf
 
 ## Required acceptance tests
 
-- [ ] Dimensional RHS equals `r*K` times dimensionless RHS across A/B/logistic, multiple parameters/populations; invalid `r,K,A,H,h` rejected.
-- [ ] Logistic roots satisfy residual tolerance below/at/above `q=1/4`; correct zero-harvest signs.
-- [ ] A has `0,a,1` at `q=0`; two positive roots for representative `0<q<q_c`; one double root at `q_c`; none above.
-- [ ] Every reported root has small RHS residual and correct physical-domain status; negative cubic root never returned as a physical population.
-- [ ] Stable/unstable labels agree with independently perturbed trajectories away from a fold; fold classified via one-sided signs, not derivative equality alone.
-- [ ] Branch output retains close roots without silently deleting one near the fold; labels/units and exported table align.
+- [x] Dimensional RHS equals `r*K` times dimensionless RHS across A/B/logistic, multiple parameters/populations; invalid `r,K,A,H,h` rejected.
+- [x] Logistic roots satisfy residual tolerance below/at/above `q=1/4`; correct zero-harvest signs.
+- [x] A has `0,a,1` at `q=0`; two positive roots for representative `0<q<q_c`; one double root at `q_c`; none above.
+- [x] Every reported root has small RHS residual and correct physical-domain status; negative cubic root never returned as a physical population.
+- [x] Stable/unstable labels agree with independently perturbed trajectories away from a fold; fold classified via one-sided signs, not derivative equality alone.
+- [x] Branch output retains close roots without silently deleting one near the fold; labels/units and exported table align.
 
 ## Handoff and done checklist
 
 - [ ] Foundation API reviewed by WP03 and communicated to WP02/WP04/WP05.
-- [ ] Code/tests/config, two paired figures, table, report and notebook section committed with manifests.
+- [x] Code/tests/config, two paired figures, table, report and notebook section committed with manifests.
 - [ ] Report assembly passes compilation; every page inspected; EPS files and bibliography complete.
 - [ ] One other member reproduced the command; all four approved the current PR; status updated honestly.
 - [ ] AI log and citations updated. Owner can explain scaling, root stability, semistability and why A has no zero equilibrium for H>0.
 
 **Presentation:** 0–5 min: problem, assumptions, logistic recap, scaling, Model A geometry. Prepare one baseline slide, one model/assumption slide and one A branch figure. Know how your section connects to the collapse proof and PINNs.
+
+## Current handoff
+
+- **Owner:** Raghav (`RaghavSinghal15`).
+- **Branch / PR:** `wp01/foundations-model-a`, [PR #3](https://github.com/devam2006/mm-allee-harvesting/pull/3). All four other members requested as reviewers.
+- **Done (with evidence):** every acceptance test above, mapped in the PR evidence table to `tests/wp01/test_scaling.py`, `test_logistic.py`, `test_model_a_equilibria.py`, `test_stability_dynamics.py` and `test_branch_output.py` (132 tests). Figures `wp01_logistic_vs_allee`, `wp01_model_a_branches` and an extra `wp01_model_a_perturbations` (PNG + EPS + PDF), `artifacts/tables/wp01_equilibria.csv`, `wp01_thresholds.json`, manifest `artifacts/manifests/wp01_run.json`. Report section 1 and notebook section 1 written; section 1 compiles inside `report/main.tex` with no warnings. Slide content and a five-minute script are in `presentation/wp01_contribution.md`.
+- **Reproduce:** `python experiments/wp01/run.py --config configs/wp01.json --output results/wp01` then `python -m pytest tests/wp01 -q`.
+- **Interface decisions:** see DECISIONS.md (24 Oct): `Equilibrium` record schema, one-sided sign classification, fold tolerance 1e-12, `fold_a` vs WP03 `critical_a`, extensionless figure includes for pdflatex.
+- **Still open:** (1) WP03 review of the foundation API and its communication to WP02/WP04/WP05; (2) **report assembly** of all five sections, unified notation/citations, compile and page-by-page inspection and the EPS audit, which can only finish once the other sections land; (3) another member's reproduction and four approvals.
+- **Key points to be able to explain:** scaling to (a, q); phase-line stability; why x=0 is not an equilibrium of A for q>0; derivation of x* and q_c from G'(x)=0; why the fold is semistable although f'=0; why bracketing + Brent rather than polynomial eigenvalues near the fold.
