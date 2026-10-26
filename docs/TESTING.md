@@ -2,7 +2,7 @@
 
 ## Existing checks versus project completion
 
-`python -m pytest -q` exercises the shared scaffold plus the implemented **WP03 clean RK45 reference milestone**. WP03 adds exact-logistic, sampling/event, dimensional-scaling, independent-polynomial DOP853, refinement/quadrature, export/provenance and fault-detection checks. The other packages still have starter checks for scaling, B roots, metrics/autograd and split/identifiability invariants. This is not a substitute for the remaining scientific acceptance tests listed in each task brief.
+`python -m pytest -q` currently exercises the **scaffold**: scaling, B root/zero invariants, extinction stopping, error metrics, split rejection and the Model B coefficient ambiguity. Each of the five packages already has executable tests under its owned directory. These are a starting point, not a substitute for the additional acceptance tests listed in the five task briefs.
 
 No unimplemented feature is marked as a fake passing test or hidden behind permanent xfail. When adding a feature, implement its acceptance tests in the same PR. `STATUS.md` remains not started/in progress until its core evidence exists.
 

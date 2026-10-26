@@ -29,7 +29,6 @@ def solve_trajectory(
     rtol=1e-9,
     atol=1e-11,
     max_step=0.1,
-    tau_eval=None,
 ):
     """Return only the physical pre-extinction trajectory, including its event endpoint.
 
@@ -37,9 +36,6 @@ def solve_trajectory(
     not append a post-extinction zero tail. B/zero-yield have no finite zero event.
     Numerical negative roundoff no larger than 10*atol is rounded to zero only in
     returned samples, never in the vector field or used to claim B extinction.
-    Optional tau_eval is a strictly increasing finite grid beginning at zero,
-    bounded by tau_end. Samples after extinction are removed and its exact
-    numerical event endpoint is appended. Internal RK steps remain adaptive.
     """
     if not all(isfinite(v) for v in (a, harvest, x0, tau_end, rtol, atol, max_step)):
         raise ValueError("Inputs must be finite")
@@ -50,21 +46,11 @@ def solve_trajectory(
     if min(rtol, atol, max_step) <= 0:
         raise ValueError("Solver tolerances and max_step must be positive")
     rhs(x0, model, a=a, harvest=harvest)  # validate model and harvest
-    requested = None if tau_eval is None else np.asarray(tau_eval, dtype=float)
-    if requested is not None and (
-        requested.ndim != 1
-        or requested.size == 0
-        or not np.all(np.isfinite(requested))
-        or requested[0] != 0
-        or requested[-1] > tau_end
-        or np.any(np.diff(requested) <= 0)
-    ):
-        raise ValueError("tau_eval must increase strictly from zero within [0,tau_end]")
     constant_yield = model in {"A", "logistic"} and harvest > 0
     if x0 == 0:
         if constant_yield:
             return Trajectory(np.array([0.0]), np.array([0.0]), 0.0, model, "stop_at_zero")
-        t = np.linspace(0, tau_end, n_points) if requested is None else requested.copy()
+        t = np.linspace(0, tau_end, n_points)
         return Trajectory(t, np.zeros_like(t), None, model, "zero_equilibrium")
 
     def vector_field(tau, state):
@@ -92,9 +78,7 @@ def solve_trajectory(
     if constant_yield and len(result.t_events[0]):
         hit = float(result.t_events[0][0])
     stop = tau_end if hit is None else hit
-    grid = np.linspace(0, stop, n_points) if requested is None else requested[requested <= stop]
-    if hit is not None and grid[-1] != hit:
-        grid = np.append(grid, hit)
+    grid = np.linspace(0, stop, n_points)
     population = result.sol(grid)[0]
     if np.min(population) < -10 * atol:
         raise RuntimeError("Reference solver produced negative physical samples; tighten settings")

@@ -7,9 +7,7 @@ Freeze names before independent implementations. Existing scaffold APIs below ar
 - `models.Parameters(r,K,A,H=0,h=0)`: immutable dimensional parameters, validated positive/range constraints; `.dimensionless()` returns `a,q,e`.
 - `models.growth(x,a)`, `rhs(x,model,a=...,harvest=...)`: dimensionless NumPy-compatible scalar/array functions; model is exactly `logistic`, `A` or `B`; harvest is q for logistic/A and e for B. Negative x are allowed in the algebraic RHS for event location, never as a reported physical trajectory.
 - `models.dimensional_rhs(N,model,p)`: dimensional equivalent. No implicit unit conversions.
-- `solver.solve_trajectory(model,*,a,harvest,x0,tau_end,n_points=301,rtol=1e-9,atol=1e-11,max_step=0.1,tau_eval=None) -> Trajectory`. Nonnegative constant harvest only. A/logistic with positive constant yield use a terminal downward zero event. B and zero-yield cases do not declare finite zero events. Returns `.tau`, `.x`, `.extinction_tau`, `.model`, `.boundary_policy`; no post-event samples. Initial zero is handled under the explicit boundary convention. Optional tau_eval strictly increases from zero within the horizon; post-event times are dropped and the numerical event endpoint appended. Otherwise n_points uniformly covers the physical interval. Output times do not prescribe RK steps.
-- `datasets.generate_reference(case,solver=None) -> ReferenceTrajectory`: implemented clean A/B export in dimensional time/population, configurable n_points/time_points, with explicit event metadata. `write_reference_files` writes clean CSVs, declared known conditions and separate evaluation truth. No noise/splits/inverse fitting. See [RK45 handoff](WP03_RK45_HANDOFF.md).
-- `reference_validation.validate_reference(...)`: implemented independent dimensional-polynomial DOP853, tighter RK45 and guarded A quadrature checks. This supports the reference milestone, not general basin classification or rigorous interval certification.
+- `solver.solve_trajectory(model,*,a,harvest,x0,tau_end,n_points=301,rtol=1e-9,atol=1e-11,max_step=0.1) -> Trajectory`. Nonnegative constant harvest only. A/logistic with positive constant yield use a terminal downward zero event. B and zero-yield cases do not declare finite zero events. Returns `.tau`, `.x`, `.extinction_tau`, `.model`, `.boundary_policy`; no post-event samples. Initial zero is handled under the explicit boundary convention.
 - `metrics.errors(prediction,reference) -> {rmse,mae,relative_l2}`; relative L2 is `None` for a zero reference norm. Shapes must match and be nonempty finite arrays.
 - `data.validate_splits(train_ids,val_ids,test_ids)`: rejects overlap, duplicates or empty splits. IDs identify individual observations, not merely row numbers reset per file.
 - `plotting.save_figure(fig,stem)`: writes paired `.png` and `.eps` to the supplied stem. Caller supplies labels/style and a provenance manifest.
@@ -22,7 +20,7 @@ All numerical code lives in `src/mm_allee/`; scripts import it. Core NumPy funct
 |---|---|---|
 | WP01 | `equilibria.py`: `equilibria_a(a,q)`, `equilibria_logistic(q)`, `classify_equilibrium(...)`; list of root/stability/derivative records with a documented tolerance | WP02/WP03 reuse stability conventions and data schema |
 | WP02 | `model_b.py`: B equilibrium records; `history.py`: segmented ramp and explicit restocking policy | History output includes segment, control, time, population, event/intervention labels |
-| WP03 | Remaining: `thresholds.py`: `critical_a(a) -> (x_star,q_c)`, `critical_b(a) -> e_c`; `collapse.py`: full basin/extinction analysis. Clean `datasets.py` and numerical-reference validation are implemented above | Clean reference CSV + manifest + stable observation IDs; WP05 prepares observation/noise/split files |
+| WP03 | `thresholds.py`: `critical_a(a) -> (x_star,q_c)`, `critical_b(a) -> e_c`; `collapse.py`: basin labels and extinction quadrature; `datasets.py`: generator | Reference CSV + manifest + train/val/test observation IDs |
 | WP04 | `pinn/network.py`, `pinn/residual.py`, `pinn/train_forward.py`: small network, differentiable A/B residual, forward trainer | Frozen model/config/checkpoint format, history/metrics schema, trainable-parameter extension hook |
 | WP05 | `pinn/inverse.py`, `inference.py`, `validation.py`: constrained parameters, ODE least-squares baseline, noise/held-out analysis | Recovery and prediction metrics, identifiability demo and failure tables |
 
@@ -36,9 +34,7 @@ Every run writes `manifest.json` with schema version, run ID, UTC timestamp, git
 
 ## Data and metrics
 
-**WP03 clean reference CSV (implemented):** `observation_id,trajectory_id,model,time,population,is_synthetic`. It carries no split or noisy-label columns. Known-K experimental conditions/fixed scales are separate from true unknown parameters/events and evaluation metadata.
-
-**WP05 fitting-observation CSV (to implement):** `observation_id,trajectory_id,model,time,observed_population,split,noise_sigma,noise_seed,is_synthetic`. Clean `population` truth stays in separate reference/evaluation data, not in the trainer's observation dictionary. WP05 chooses observation subsets, applies seeded noise, freezes splits and tests leakage. Stable source IDs allow audit without copying truth into fitting inputs. This boundary clarification replaces the earlier combined reference/observation CSV suggestion.
+Reference observations CSV: `observation_id,trajectory_id,model,time,population,observed_population,split,noise_sigma,noise_seed,is_synthetic`.
 
 Use consistent **dimensional** time/population columns and declare units/reference scales in the manifest; dimensionless variants require clearly named `tau,x` columns and must not masquerade as dimensional ones. Store the noise-free reference separately from fitting observations; training code cannot inspect final-test truth or simulator parameters held as evaluation metadata. At sigma zero the observations are exact but the split still applies.
 

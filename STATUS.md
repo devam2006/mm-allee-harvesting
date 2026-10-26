@@ -1,13 +1,13 @@
 # Project status
 
-Repository scaffold is prepared. WP03's clean RK45 reference milestone is implemented on its task branch; the rest of WP03 and the other scientific packages remain pending. No trained PINN, empirical finding, final report or final presentation is claimed. Human understanding/review is not certified by code completion.
+Initial state: repository scaffold prepared; scientific work packages are **not started**. Existing tests exercise shared infrastructure only. No trained PINN, empirical finding, final report or final presentation is claimed.
 
 <!-- team-sync:status:start -->
 | Package | Owner | State | PR/evidence |
 |---|---|---|---|
 | WP01 | @RaghavSinghal15 | Not started | Fill after assignment |
 | WP02 | @AshChan07 | Not started | Fill after assignment |
-| WP03 | @devam2006 | In progress | RK45 clean A/B milestone; [handoff](docs/WP03_RK45_HANDOFF.md), branch wp03/rk45-reference-data; other analysis and human review pending |
+| WP03 | @devam2006 | Not started | Fill after assignment |
 | WP04 | @Prem-Mehta03 | Not started | Fill after assignment |
 | WP05 | @rohanagrawal28 | Not started | Fill after assignment |
 <!-- team-sync:status:end -->
