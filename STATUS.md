@@ -5,7 +5,7 @@ Initial state: repository scaffold prepared; scientific work packages are **not 
 <!-- team-sync:status:start -->
 | Package | Owner | State | PR/evidence |
 |---|---|---|---|
-| WP01 | @RaghavSinghal15 | PR review | [PR #3](https://github.com/devam2006/mm-allee-harvesting/pull/3): acceptance tests, figures, table, report/notebook section 1; report assembly pending other sections |
+| WP01 | @RaghavSinghal15 | Not started | Fill after assignment |
 | WP02 | @AshChan07 | Not started | Fill after assignment |
 | WP03 | @devam2006 | Not started | Fill after assignment |
 | WP04 | @Prem-Mehta03 | Not started | Fill after assignment |

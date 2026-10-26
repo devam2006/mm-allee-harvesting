@@ -9,9 +9,6 @@
 | 2026-10-19 | Fixed-K inverse B core; all-four B not uniquely recoverable under a single fixed effort | Three polynomial coefficient combinations for four unknowns |
 | 2026-10-19 | Synthetic benchmark default, explicit provenance and held-out observation IDs | Clear reproducibility and honest interpretation |
 | 2026-10-19 | Keep classical requirements and both PINN directions core; slowing/sensitivity/MSY optional | Preserve a deliverable project if training proves expensive |
-| 2026-10-24 | WP01 equilibrium API and record schema as in INTERFACES.md; stability from one-sided signs, roots from calculus brackets + Brent, fold tolerance 1e-12 in q | Avoids complex near-fold artefacts of companion-matrix solvers and keeps close roots separate; WP02 reuses the conventions |
-| 2026-10-24 | `equilibria.fold_a(a)` provides the closed-form `(x_star, q_c)` for WP01 classification; WP03's planned `thresholds.critical_a` may wrap it but must keep its own independent maximisation test | WP01 needs q_c now and must not depend on an unmerged module |
-| 2026-10-24 | Report figures are included without file extension; pdflatex picks the vector PDF variant written next to the PNG/EPS pair. EPS files remain the submitted originals | Restricted pdflatex cannot convert EPS stored outside `report/`; this keeps `latexmk -pdf -cd report/main.tex` working without `-shell-escape` |
 
 Add interface changes, chosen experiment budgets, fixed inverse parameters, final environment lock and presentation date here as reviewed decisions.
 
