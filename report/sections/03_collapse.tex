@@ -1,6 +1,113 @@
 \section{Collapse thresholds, extinction and basins}
-\textbf{SCAFFOLD\_ONLY:} Threshold derivations; finite versus asymptotic extinction; quadrature and event validation; basin maps; synthetic reference provenance.
+\textbf{Partial WP03 milestone:} the numerical-reference method below is implemented.
+\textbf{SCAFFOLD\_ONLY:} full threshold proofs, basin maps, extinction-time sweeps,
+optional sensitivity/MSY and final reproduction remain pending. These numerical
+checks do not establish an ecological law or complete the group project.
 
-Replace this template with derivations, algorithms, labelled figures/tables, interpretation, limitations and verified references from WP03.
+\subsection{Reference initial-value problem and scaling}
+For known parameters we solve Model A,
+\[
+N'=rN(1-N/K)(N/A-1)-H,
+\]
+and Model B, with the last term replaced by $-hN$, from a specified $N(0)=N_0$.
+The numerical implementation uses $x=N/K$ and $\tau=rt$:
+\[
+\frac{dx}{d\tau}=G(x)-q\quad\hbox{or}\quad G(x)-ex,\qquad
+G(x)=x(1-x)(x/a-1),\quad a=A/K,\ q=H/(rK),\ e=h/r.
+\]
+The exported reference values convert back using $t=\tau/r$, $N=Kx$.
+This use of generating parameters is confined to simulation; inverse fitting
+uses independently declared fixed scales rather than hidden true unknown $r$.
 
-The reference integration uses SciPy solve\_ivp\cite{scipy_solve_ivp}.
+\subsection{Adaptive RK45 and the physical boundary}
+We use SciPy's \texttt{solve\_ivp} RK45 implementation (Dormand--Prince
+5(4))\cite{scipy_solve_ivp}. Intermediate slope evaluations $k_i$ are combined
+with two weight vectors,
+\[
+x_{n+1}^{(5)}=x_n+\Delta\tau\sum_i b_i k_i,\qquad
+x_{n+1}^{(4)}=x_n+\Delta\tau\sum_i \widehat b_i k_i.
+\]
+Their difference estimates local error; the solver accepts/retries the step
+and adjusts its size relative to absolute/relative tolerances. We accept the
+fifth-order state, with dimensionless \texttt{rtol=$10^{-9}$},
+\texttt{atol=$10^{-11}$} and maximum step $0.1$ for these fixtures.
+Local tolerance control is not a guarantee of global trajectory error.
+Requested observation times are evaluated using dense output and do not set
+the solver's internal step sizes.
+
+For A with $H>0$, $f(0)=-H$; zero is not an equilibrium. A terminal
+downward-zero event locates the first boundary hit and stops physical output.
+The exact numerical event endpoint is included; no post-event zero tail is
+present in the original-ODE data. For B and for zero-yield A, no exact finite
+extinction is declared from positive starts. A small numerical value or a
+finite horizon with no event is not proof of extinction or permanent survival.
+
+\subsection{Independent checks and measured evidence}
+We independently integrate the expanded dimensional polynomial with DOP853:
+\begin{align*}
+f_A(N)&=-H-rN+r(1/A+1/K)N^2-\frac{r}{AK}N^3,\\
+f_B(N)&=-(r+h)N+r(1/A+1/K)N^2-\frac{r}{AK}N^3.
+\end{align*}
+DOP853 uses relative tolerance $10^{-12}$ and absolute tolerance
+$K10^{-14}$. A second RK45 run reduces both tolerances by 100 and halves
+the maximum step. Comparisons use common pre-event times only, with event
+times checked separately. Accepted differences are at most $5\,10^{-8}K$
+in sampled populations and $10^{-7}$ in dimensional event time. These
+are numerical-reference acceptance targets, not PINN accuracy targets.
+
+For A on a strictly declining path that reaches zero, separation gives
+$dt=-dN/(H-g(N))$, hence
+\[
+t_{\rm ext}=\int_0^{N_0}\frac{dN}{H-g(N)}.
+\]
+Before applying quadrature, endpoints and interior critical points of the
+expanded cubic are checked for a strictly negative vector field, with a
+conservative numerical margin. Paths with a possible intervening equilibrium
+are rejected. This is a numerical safety check, not a rigorous interval
+certificate or the later full basin classification.
+
+Six synthetic cases use $r=0.7$, $K=100$, $A=20$ in arbitrary declared
+time and population units, with 101 clean observations per case:
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Case & $H$ (A) / $h$ (B) & $N_0$ & Requested end time\\
+\midrule
+A regular & 10 & 45 & 8\\
+B regular & 0.21 & 45 & 8\\
+A extinction & 70 & 80 & 5\\
+B decline & 0.21 & 10 & 5\\
+A near fold & 36.5 & 85 & 30\\
+B near fold & 0.5544 & 85 & 30\\
+\bottomrule
+\end{tabular}
+\end{center}
+The largest sampled RK45/DOP853 difference is approximately
+$6.11\,10^{-7}$ population units, below the $5\,10^{-6}$ target here.
+For the A extinction case, RK45 gives $t_{\rm ext}\approx1.643289435$;
+the quadrature difference is below $6\,10^{-10}$ time units.
+Per-case errors, refinement changes and event checks are recorded in
+\texttt{artifacts/tables/wp03\_reference\_validation.csv}; reproducibility
+configuration and source/file hashes are in the reference manifest.
+Tests also check an exact unharvested logistic trajectory and demonstrate that
+an intentionally corrupted production RHS is detected by the independent check.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{wp03_rk45_reference.png}
+\caption{Clean synthetic A/B reference trajectories. Each curve ends at its
+configured horizon or the Model A extinction event (black marker).
+Near-fold cases are selected benchmarks, not a completed threshold study.
+Controls and initial values are listed above; original EPS is supplied.}
+\end{figure}
+
+\subsection{Handoff and limitations}
+The clean CSVs and generator are WP03 deliverables. WP05 owns sampling
+selection, noise, frozen splits, leakage checks, inverse PINN and ODE-fit
+baseline studies. True generating parameters and event metadata are stored
+separately from declared known conditions and must not enter fitting.
+WP04 may use these trajectories for evaluation, not supervised labels in
+a physics-only forward run. Regular cases include transients, but inverse
+identifiability and conditioning must still be assessed. No final parameter
+recovery, species-specific conclusion or exhaustive numerical guarantee is
+claimed. Devam's detailed understanding/review remains pending.
