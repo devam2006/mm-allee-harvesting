@@ -7,7 +7,7 @@ WP03's mathematical/computational analysis, early references and optional sensit
 |---|---|---|---|
 | WP01 | @RaghavSinghal15 | Not started | Fill after assignment |
 | WP02 | @AshChan07 | Not started | Fill after assignment |
-| WP03 | @devam2006 | PR review | Core analysis, references and optional sensitivity/MSY implemented; [results/commands](docs/WP03_ANALYSIS.md), wp03/collapse-analysis; human learning/review and final integration pending |
+| WP03 | @devam2006 | PR review | Core analysis, references and optional sensitivity/MSY implemented; [PR #4](https://github.com/devam2006/mm-allee-harvesting/pull/4); [results/commands](docs/WP03_ANALYSIS.md), wp03/collapse-analysis; human learning/review and final integration pending |
 | WP04 | @Prem-Mehta03 | Not started | Fill after assignment |
 | WP05 | @rohanagrawal28 | Not started | Fill after assignment |
 <!-- team-sync:status:end -->

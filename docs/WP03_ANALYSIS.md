@@ -1,6 +1,6 @@
 # Task 3: completed analysis and reproduction
 
-**Owner:** Devam (`devam2006`). **Branch:** `wp03/collapse-analysis`.
+**Owner:** Devam (`devam2006`). **Branch:** `wp03/collapse-analysis`. **Review:** [PR #4](https://github.com/devam2006/mm-allee-harvesting/pull/4) (open, unmerged).
 The core mathematical/computational WP03 deliverables and optional sensitivity/MSY are implemented.
 Human understanding, reviews, non-author reproduction and final group integration remain pending.
 

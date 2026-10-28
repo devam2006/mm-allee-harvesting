@@ -70,7 +70,7 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
 
 ## Current handoff
 
-- **Owner / branch:** Devam (`devam2006`), `wp03/collapse-analysis`; full analysis PR prepared for all four other members to review. Historical early reference handoff: [PR #2](https://github.com/devam2006/mm-allee-harvesting/pull/2).
+- **Owner / branch:** Devam (`devam2006`), `wp03/collapse-analysis`; [PR #4](https://github.com/devam2006/mm-allee-harvesting/pull/4) is assigned to Devam with all four other roster members requested for review; it remains unmerged. Historical early reference handoff: [PR #2](https://github.com/devam2006/mm-allee-harvesting/pull/2).
 - **Completed:** thresholds; exact/critical/zero-harvest basins; A extinction quadrature, RK45/DOP853/tolerance checks; extinction sweeps/maps; bottleneck; optional dimensional sensitivity and B realised-yield MSY/margins; clean references; report/notebook; paired figures/tables; speaking notes; WP03 environment/reproduction; submission-readiness audit.
 - **Navigation/commands:** [analysis](../WP03_ANALYSIS.md), [early reference handoff](../WP03_RK45_HANDOFF.md), [speaking notes](../../presentation/wp03.md).
 - **Recovery:** main at 3cfc606 matched the starter tree after a revert. This PR restores only the earlier WP03 dependency and adds the remaining work; it does not restore other packages.
