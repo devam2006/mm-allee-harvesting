@@ -5,7 +5,7 @@ are used only for the two subcritical A boundaries, with explicit uncertainty.
 """
 
 from dataclasses import dataclass
-from math import atan, isfinite, sin, sqrt, tan
+from math import atan, expm1, isfinite, log, log1p, sin, sqrt, tan
 
 import numpy as np
 from scipy.integrate import quad
@@ -42,6 +42,16 @@ def positive_branches(model, *, a, harvest):
         return None
     if control == qc:
         return star, star
+    if control < 0.9 * qc:
+        # Near zero catch, subtracting two O(q_c) Taylor terms destroys the
+        # endpoint signs. Here the original product form has exact -control
+        # endpoint values and is well conditioned away from the fold.
+        def field(x):
+            return growth(x, a) - control
+
+        lower = brentq(field, a, star, xtol=np.nextafter(0.0, 1.0), rtol=1e-15)
+        upper = brentq(field, star, 1, xtol=np.nextafter(0.0, 1.0), rtol=1e-15)
+        return lower, upper
     d = sqrt(1 - a + a * a)
 
     def equation(offset):
@@ -107,6 +117,12 @@ def classify_basin(model, *, a, harvest, x0, root_tol=ROOT_TOL):
     if roots is None:
         return result("finite_extinction" if model == "A" else "asymptotic_extinction", 0)
     lower, upper = roots
+    if control > 0 and model == "A" and initial == lower == a:
+        # A tiny positive catch can move the root by less than one float ulp.
+        # A returned endpoint approximation is not an exact equilibrium.
+        return result("boundary_unresolved", None)
+    if control > 0 and model == "A" and initial == upper == 1:
+        return result("persistence", upper)
     if initial == lower:
         return result("equilibrium", initial, "semistable" if lower == upper else "unstable")
     if initial == upper:
@@ -127,12 +143,26 @@ class ExtinctionTime:
     method: str
 
 
+def _finite_quad(integrand, lower, upper, absolute, relative):
+    output = quad(
+        integrand, lower, upper, epsabs=absolute, epsrel=relative, limit=250, full_output=1
+    )
+    if len(output) != 3:
+        raise RuntimeError("Extinction quadrature failed to converge: " + str(output[3]))
+    value, error, _ = output
+    if not isfinite(value) or value < 0 or not isfinite(error):
+        raise ArithmeticError("Invalid extinction quadrature result")
+    return float(value), float(error)
+
+
 def extinction_time_a(*, a, q, x0, epsabs=1e-10, epsrel=1e-10, root_tol=ROOT_TOL):
     """Finite tau_ext, or None with an explicit non-finite/unresolved basin status.
 
     Analytic basin classification excludes equilibrium poles before integrating.
     The reported QUADPACK error is an estimate, not a rigorous error bound.
     A tangent substitution resolves the supercritical bottleneck when q~q_c.
+    At the fold an elementary antiderivative avoids an unresolved endpoint
+    peak; quadrature_error is None because no numerical quadrature is used.
     """
     absolute = checked_number(epsabs, "epsabs", positive=True)
     relative = checked_number(epsrel, "epsrel", positive=True)
@@ -146,6 +176,42 @@ def extinction_time_a(*, a, q, x0, epsabs=1e-10, epsrel=1e-10, root_tol=ROOT_TOL
     d = sqrt(1 - a + a * a)
     beta = d / a
     delta = q - qc
+    if q == qc:
+        # q_c-G(x)=(x_star-x)^2*(d-x_star+x)/a. Partial fractions
+        # give this positive, cancellation-free integral for x0<x_star.
+        gap = star - x0
+        d_minus_star = (1 - a) ** 2 / (2 * d + 1 + a)
+        value = a * x0 / (d * gap * star) + a / d**2 * log1p(d * x0 / (gap * d_minus_star))
+        if not isfinite(value) or value <= 0:
+            raise ArithmeticError("Fold extinction time exceeds float resolution")
+        return ExtinctionTime(basin, value, None, "fold_closed_form")
+    if q < qc:
+        lower_root, upper_root = positive_branches("A", a=a, harvest=q)
+        if x0 > 0.99 * lower_root:
+            # Resolve the logarithmic endpoint growth without subtracting
+            # nearly equal production/catch values. Factoring the cubic gives
+            # q-G(x)=(x-r_negative)*(lower-x)*(upper-x)/a.
+            split = lower_root / 2
+            negative_root = -a * q / (lower_root * upper_root)
+            first, first_error = _finite_quad(
+                lambda x: 1 / (q - growth(x, a)), 0, split, absolute / 2, relative
+            )
+
+            def transformed(u):
+                x = -lower_root * expm1(-u)
+                distance = lower_root * np.exp(-u)
+                return a / ((x - negative_root) * (upper_root - lower_root + distance))
+
+            second, second_error = _finite_quad(
+                transformed,
+                log(2),
+                log1p(x0 / (lower_root - x0)),
+                absolute / 2,
+                relative,
+            )
+            return ExtinctionTime(
+                basin, first + second, first_error + second_error, "boundary_log_quad"
+            )
     method = "direct_quad"
     if 0 < delta < 0.1 * qc and x0 > star:
         scale = sqrt(delta / beta)
@@ -172,15 +238,8 @@ def extinction_time_a(*, a, q, x0, epsabs=1e-10, epsrel=1e-10, root_tol=ROOT_TOL
                 raise ArithmeticError("Quadrature path too close to an unresolved equilibrium")
             return 1 / denominator
 
-    output = quad(
-        integrand, lower, upper, epsabs=absolute, epsrel=relative, limit=250, full_output=1
-    )
-    if len(output) != 3:
-        raise RuntimeError("Extinction quadrature failed to converge: " + str(output[3]))
-    value, error, _ = output
-    if not isfinite(value) or value < 0 or not isfinite(error):
-        raise ArithmeticError("Invalid extinction quadrature result")
-    return ExtinctionTime(basin, float(value), float(error), method)
+    value, error = _finite_quad(integrand, lower, upper, absolute, relative)
+    return ExtinctionTime(basin, value, error, method)
 
 
 def safety_margins(model, parameters, initial_population):

@@ -4,6 +4,9 @@
 The core mathematical/computational WP03 deliverables and optional sensitivity/MSY are implemented.
 Human understanding, reviews, non-author reproduction and final group integration remain pending.
 
+**Learning guide:** [WP03 explained from the beginning](https://github.com/devam2006/mm-allee-harvesting/blob/wp03/collapse-analysis/docs/WP03_EXPLAINED.md), with plain-language
+derivations, RK45, worked examples, code navigation and presentation questions.
+
 ## Run it
 
 From the repository root, activate the ignored `.venv` from [setup](SETUP.md), then:
@@ -63,6 +66,11 @@ effort cliff. Initial-state basin margins must still be checked.
   an explicit precision justification. Extreme parameter limits can exceed float resolution.
 - Blank extinction-time cells mean no finite extinction or unresolved classification, with a
   separate outcome label. They do not mean zero or failure to observe an event within a chosen horizon.
+- The 28 October recheck fixed tiny-positive-catch brackets and near-boundary integral evaluation.
+  A roots use product-form brackets away from the fold and the stable offset form near it.
+  Near a subcritical barrier the integral uses a logarithmic variable; at the fold it uses an
+  elementary antiderivative (`fold_closed_form`, with no quadrature-error estimate). Rounded
+  endpoint roots at positive catch are not certified as exact A equilibria.
 - The inverse-square-root bottleneck applies when a fixed start above the fold passes through
   it after collapse. It is distinct from local pre-collapse relaxation and need not hold for a
   start already below the slow region. The transformed quadrature resolves the narrow peak.
@@ -79,6 +87,8 @@ effort cliff. Initial-state basin margins must still be checked.
 | Distinct near-critical controls retained | `test_adjacent_controls_are_not_silently_merged_into_fold` |
 | Zero/subcritical/fold/supercritical basins and exact roots | `test_all_basin_regimes_and_exact_initial_roots`, `test_basin_labels_agree_with_independent_polynomial_dynamics` |
 | Finite A times and tolerance convergence | `test_extinction_quadrature_matches_two_rk45_tolerances_and_independent_dop853` |
+| Tiny catch and rounded endpoints | `test_small_positive_catch_preserves_brackets_and_reaching_zero_paths`, `test_rounded_endpoint_roots_are_not_called_exact_positive_catch_equilibria` |
+| Near-boundary integral conditioning | `test_close_below_fold_time_matches_independent_rescaled_rational_integral`, `test_subcritical_near_boundary_integral_matches_high_precision_polynomial` |
 | Non-finite paths never integrated as extinction | `test_no_quadrature_is_attempted_through_equilibria_or_on_nonfinite_paths` |
 | Bottleneck asymptotic | `test_bottleneck_inverse_square_root_asymptotic` |
 | Dimensional sensitivity and scale identities | `test_dimensional_sensitivity_matches_central_differences_and_homogeneity` |
@@ -87,6 +97,9 @@ effort cliff. Initial-state basin margins must still be checked.
 | Import safety, failed-run publication, budget, hashes and readiness blockers | [study/readiness tests](../tests/wp03/test_study_and_readiness.py) |
 
 Root tests use independently expanded polynomials and trajectories, not just a duplicated closed form.
+After the 28 October recheck: **142 WP03 tests passed; full suite 185 passed, one optional Torch
+test skipped locally**. All seven refreshed numerical tables and the summary repeat byte-for-byte
+in the second isolated venv; the six clean reference CSVs remain unchanged.
 Event acceptance is 2e-7 + 5e-7*tau_ext in dimensionless time. Population reference tolerances and
 the original six-case results remain in the [RK45 handoff](WP03_RK45_HANDOFF.md). Numerical error
 estimates do not constitute interval-arithmetic certification or a guarantee for every possible parameter.

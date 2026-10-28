@@ -102,6 +102,21 @@ uniqueness exclude a positive state arriving at the zero equilibrium in
 finite time. The same argument applies to B; no B cutoff time is claimed
 as exact extinction.
 
+Near a subcritical basin boundary, factor the cubic as
+$(x-x_n)(x_--x)(x_+-x)/a$, where $x_n<0$.
+For the difficult upper portion of the integral, the substitution
+$u=\log[x_-/(x_--x)]$ removes the vanishing factor and avoids cancellation.
+At the computed fold, put $s=x_*-x_0>0$ and $d=\sqrt{1-a+a^2}$.
+Partial fractions give an elementary evaluation of the same integral:
+\[
+\tau_{\rm ext}=\frac{a x_0}{d s x_*}
++\frac{a}{d^2}\log\left(1+\frac{d x_0}{s(d-x_*)}\right).
+\]
+This avoids missed endpoint contributions for starts extremely close below
+the fold. Its method is recorded as \texttt{fold\_closed\_form}, with no
+invented quadrature-error estimate. Root rounding remains a separate source
+of uncertainty near a basin boundary.
+
 SciPy RK45 uses the Dormand--Prince 5(4) pair: shared stage slopes produce
 two estimates, their difference controls local error, and the fifth-order
 value advances the state\cite{scipy_solve_ivp}. The wrapper stops at the first
@@ -113,7 +128,8 @@ $10^{-9}$ relative, $10^{-11}$ absolute, maximum dimensionless step $0.1$.
 The 427 initial-state/control evaluations retain explicit outcome labels;
 a blank time means no finite extinction or unresolved classification, not
 zero or a finite-horizon estimate. Six representative finite paths, including
-the fold from below, are checked by quadrature, RK45 at relative tolerances
+the fold from below, are checked by the separated integral (quadrature or the
+fold expression above), RK45 at relative tolerances
 $10^{-8}$ and $10^{-10}$, and DOP853 at $10^{-12}$. The latter integrates the
 independently expanded polynomial $-q-x+(1+a)x^2/a-x^3/a$.
 Acceptance is $|\Delta\tau|\le2\,10^{-7}+5\,10^{-7}\tau_{\rm ext}$;

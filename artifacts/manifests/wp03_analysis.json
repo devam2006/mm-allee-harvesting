@@ -3,8 +3,8 @@
   "run_id": "wp03-collapse-analysis-v1",
   "status": "passed",
   "is_synthetic": true,
-  "generated_at_utc": "2026-10-28T12:15:53.258938+00:00",
-  "git_sha": "99573a6c3db6d12fe59831d066b72eb7d4661340",
+  "generated_at_utc": "2026-10-28T14:11:14.384788+00:00",
+  "git_sha": "53878909e204d7086f0a0a07715165588dc90368",
   "git_dirty": true,
   "configuration": {
     "schema_version": 1,
@@ -74,7 +74,7 @@
     "src/mm_allee/datasets.py": "56f01a532f8c5b5201c44fc92799c65e5b50b45064d25ce7e12aa5c0dd1a0414",
     "src/mm_allee/solver.py": "5b5e972a52acb90ca6b1950cf3a7c7b66f3d7f219534948e052dc1b17ece8711",
     "src/mm_allee/thresholds.py": "5dd125bcf915b1e8c4583abf0dd93c8f301d7465daca7afee44f1d4cd665f466",
-    "src/mm_allee/collapse.py": "1f67979ecf3b253b954ea6e874548cd6b9e44a4ff3264ef7cbcfc16ec4c9fc3b",
+    "src/mm_allee/collapse.py": "574ade46f7a43096a7230695ff1d6d7a687ffd43ee0a408df68c7b9e9718d560",
     "src/mm_allee/collapse_study.py": "314e51d564f7912341e67c042f62067b7a403d7c30cf307f772603010dec9b47",
     "src/mm_allee/plotting.py": "549d490288d2e3276bda981552271c3f8c6a21c04b5e31a4e0d7aff88fcece92"
   },
@@ -89,7 +89,7 @@
     "machine": "x86_64",
     "processor": "x86_64"
   },
-  "wall_seconds": 2.571378260000074,
+  "wall_seconds": 8.243284445999961,
   "table_rows": {
     "thresholds": 6,
     "extinction": 427,
@@ -112,20 +112,20 @@
   "paths_relative_to": "repository_root",
   "files_sha256": {
     "artifacts/tables/wp03_thresholds.csv": "50db09da91221edc79893e1082d15b5f0ee09b7e412de68afd79ffd6c2644ce9",
-    "artifacts/tables/wp03_extinction.csv": "5dbed2f9e97399b42ce623ef80b314ce8521cd1d20802b72da36d5ed242837c5",
-    "artifacts/tables/wp03_basins.csv": "5c27eb69168f28a956bbddd8ac97dec3cd7f00adfc4320e0f967788bd32a601b",
+    "artifacts/tables/wp03_extinction.csv": "b2179fd68083551525fc48c9b62d2f3c29c9a96b857771872ce8633f7cea9943",
+    "artifacts/tables/wp03_basins.csv": "497ca340e1fb7270197847379ece08e9cd2a6adc94706054ead25b84541958ba",
     "artifacts/tables/wp03_bottleneck.csv": "357c547f394682dfccf065f891e318a77f59e6e80fe5a183ab179c438c7d2008",
     "artifacts/tables/wp03_sensitivity.csv": "028ceb115bc361d843f90f05e96b1d17d551992b142d28a18d7cc01a4dacc938",
     "artifacts/tables/wp03_yield.csv": "960ee994d0073bbb817a85f6b17ac048e1711fea0bcef5155401db6b3d893f0e",
-    "artifacts/tables/wp03_event_validation.csv": "82669aba10f14030bdfac76de2c16a004d504d97870eb3d8b85afd02e43ba4e1",
+    "artifacts/tables/wp03_event_validation.csv": "f31345924cd237bc49d32541016e96765b66323b6965356207f144a8c701da13",
     "artifacts/figures/wp03_extinction.png": "45e515506b0bb9ffb8edb73e867ee81b70668dad7e41d0fc4ddf19c98553c847",
-    "artifacts/figures/wp03_extinction.eps": "1d3b628caf311743942abc3ea102c11f07299c5c4f9b70f6d13249235e80b7b8",
+    "artifacts/figures/wp03_extinction.eps": "88e419dcf5439b06907408a63dda9542ffdfa68763ebcf894b9d2537eebd78de",
     "artifacts/figures/wp03_basins.png": "adad8d09904c2bb81f70e488aef4d36b47bf15a1c5050d0307ed750fd22c1800",
-    "artifacts/figures/wp03_basins.eps": "c6ac2ab998b5a5f16c178db09f25a9d3976c9f3fd84be82f8a0e217090d6b835",
+    "artifacts/figures/wp03_basins.eps": "45d9498b1cb1fea77d34b57f1f1feb120f78aa208c5b2b69e560822459e2e896",
     "artifacts/figures/wp03_bottleneck.png": "7cd1d043c6ee8b8f25844994eb32a1fccd154aaf779c0338d408e905bc0b8145",
-    "artifacts/figures/wp03_bottleneck.eps": "39d70e617d0e2ab431e00050aaa42629b74a3c95295cf14f95bce952a554ee42",
+    "artifacts/figures/wp03_bottleneck.eps": "3bf4acdab927933907e2428c73b64292c4f84b9ec4494359d5add006938243da",
     "artifacts/figures/wp03_sensitivity_yield.png": "e5406e92783b26c6572bb410fcbd18fedbd6de69c0fa19d13b03ca1d293e5279",
-    "artifacts/figures/wp03_sensitivity_yield.eps": "1465d873de97cd2b4b0120549beaa6aef64a218e0b41e3feeb99941a58c4646d",
+    "artifacts/figures/wp03_sensitivity_yield.eps": "5aca41c41fb0da7080e8b722b1ae6fffa3ebe165f91e2962e7022037ef4598c8",
     "artifacts/manifests/wp03_summary.json": "bacc2d29f1e6bb7a59cda33dd3e2a426b57efe16232bffafbf358ccfa37d50fa"
   }
 }
