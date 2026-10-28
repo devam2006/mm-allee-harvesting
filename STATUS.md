@@ -1,13 +1,13 @@
 # Project status
 
-Initial state: repository scaffold prepared; scientific work packages are **not started**. Existing tests exercise shared infrastructure only. No trained PINN, empirical finding, final report or final presentation is claimed.
+WP03's mathematical/computational analysis, early references and optional sensitivity/MSY are implemented on wp03/collapse-analysis and prepared for review. Other packages remain as recorded in the current main tree; final integration is pending. No trained PINN, empirical finding, final report or final presentation is claimed. Human understanding/review is not certified by code completion.
 
 <!-- team-sync:status:start -->
 | Package | Owner | State | PR/evidence |
 |---|---|---|---|
 | WP01 | @RaghavSinghal15 | Not started | Fill after assignment |
 | WP02 | @AshChan07 | Not started | Fill after assignment |
-| WP03 | @devam2006 | Not started | Fill after assignment |
+| WP03 | @devam2006 | PR review | Core analysis, references and optional sensitivity/MSY implemented; [results/commands](docs/WP03_ANALYSIS.md), wp03/collapse-analysis; human learning/review and final integration pending |
 | WP04 | @Prem-Mehta03 | Not started | Fill after assignment |
 | WP05 | @rohanagrawal28 | Not started | Fill after assignment |
 <!-- team-sync:status:end -->

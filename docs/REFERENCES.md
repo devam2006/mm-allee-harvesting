@@ -11,3 +11,11 @@ Implementation primary sources (documentation checked during scaffold preparatio
 - [actions/checkout](https://github.com/actions/checkout) and [actions/setup-python](https://github.com/actions/setup-python): CI configuration.
 
 WP01/WP02 find a small number of credible primary/textbook sources on strong Allee effects and harvesting. WP04 verifies the original PINN method source and records the particular loss/architecture used. WP05 cites any inference/identifiability method borrowed rather than derived here. Put **verified** entries in `report/references.bib`, cite them where used, and distinguish this group's derivations from adapted material.
+
+## WP03 numerical references checked 28 October 2026
+
+- SciPy [solve_ivp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html): RK45 5(4), DOP853 and terminal events.
+- SciPy [quad](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.quad.html): QUADPACK integration/error-estimate semantics.
+- SciPy [bounded minimisation](https://docs.scipy.org/doc/scipy/reference/optimize.minimize_scalar-bounded.html): independent maxima and its x tolerance.
+
+The mathematical derivations are this project's calculations under the stated models, not empirical ecological validation. Bibliography entries are in report/references.bib.

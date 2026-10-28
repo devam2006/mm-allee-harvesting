@@ -26,7 +26,7 @@ Own finite-time extinction (item 3), threshold derivations (4), basins (5), and 
 2. Extend/review the event-aware RK45 wrapper and derive the extinction quadrature. Classify starts/harvests before integration: below/at/above fold and basin boundaries, `H=0`, `N0=0`. Never integrate through an equilibrium pole or label a finite horizon as proof of no extinction.
 3. Compute extinction-time curves/maps versus `N0,H` in extinction regimes, compare RK45 event times with quadrature, and verify tolerance convergence. Plot the bottleneck close to the threshold. B time to a small cutoff must be distinctly named if included.
 4. Produce basin diagrams with initial state and harvest; mark the unstable root, fold cases and exact equilibria. Share root interfaces with WP01/WP02.
-5. Implement the **synthetic reference generator**: regular persistence, subthreshold/extinction and near-fold regimes for A/B, high-accuracy independent reference checks, train/validation/test observation IDs, fixed noise seeds and manifests. Agree units/scales with WP05; hand over an early small fixture before a large sweep.
+5. Implement the **clean synthetic reference generator**: regular persistence, subthreshold/extinction and near-fold regimes for A/B, high-accuracy independent reference checks, stable observation IDs and manifests. Agree units/scales with WP05; hand over an early small fixture before a large sweep. WP05 chooses observation subsets, constructs seeded noise and train/validation/test splits, and validates leakage; do not implement its inverse pipeline here. See [the implemented RK45 handoff](../WP03_RK45_HANDOFF.md).
 6. **Optional:** threshold elasticities checked by finite differences; MSY for A/B and harvest/basin safety margins. Distinguish B maximum sustainable realised yield from maximum admissible effort. Keep extras short if core or integration needs attention.
 7. Freeze a successful clean environment, rerun all final commands independently, execute the final notebook, audit output manifests and build the submission zip using `scripts/package_submission.py`. Check its contents against course requirements.
 
@@ -34,7 +34,7 @@ Own finite-time extinction (item 3), threshold derivations (4), basins (5), and 
 
 | Output | Content |
 |---|---|
-| `src/mm_allee/thresholds.py`, `collapse.py`, `datasets.py` | Thresholds, certified extinction quadrature/basins, synthetic generator |
+| `src/mm_allee/thresholds.py`, `collapse.py`, `datasets.py` | Thresholds, analytically classified extinction quadrature/basins, clean generator; numerical error is not interval certification |
 | `experiments/wp03/run.py`, `configs/wp03.json` | Reproduce threshold/extinction/basin results and reference data |
 | `tests/wp03/test_*.py` | Existing event checks plus independent acceptance below |
 | `artifacts/figures/wp03_extinction.png/.eps` | Extinction time vs state/harvest with impossible/no-event cases labelled |
@@ -42,26 +42,26 @@ Own finite-time extinction (item 3), threshold derivations (4), basins (5), and 
 | `artifacts/tables/wp03_thresholds.csv` | Analytic/numeric threshold and event/quadrature comparisons |
 | `artifacts/manifests/wp03_reference.json` | Reference generator provenance and split/noise contract |
 | `report/sections/03_collapse.tex`, `notebooks/sections/03_collapse.ipynb` | Proofs, algorithms, evidence and interpretations |
-| `artifacts/manifests/final_environment.txt`, reproduction log | Actual successful clean versions and commands |
+| `artifacts/manifests/wp03_environment.txt`, `wp03_reproduction.json` | WP03 environment/reproduction; final group snapshot waits for integration |
 | `submission/mm-allee-submission.zip` | Complete tested hand-in bundle, after all packages integrate |
 
-Deliver future command `python experiments/wp03/run.py --config configs/wp03.json --output results/wp03`. Generated bulk observations stay under ignored `data/generated/` or `results/`; commit only a small documented fixture and manifests.
+Implemented analysis command `python experiments/wp03/run.py --config configs/wp03.json --output results/wp03`. Generated bulk observations stay under ignored `data/generated/` or `results/`; commit only a small documented fixture and manifests.
 
 ## Acceptance tests
 
-- [ ] Threshold formulas match independent bounded numerical maximisation over the correct intervals for several a values; critical RHS and derivative vanish within stated tolerances.
-- [ ] A event time agrees with independently evaluated quadrature; convergence checked at two tolerances and at least one alternate solver/reference.
-- [ ] `q=0` subthreshold decline has no finite zero event; equilibrium/supercritical/fold cases classified correctly. At the fold, distinguish starts above and below the double root.
-- [ ] Solver never emits negative physical populations and includes the exact event endpoint; initial zero and invalid inputs handled explicitly.
-- [ ] Basin labels agree with long-enough trajectories away from boundaries and exact roots are not misclassified by numerical drift.
-- [ ] Same generator seed/config gives identical observations and splits; different seeds change noise; truth/units/noise are explicit and all split IDs disjoint.
-- [ ] Synthetic fixture contains both models and nontrivial dynamics; evaluation reference is not passed to training as labels by accident.
-- [ ] Optional sensitivity and MSY claims have numerical checks and correct units/holding-fixed conventions.
+- [x] Threshold formulas match independent bounded numerical maximisation over the correct intervals for several a values; critical RHS and derivative vanish within stated tolerances.
+- [x] A event time agrees with independently evaluated quadrature; convergence checked at two tolerances and at least one alternate solver/reference.
+- [x] `q=0` subthreshold decline has no finite zero event; equilibrium/supercritical/fold cases classified correctly. At the fold, distinguish starts above and below the double root.
+- [x] Solver never emits negative physical populations and includes the exact event endpoint; initial zero and invalid inputs handled explicitly.
+- [x] Basin labels agree with long-enough trajectories away from boundaries and exact roots are not misclassified by numerical drift.
+- [x] Same clean-generator config gives identical reference CSVs/IDs in the same environment; units/true parameters/provenance are explicit. Noise/split generation and its seed/leakage tests belong to WP05.
+- [x] Small clean synthetic fixture contains both models and nontrivial dynamics; evaluation truth is separate from declared known conditions. WP05 still must test its trainer's leakage boundary.
+- [x] Optional sensitivity and MSY claims have numerical checks and correct units/holding-fixed conventions.
 
 ## Handoff and done
 
-- [ ] Early reference fixture/schema delivered to WP04/WP05; thresholds delivered to WP01/WP02.
-- [ ] Paired plots/table, report/notebook and tests complete; threshold/extinction claims independently checked.
+- [x] Early clean reference fixture/schema is available on the Task 3 branch for WP04/WP05. Threshold/basin APIs are implemented; affected owners review the interface in this PR.
+- [x] Paired plots/tables, report/notebook and tests complete; threshold/extinction claims independently checked.
 - [ ] Final bundle contains all required `.tex/.bib/.pdf/.eps/.ipynb` files, reproduction instructions and no credentials or bulk weights.
 - [ ] Four approvals, other member reproduction, AI log/citations/status current.
 - [ ] Owner can derive both thresholds, explain finite versus asymptotic extinction and demonstrate why the quadrature is valid only on a reaching-zero path.
@@ -70,8 +70,10 @@ Deliver future command `python experiments/wp03/run.py --config configs/wp03.jso
 
 ## Current handoff
 
-- **Owner:** Devam (`devam2006`) selected Task 3 on 19 October 2026.
-- **Branch / PR:** `docs/agent-onboarding`, [PR #1](https://github.com/devam2006/mm-allee-harvesting/pull/1), records the choice and shared setup; scientific implementation has not started.
-- **Completed:** task selection only; the acceptance checkboxes above remain open.
-- **Next:** begin the WP03 derivation and review the existing solver/event tests, following the agent playbook. Coordinate roots with WP01/WP02 and an early reference-data fixture with WP04/WP05 once those owners choose.
-- **Explanation to cover first:** why a positive constant catch permits finite-time extinction, and why the zero-harvest case is different.
+- **Owner / branch:** Devam (`devam2006`), `wp03/collapse-analysis`; full analysis PR prepared for all four other members to review. Historical early reference handoff: [PR #2](https://github.com/devam2006/mm-allee-harvesting/pull/2).
+- **Completed:** thresholds; exact/critical/zero-harvest basins; A extinction quadrature, RK45/DOP853/tolerance checks; extinction sweeps/maps; bottleneck; optional dimensional sensitivity and B realised-yield MSY/margins; clean references; report/notebook; paired figures/tables; speaking notes; WP03 environment/reproduction; submission-readiness audit.
+- **Navigation/commands:** [analysis](../WP03_ANALYSIS.md), [early reference handoff](../WP03_RK45_HANDOFF.md), [speaking notes](../../presentation/wp03.md).
+- **Recovery:** main at 3cfc606 matched the starter tree after a revert. This PR restores only the earlier WP03 dependency and adds the remaining work; it does not restore other packages.
+- **Integration pending:** final group environment/PDF, all-task clean-kernel reproduction and submission ZIP require remaining packages, metadata and approvals. The audit lists those blockers.
+- **Next:** reviewers reproduce the exact commands; WP01/WP02 review the threshold/basin interface. WP05 retains noisy-observation/split/inverse ownership.
+- **Human understanding:** pending at Devam's request. Speaking notes are study material; no human approval, understanding check or non-author reproduction is claimed.
