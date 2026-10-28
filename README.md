@@ -1,5 +1,7 @@
 # MM project: harvesting under a strong Allee effect
 
+**This is the evolving final-materials draft branch.** Start with [DRAFT_DELIVERABLES.md](DRAFT_DELIVERABLES.md) for the partial report, notebook, editable PowerPoint, previews, source ledger and update commands. WP03 is populated; the other scientific sections still await reviewed contributions. This branch is not ready for submission.
+
 **Approved title:** Harvesting under a Strong Allee Effect: Collapse Thresholds, Hysteresis and Comparison of Constant-Yield vs Proportional-Effort Harvesting, with Physics-Informed Neural Network (PINN) Forward and Inverse Analysis
 
 Private, five-person Mathematical Modelling project. Humans own and explain the work; AI agents assist with implementation, checking and writing. This repository starts as a **tested scaffold and work plan**, not a completed scientific project. See [STATUS.md](STATUS.md).

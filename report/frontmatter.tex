@@ -1,0 +1,26 @@
+\section*{Working draft and scope}
+This is an incomplete report for group review. The WP03 classical/numerical
+analysis is implemented; the remaining sections retain explicit gaps until
+their owners supply reviewed work. No forward or inverse PINN performance
+is claimed in this draft. The numerical examples are synthetic.
+
+\section*{Introduction and objectives}
+We study harvesting in a population with a minimum viable density, represented
+by a strong Allee effect. The aim is to derive collapse thresholds, distinguish
+the role of harvesting from that of initial population, and test numerical and
+PINN methods using reproducible evidence.
+The project compares constant catch with proportional effort, examines
+harvesting history and recovery barriers, and evaluates forward/inverse PINNs
+once the corresponding experiments are available.
+
+Assume one deterministic, well-mixed population with constant $r>0$,
+$0<A<K$, nonnegative harvesting, and no age structure or delays. Write
+\[
+g(N)=rN(1-N/K)(N/A-1),\qquad
+N'=g(N)-H\ (\mathrm A),\qquad N'=g(N)-hN\ (\mathrm B).
+\]
+Here $H$ has population/time units and $h$ inverse-time units. For forward
+analysis use $x=N/K$, $\tau=rt$, $a=A/K$, $q=H/(rK)$ and $e=h/r$.
+Unknown-parameter inverse analysis must instead respect fixed external scaling.
+The equations are the group's approved model; their illustrative parameters
+are not calibrated to a measured species.

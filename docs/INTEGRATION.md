@@ -1,5 +1,10 @@
 # Integration and final submission
 
+An evolving partial assembly now lives on `integration/final-deliverables-draft`.
+Read [its entry page](https://github.com/devam2006/mm-allee-harvesting/blob/integration/final-deliverables-draft/DRAFT_DELIVERABLES.md)
+for report/notebook/PowerPoint sources, previews, imported versions and refresh commands.
+It is dependent draft work, not merged final evidence. The WP03 learning guide remains on the WP03 branch.
+
 ## Schedule
 
 Presentation slot: **30 minutes including Q&A confirmed by the user on 19 October 2026**. Plan 25 min talk + 5 min Q&A, about 5 min speaking per member. Date/time: **not supplied**; record it in `team.json` and here. Course PDF deadlines remain unchanged: submission at least one week before the chosen slot; all presentations before 14 November 2026.

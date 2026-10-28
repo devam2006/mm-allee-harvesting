@@ -45,6 +45,9 @@ def main():
     ]
     nb.cells[0]["id"] = "project-introduction"
     nb.cells[1]["id"] = "project-setup"
+    overview = ROOT / "notebooks/frontmatter.md"
+    if overview.is_file():
+        nb.cells[0].source = overview.read_text(encoding="utf-8")
     for index, name in enumerate(EXPECTED, 1):
         fragment = nbformat.read(ROOT / "notebooks/sections" / name, as_version=4)
         nbformat.validate(fragment)
