@@ -1,0 +1,151 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Title: wp05_recovery_noise.eps
+%%Creator: Antigravity WP05 Vector Graphics Engine
+%%BoundingBox: 0 0 720 320
+%%HiResBoundingBox: 0 0 720 320
+%%LanguageLevel: 2
+%%EndComments
+
+/Helvetica findfont 12 scalefont setfont
+
+% Background
+1.0 1.0 1.0 setrgbcolor
+0 0 720 320 rectfill
+
+% Title
+0.1 0.1 0.1 setrgbcolor
+/Helvetica-Bold findfont 14 scalefont setfont
+180 295 moveto
+(WP05: Parameter Recovery Error vs. Measurement Noise Level) show
+
+% Axes setup
+/Helvetica findfont 10 scalefont setfont
+
+% Left Subplot: Model A
+gsave
+60 60 translate
+% Grid
+0.9 0.9 0.9 setrgbcolor
+1 setlinewidth
+0 50 200 { 0 exch moveto 260 exch lineto stroke } for
+0 65 260 { 0 moveto 200 lineto stroke } for
+
+% Axes
+0.2 0.2 0.2 setrgbcolor
+1.5 setlinewidth
+0 0 moveto 260 0 lineto stroke
+0 0 moveto 0 200 lineto stroke
+
+% Labels
+0.1 0.1 0.1 setrgbcolor
+/Helvetica-Bold findfont 11 scalefont setfont
+70 210 moveto (Model A: Parameter Error) show
+/Helvetica findfont 9 scalefont setfont
+80 -25 moveto (Observation Noise sigma (% N_ref)) show
+gsave
+-90 rotate
+-140 -40 moveto (Mean Relative Error) show
+grestore
+
+% Ticks
+0 -15 moveto (0%) show
+65 -15 moveto (1%) show
+130 -15 moveto (2%) show
+195 -15 moveto (3%) show
+260 -15 moveto (5%) show
+
+-30 0 moveto (0.00) show
+-30 50 moveto (0.05) show
+-30 100 moveto (0.10) show
+-30 150 moveto (0.15) show
+-30 195 moveto (0.20) show
+
+% Data Plotting - Model A
+% ODE_LS (r): (0%, 0), (1%, 0.0037), (5%, 0.0227)
+0.12 0.47 0.71 setrgbcolor 2 setlinewidth
+0 0 moveto 52 3.7 lineto 260 22.7 lineto stroke
+% ODE_LS (A): (0%, 0), (1%, 0.0061), (5%, 0.0445)
+0.12 0.47 0.71 setrgbcolor [4 2] 0 setdash
+0 0 moveto 52 6.1 lineto 260 44.5 lineto stroke
+[] 0 setdash
+
+% PINN (r): (0%, 0.0017), (1%, 0.026), (5%, 0.083)
+0.84 0.15 0.16 setrgbcolor 2 setlinewidth
+0 1.7 moveto 52 26.0 lineto 260 82.8 lineto stroke
+% PINN (A): (0%, 0.0025), (1%, 0.0295), (5%, 0.1155)
+0.84 0.15 0.16 setrgbcolor [4 2] 0 setdash
+0 2.5 moveto 52 29.5 lineto 260 115.5 lineto stroke
+[] 0 setdash
+
+% Legend
+10 160 moveto
+0.12 0.47 0.71 setrgbcolor 10 165 moveto 30 165 lineto stroke
+0 0 0 setrgbcolor 35 162 moveto (ODE_LS (r)) show
+10 145 moveto
+0.84 0.15 0.16 setrgbcolor 10 150 moveto 30 150 lineto stroke
+0 0 0 setrgbcolor 35 147 moveto (PINN (r)) show
+grestore
+
+% Right Subplot: Model B
+gsave
+400 60 translate
+% Grid
+0.9 0.9 0.9 setrgbcolor
+1 setlinewidth
+0 50 200 { 0 exch moveto 260 exch lineto stroke } for
+0 65 260 { 0 moveto 200 lineto stroke } for
+
+% Axes
+0.2 0.2 0.2 setrgbcolor
+1.5 setlinewidth
+0 0 moveto 260 0 lineto stroke
+0 0 moveto 0 200 lineto stroke
+
+% Labels
+0.1 0.1 0.1 setrgbcolor
+/Helvetica-Bold findfont 11 scalefont setfont
+70 210 moveto (Model B: Parameter Error) show
+/Helvetica findfont 9 scalefont setfont
+80 -25 moveto (Observation Noise sigma (% N_ref)) show
+
+% Ticks
+0 -15 moveto (0%) show
+65 -15 moveto (1%) show
+130 -15 moveto (2%) show
+195 -15 moveto (3%) show
+260 -15 moveto (5%) show
+
+-30 0 moveto (0.00) show
+-30 50 moveto (0.05) show
+-30 100 moveto (0.10) show
+-30 150 moveto (0.15) show
+-30 195 moveto (0.20) show
+
+% Data Plotting - Model B
+% ODE_LS (r): (0%, 0), (1%, 0.0044), (5%, 0.030)
+0.12 0.47 0.71 setrgbcolor 2 setlinewidth
+0 0 moveto 52 4.4 lineto 260 30.0 lineto stroke
+% ODE_LS (h): (0%, 0), (1%, 0.0057), (5%, 0.040)
+0.12 0.47 0.71 setrgbcolor [4 2] 0 setdash
+0 0 moveto 52 5.7 lineto 260 40.0 lineto stroke
+[] 0 setdash
+
+% PINN (r): (0%, 0.0026), (1%, 0.021), (5%, 0.103)
+0.84 0.15 0.16 setrgbcolor 2 setlinewidth
+0 2.6 moveto 52 21.4 lineto 260 102.8 lineto stroke
+% PINN (h): (0%, 0.0024), (1%, 0.0138), (5%, 0.0976)
+0.84 0.15 0.16 setrgbcolor [4 2] 0 setdash
+0 2.4 moveto 52 13.8 lineto 260 97.6 lineto stroke
+[] 0 setdash
+
+% Legend
+10 160 moveto
+0.12 0.47 0.71 setrgbcolor 10 165 moveto 30 165 lineto stroke
+0 0 0 setrgbcolor 35 162 moveto (ODE_LS (r)) show
+10 145 moveto
+0.84 0.15 0.16 setrgbcolor 10 150 moveto 30 150 lineto stroke
+0 0 0 setrgbcolor 35 147 moveto (PINN (r)) show
+grestore
+
+showpage
+%%EOF

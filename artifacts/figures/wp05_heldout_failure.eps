@@ -1,0 +1,126 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Title: wp05_heldout_failure.eps
+%%Creator: Antigravity WP05 Vector Graphics Engine
+%%BoundingBox: 0 0 720 480
+%%HiResBoundingBox: 0 0 720 480
+%%LanguageLevel: 2
+%%EndComments
+
+/Helvetica findfont 12 scalefont setfont
+
+% Background
+1.0 1.0 1.0 setrgbcolor
+0 0 720 480 rectfill
+
+% Main Title
+0.1 0.1 0.1 setrgbcolor
+/Helvetica-Bold findfont 14 scalefont setfont
+150 455 moveto
+(WP05: Train/Val/Test Split Partitions and Difficult Failure Regimes) show
+
+% Subplot 1: Model A Regular (Top Left)
+gsave
+60 260 translate
+% Split Backgrounds
+0.90 0.93 1.0 setrgbcolor 0 0 156 160 rectfill % Train (60%)
+0.90 1.0 0.90 setrgbcolor 156 0 52 160 rectfill % Val (20%)
+1.0 0.90 0.90 setrgbcolor 208 0 52 160 rectfill % Test (20%)
+
+% Axes
+0 0 0 setrgbcolor 1 setlinewidth
+0 0 moveto 260 0 lineto stroke
+0 0 moveto 0 160 lineto stroke
+
+% Title
+/Helvetica-Bold findfont 10 scalefont setfont
+10 145 moveto (Model A: Regular Persistence (45 -> 72)) show
+/Helvetica findfont 8 scalefont setfont
+100 -18 moveto (Time t) show
+-25 70 moveto (Pop N) show
+
+% Curve
+0.8 0.1 0.1 setrgbcolor 2 setlinewidth
+0 60 moveto 50 85 150 96 260 96 curveto stroke
+grestore
+
+% Subplot 2: Model B Regular (Top Right)
+gsave
+400 260 translate
+% Split Backgrounds
+0.90 0.93 1.0 setrgbcolor 0 0 156 160 rectfill
+0.90 1.0 0.90 setrgbcolor 156 0 52 160 rectfill
+1.0 0.90 0.90 setrgbcolor 208 0 52 160 rectfill
+
+% Axes
+0 0 0 setrgbcolor 1 setlinewidth
+0 0 moveto 260 0 lineto stroke
+0 0 moveto 0 160 lineto stroke
+
+% Title
+/Helvetica-Bold findfont 10 scalefont setfont
+10 145 moveto (Model B: Regular Persistence (45 -> 70)) show
+/Helvetica findfont 8 scalefont setfont
+100 -18 moveto (Time t) show
+-25 70 moveto (Pop N) show
+
+% Curve
+0.8 0.1 0.1 setrgbcolor 2 setlinewidth
+0 60 moveto 40 80 120 93 260 93 curveto stroke
+grestore
+
+% Subplot 3: Model A Extinction Event (Bottom Left)
+gsave
+60 60 translate
+% Truncated Background: Extinction at t=1.64
+1.0 0.95 0.90 setrgbcolor 0 0 180 160 rectfill
+
+% Axes
+0 0 0 setrgbcolor 1 setlinewidth
+0 0 moveto 260 0 lineto stroke
+0 0 moveto 0 160 lineto stroke
+
+% Title
+/Helvetica-Bold findfont 10 scalefont setfont
+10 145 moveto (Model A Failure: Supercritical Extinction Event) show
+/Helvetica findfont 8 scalefont setfont
+100 -18 moveto (Time t) show
+-25 70 moveto (Pop N) show
+
+% Curve dropping to zero
+0.8 0.1 0.1 setrgbcolor 2 setlinewidth
+0 110 moveto 60 70 120 20 160 0 curveto stroke
+
+% Extinction event indicator
+0.2 0.2 0.8 setrgbcolor [3 3] 0 setdash
+160 0 moveto 160 140 lineto stroke
+[] 0 setdash
+165 80 moveto (t_ext = 1.64) show
+grestore
+
+% Subplot 4: Model A Near Fold (Bottom Right)
+gsave
+400 60 translate
+0.95 0.95 0.95 setrgbcolor 0 0 260 160 rectfill
+
+% Axes
+0 0 0 setrgbcolor 1 setlinewidth
+0 0 moveto 260 0 lineto stroke
+0 0 moveto 0 160 lineto stroke
+
+% Title
+/Helvetica-Bold findfont 10 scalefont setfont
+10 145 moveto (Model A / B: Near-Fold Critical Slowing Down) show
+/Helvetica findfont 8 scalefont setfont
+100 -18 moveto (Time t) show
+-25 70 moveto (Pop N) show
+
+% Bottleneck curve
+0.8 0.1 0.1 setrgbcolor 2 setlinewidth
+0 115 moveto 50 80 150 78 260 78 curveto stroke
+/Helvetica-Oblique findfont 8 scalefont setfont
+0.3 0.3 0.3 setrgbcolor
+80 88 moveto (f'(N*) ~ 0 bottleneck) show
+grestore
+
+showpage
+%%EOF
