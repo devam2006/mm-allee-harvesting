@@ -20,9 +20,9 @@ Implement item 12 for **both A and B** and provide the engine WP05 extends. Demo
 
 ## Subtasks
 
-1. Agree a small differentiable PyTorch MLP, seeded initialisation, CPU-first dtype/device choice, fixed input scaling and trainable-parameter interface. Start with one trajectory per model; parameter-conditioned surrogates are optional scope expansion.
-2. Derive physics residual and loss `L=lambda_phys*MSE(dx/dtau-f)+lambda_ic*MSE(x(0)-x0)`. Explain soft versus hard IC enforcement, collocation sampling and optimiser. Use `autograd.grad(...,create_graph=True)` or an equivalent correctly differentiable method. Never detach parameter tensors in residuals.
-3. Implement/verify Torch RHS parity with NumPy reference for both models; handle input rescaling chain rules explicitly. No supervised RK45 solution labels in a claimed physics-only forward run.
+1. Agree a small differentiable JAX MLP `(1,32,32,1)` (owner decision, 29 Oct 2026; replaces the original PyTorch wording), seeded initialisation, CPU/float64, fixed input scaling and trainable-parameter interface. Start with one trajectory per model; parameter-conditioned surrogates are optional scope expansion.
+2. Derive physics residual and loss `L=MSE(dx/dtau-f)`, with the initial condition enforced exactly by the hard embedding `x_hat=x0+s*N(s)` (owner decision; the soft-IC form `L=lambda_phys*MSE(dx/dtau-f)+lambda_ic*MSE(x(0)-x0)` is explained but not used). Explain collocation sampling and the Adam-then-L-BFGS optimiser. Use `jax.grad`/`vmap` or an equivalent correctly differentiable method. Never detach parameter tensors in residuals.
+3. Implement/verify JAX RHS parity with NumPy reference for both models; handle input rescaling chain rules explicitly. No supervised RK45 solution labels in a claimed physics-only forward run.
 4. Train bounded CPU-budget experiments for regular, near-fold and subthreshold/extinction regimes; seeds 11/22/33. For A train/evaluate only on the pre-extinction interval. An optional piecewise boundary-aware model must state the modified residual and event handling.
 5. Compare on a separate dense reference grid with tight RK45/DOP853. Report RMSE, MAE, global relative L2, runtime, training losses, boundary violations, and all seed failures. A tiny mean loss alone does not establish trajectory accuracy.
 6. Deliver shared engine/config/checkpoint API to WP05 after the first short, tested A/B run. Collaborate on gradients and constraints, rather than letting two agents create incompatible PINN stacks.
@@ -34,7 +34,7 @@ Implement item 12 for **both A and B** and provide the engine WP05 extends. Demo
 |---|---|
 | `src/mm_allee/pinn/{network,residual,train_forward}.py` | Shared network/loss/trainer with extension hooks for trainable physical parameters |
 | `experiments/wp04/run.py`, `configs/wp04_smoke.json`, `wp04_final.json` | Budgeted smoke and frozen final sweep |
-| `tests/wp04/test_*.py` | Core metric tests plus Torch parity/autograd/training tests |
+| `tests/wp04/test_*.py` | Core metric tests plus JAX parity/autodiff/training tests |
 | `artifacts/figures/wp04_forward.png/.eps` | Both models, reference vs prediction, regular and difficult cases |
 | `artifacts/figures/wp04_error_loss.png/.eps` | Absolute errors and optimisation history |
 | `artifacts/tables/wp04_forward_metrics.csv` | Per seed/model/regime error/runtime/status before aggregates |
@@ -45,7 +45,7 @@ Deliver future command `python experiments/wp04/run.py --config configs/wp04_smo
 
 ## Acceptance tests
 
-- [x] Torch RHS matches NumPy for A/B arrays and edge populations/harvests.
+- [x] JAX RHS matches NumPy for A/B arrays and edge populations/harvests.
 - [x] Analytic test function produces the expected derivative/residual, including time scaling.
 - [x] Backpropagation reaches network weights and optional physical-parameter tensors with finite, nonzero expected gradients; no accidental float cast or detach.
 - [x] Initial-condition handling correct; a short seeded optimiser smoke run reduces a meaningful loss, with generous numerical tolerances.
@@ -57,7 +57,7 @@ Deliver future command `python experiments/wp04/run.py --config configs/wp04_smo
 ## Handoff and done
 
 - [ ] Shared PINN API documented and tested with WP05 before long sweeps.
-- [ ] Two paired figures, metrics table, configs/manifests, report/notebook section, real Torch CI tests.
+- [ ] Two paired figures, metrics table, configs/manifests, report/notebook section, real JAX CI tests.
 - [x] Forward notebook runs from a clean kernel under its declared budget; all equations/methods cited or derived.
 - [ ] Other member reproduction; four approvals; AI log/citations/status current.
 - [ ] Owner can explain automatic differentiation, physics/IC losses, collocation, RK45 comparison and why failure near a fold matters.
@@ -66,10 +66,10 @@ Deliver future command `python experiments/wp04/run.py --config configs/wp04_smo
 
 ## Current handoff
 
-- **Owner:** Prem (`Prem-Mehta03`), Task 4. **Branch:** `wp04/forward-pinn-engine`; PR not opened yet (needs `gh` or the GitHub web form; see PR body below/`pr-body.md`).
-- **Done (evidence):** engine `src/mm_allee/pinn/{network,residual,train_forward}.py`; `experiments/wp04/run.py`; `configs/wp04_{smoke,final}.json`; `tests/wp04/test_pinn_engine.py` (33 tests, mutation-checked: B sign, residual sign, detached parameter, time scaling); final sweep (18 PINN runs + 6 RK45 baselines, 166 s CPU) in `artifacts/{figures,tables,manifests}/wp04_*`; report section and notebook fragment written. Acceptance checkboxes above are ticked only where a named test or the recorded sweep supports them.
-- **Result:** B (3 regimes) and A-extinction accurate (relative L2 about 1e-4 to 6e-3); A near-fold inaccurate (9-12%); **A regular fails for all seeds (69-81%) with tiny loss**: the network jumps to the unstable root x_-=0.29598, a spurious zero-residual solution. 12 accurate / 6 inaccurate / 0 diverged. RK45 is about 1e-10 accurate in 0.01 s vs 8-11 s per PINN run.
-- **Not done:** hand-off check of the shared API with WP05 (owner Rohan); other-member reproduction; four approvals; CI result on GitHub (not run); untested remedies for the A-regular failure (hard IC `hard_ic=true`, denser early collocation, causal training); WP03 reference fixtures are not on main (merge was reverted), so the reference here is generated independently by DOP853 in `run.py`.
+- **Owner:** Prem (`Prem-Mehta03`), Task 4. **Branch:** `wp04/forward-pinn-engine`; PR not opened yet (needs `gh` or the GitHub web form; PR text in `pr-body.md`).
+- **Owner decisions (29 Oct 2026):** JAX instead of PyTorch; network (1,32,32,1); hard initial condition and physics loss only; 100 collocation points; Adam 1000 then L-BFGS 2500 iterations (about 2/7 Adam); errors in scientific notation.
+- **Done (evidence):** engine `src/mm_allee/pinn/{network,residual,train_forward,autodiff}.py`; `experiments/wp04/run.py`; `configs/wp04_{smoke,final}.json`; `tests/wp04/` (34 tests; mutation-checked: B sign, residual sign, stop-gradient on the physical parameter, dropped product-rule term, forgotten hard-IC factor); final sweep (18 PINN runs + 6 RK45 baselines, 54 s CPU) in `artifacts/{figures,tables,manifests}/wp04_*`; report section and notebook fragment written.
+- **Result:** 12 accurate / 6 inaccurate / 0 diverged. Accurate for all seeds: A extinction (relative L2 1.2e-7 to 8.3e-7), B near-fold (9.3e-8 to 8.5e-7), B decay (3.2e-5 to 1.0e-4). **B regular fails for all seeds (6.8e-1 to 9.2e-1) with loss 2e-8 to 3e-6**: seeds 11/22 sit on the unstable root x_-=0.2838, seed 33 decays to 0 (spurious zero-residual solutions; hard IC does not prevent this). A regular fails for seeds 11, 33 (7.6e-1, 8.5e-1), seed 22 is 1.9e-5; A near-fold seed 11 is 9.1e-2. RK45 is about 1e-10 accurate in 3e-3 to 9e-3 s vs 2.4 to 3.6 s per PINN run.
+- **Not done:** shared API check with WP05 (owner Rohan; the framework change affects them); other-member reproduction; four approvals; GitHub CI (Linux, Python 3.11) not run; LaTeX not compiled; untested remedies for the failures (denser early collocation, time-marching, more seeds); WP03 reference fixtures are not on main, so the reference is generated independently by DOP853 in `run.py`.
 - **Next command:** `python -m pytest tests/wp04 -q`, then `python experiments/wp04/run.py --config configs/wp04_smoke.json --output results/wp04_smoke`.
-- **Interface decisions:** documented in `docs/INTERFACES.md` ("Forward PINN engine"); `parameters`/`extra_parameters` of `train_forward` are the WP05 hook. Not yet recorded in `docs/DECISIONS.md`.
-- **Open understanding question for the owner:** why can the loss be about 1e-6 while the trajectory is wrong, and where does the A-regular network sit in terms of equilibria?
+- **Open understanding question for the owner:** why can the physics loss be about 1e-8 while the trajectory is wrong, and what do the failed trajectories converge to in terms of equilibria?

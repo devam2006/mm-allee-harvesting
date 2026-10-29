@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "run_id": "wp04-20261029T171415Z",
-  "created_utc": "2026-10-29T17:14:15.262306+00:00",
+  "run_id": "wp04-20261029T174846Z",
+  "created_utc": "2026-10-29T17:48:46.260857+00:00",
   "git": {
-    "sha": "3cfc60658c47a4147e06cf86ed5ace3a9b620d1a",
+    "sha": "14dfc1de5cabf35a7e44c77eed3b8037159c831d",
     "dirty": true
   },
   "command": "python experiments/wp04/run.py --config configs/wp04_final.json --output results/wp04",
   "config": {
     "schema_version": 1,
-    "scope": "Frozen final forward sweep (settings chosen before inspecting final results).",
+    "scope": "Frozen final forward sweep (JAX, hard IC, Adam then L-BFGS; settings chosen before inspecting final results).",
     "manifest_name": "wp04_forward.json",
     "seeds": [
       11,
@@ -25,16 +25,16 @@
     "inaccuracy_threshold_relative_l2": 0.05,
     "save_checkpoints": true,
     "training": {
-      "width": 32,
-      "depth": 3,
-      "hard_ic": false,
-      "n_collocation": 200,
-      "sampling": "grid",
-      "lambda_phys": 1.0,
-      "lambda_ic": 1.0,
+      "layers": [
+        1,
+        32,
+        32,
+        1
+      ],
+      "n_collocation": 100,
       "lr": 0.01,
-      "adam_epochs": 4000,
-      "lbfgs_epochs": 20,
+      "adam_iters": 1000,
+      "lbfgs_iters": 2500,
       "time_budget_s": 300
     },
     "cases": [
@@ -108,42 +108,39 @@
   },
   "baseline_solver": "mm_allee.solver.solve_trajectory (RK45, rtol=1e-9, atol=1e-11)",
   "optimiser": {
-    "adam_epochs": 4000,
+    "scheme": "Adam then L-BFGS-B (SciPy) on the JAX gradient",
+    "adam_iters": 1000,
     "lr": 0.01,
-    "lbfgs_epochs": 20
+    "lbfgs_iters": 2500
   },
-  "loss_weights": {
-    "lambda_phys": 1.0,
-    "lambda_ic": 1.0
-  },
+  "loss": "physics residual MSE only; initial condition enforced exactly (hard constraint)",
   "runtime_budget_s_per_run": 300,
   "supervised_labels_used": false,
   "pinn_status_counts": {
     "inaccurate": 6,
     "ok": 12
   },
-  "elapsed_seconds": 165.8,
+  "elapsed_seconds": 54.49,
   "dependencies": {
     "python": "3.13.4",
     "numpy": "2.5.2",
     "scipy": "1.18.0",
     "matplotlib": "3.11.2",
-    "torch": "2.12.1+cpu"
+    "jax": "0.11.2"
   },
   "hardware": {
     "platform": "Windows-11-10.0.26300-SP0",
     "processor": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
     "cpu_count": 16,
-    "torch_threads": 8,
     "device": "cpu",
     "dtype": "float64"
   },
   "outputs": {
-    "wp04_forward_metrics.csv": "a3fe70f865e52d08304c53d81f70aaad5bc8f6dd5e07d4c0c1e91824878bd294",
-    "wp04_forward.png": "04500e24103fc6db1e5b6d301a8270c19952299b57375989697422d64421e553",
-    "wp04_forward.eps": "33813baa15640f5c50eb307b5bc58d67511e27b3a578784528723dbce86ec917",
-    "wp04_error_loss.png": "431a45ee5a26c63017f93ec77391606967db09262d5dff3ac431b1d86f70d9b1",
-    "wp04_error_loss.eps": "32ca4c95f716a79c7a0b8bdc313836e0644a1edc553fb1bbf9a08e5d09d327fe"
+    "wp04_forward_metrics.csv": "0e89591bce0bd1681102d12d4e6f7ff79e271e4459cde61a1b8d7f4ab0f6cfd4",
+    "wp04_forward.png": "c94c0bc20b4ac6fc5506f2772534431fddcd78450a5f718b64fb69d4a33eb605",
+    "wp04_forward.eps": "bb8aa0887f24aac526f0fa52df533b29575f5f19351523ac8f16a5313979a311",
+    "wp04_error_loss.png": "99b7e1e72def88bc4f64a20f21b050e2a888aaf79f5db299327f55f56b36b85d",
+    "wp04_error_loss.eps": "56334d1d3554c5931a364483337889faad04ccc2cbe55683e0cc2ee4c428ce31"
   },
   "status": "completed"
 }

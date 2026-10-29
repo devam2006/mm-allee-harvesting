@@ -39,7 +39,7 @@ python scripts/assemble_notebook.py
 python scripts/smoke.py
 ```
 
-CI `core` installs the classical + notebook/dev dependencies, checks style, runs the fast suite, assembles and executes the notebook. CI `pinn` installs CPU Torch and runs tests marked `pinn`; WP04 must add real residual/autograd and short optimiser tests before declaring the forward engine complete. The initial `pinn` job also checks import availability, so an empty optional selection cannot masquerade as trainer validation. Long training/convergence sweeps are experiments, not default unit tests.
+CI `core` installs the classical + notebook/dev dependencies, checks style, runs the fast suite, assembles and executes the notebook. CI `pinn` installs JAX (CPU) and runs tests marked `pinn`; WP04 must add real residual/autograd and short optimiser tests before declaring the forward engine complete. The initial `pinn` job also checks import availability, so an empty optional selection cannot masquerade as trainer validation. Long training/convergence sweeps are experiments, not default unit tests.
 
 ## Independent validation
 

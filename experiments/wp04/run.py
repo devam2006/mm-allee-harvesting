@@ -44,9 +44,7 @@ METRIC_COLUMNS = [
     "wall_seconds",
     "status",
     "final_loss",
-    "final_physics",
-    "final_ic",
-    "epochs",
+    "iterations",
     "t_end",
     "extinction_tau",
 ]
@@ -138,7 +136,7 @@ def run(config_path, output, artifacts=None):
         )
         for seed in cfg["seeds"]:
             result = run_pinn(case, seed, cfg, hit)
-            pred = predict(result.net, tau)
+            pred = predict(result.params, result.config, tau)
             ev = evaluate_prediction(pred, ref_x)
             status = result.status
             limit = cfg["inaccuracy_threshold_relative_l2"]
@@ -158,7 +156,7 @@ def run(config_path, output, artifacts=None):
                 }
             )
             if cfg.get("save_checkpoints", True):
-                save_checkpoint(output / "checkpoints" / f"{case['id']}_seed{seed}.pt", result)
+                save_checkpoint(output / "checkpoints" / f"{case['id']}_seed{seed}.npz", result)
     write_metrics(output / "wp04_forward_metrics.csv", rows)
     figures = make_figures(cfg, curves, output / "figures")
     manifest = build_manifest(
@@ -189,12 +187,19 @@ def metric_row(case, method, seed, ev, seconds, status, hit, result=None):
         "wall_seconds": round(seconds, 4),
         "status": status,
         "final_loss": last("loss"),
-        "final_physics": last("physics"),
-        "final_ic": last("ic"),
-        "epochs": None if result is None else len(result.history["loss"]),
+        "iterations": None if result is None else len(result.history["loss"]),
         "t_end": hit if hit is not None else case["tau_end"],
         "extinction_tau": hit,
     }
+
+
+def format_cell(value):
+    """Errors, losses and times in scientific notation; None becomes an empty cell."""
+    if value is None:
+        return ""
+    if isinstance(value, float):
+        return f"{value:.6e}"
+    return value
 
 
 def write_metrics(path, rows):
@@ -202,7 +207,7 @@ def write_metrics(path, rows):
         writer = csv.DictWriter(handle, fieldnames=METRIC_COLUMNS)
         writer.writeheader()
         for row in rows:
-            writer.writerow({k: ("" if v is None else v) for k, v in row.items()})
+            writer.writerow({k: format_cell(v) for k, v in row.items()})
 
 
 def make_figures(cfg, curves, directory):
@@ -245,6 +250,7 @@ def make_figures(cfg, curves, directory):
                 ls=styles[c["seed"]],
                 label=f"seed {c['seed']}",
             )
+        loss_ax.axvline(cfg["training"]["adam_iters"], color="0.5", lw=0.8)  # Adam -> L-BFGS
         title = f"Model {case['model']}, {case['regime']}\n a={case['a']}, "
         title += f"{'q' if case['model'] == 'A' else 'e'}={case['harvest']}, x0={case['x0']}"
         ax.set(title=title, xlabel=r"time $\tau=rt$", ylabel=r"population $x=N/K$")
@@ -255,7 +261,7 @@ def make_figures(cfg, curves, directory):
             xlabel=r"$\tau$",
             ylabel=r"$|\hat x-x_{ref}|$",
         )
-        loss_ax.set(xlabel="optimiser step", ylabel="total loss")
+        loss_ax.set(xlabel="iteration (Adam, then L-BFGS)", ylabel="physics loss")
         for extra in (err_ax, loss_ax):
             extra.grid(alpha=0.3)
         err_ax.legend(fontsize=7)
@@ -291,9 +297,9 @@ def git_state():
 
 
 def build_manifest(config_path, cfg, rows, elapsed, output, figures):
+    import jax
     import matplotlib
     import scipy
-    import torch
 
     pinn_rows = [r for r in rows if r["method"] == "pinn"]
     counts = {}
@@ -310,8 +316,11 @@ def build_manifest(config_path, cfg, rows, elapsed, output, figures):
         "model_and_units": "dimensionless x=N/K, tau=r*t; A: q=H/(rK), B: e=h/r; synthetic only",
         "reference_solver": cfg["reference"],
         "baseline_solver": "mm_allee.solver.solve_trajectory (RK45, rtol=1e-9, atol=1e-11)",
-        "optimiser": {k: cfg["training"].get(k) for k in ("adam_epochs", "lr", "lbfgs_epochs")},
-        "loss_weights": {k: cfg["training"].get(k) for k in ("lambda_phys", "lambda_ic")},
+        "optimiser": {
+            "scheme": "Adam then L-BFGS-B (SciPy) on the JAX gradient",
+            **{k: cfg["training"].get(k) for k in ("adam_iters", "lr", "lbfgs_iters")},
+        },
+        "loss": "physics residual MSE only; initial condition enforced exactly (hard constraint)",
         "runtime_budget_s_per_run": cfg["training"].get("time_budget_s"),
         "supervised_labels_used": False,
         "pinn_status_counts": counts,
@@ -321,13 +330,12 @@ def build_manifest(config_path, cfg, rows, elapsed, output, figures):
             "numpy": np.__version__,
             "scipy": scipy.__version__,
             "matplotlib": matplotlib.__version__,
-            "torch": torch.__version__,
+            "jax": jax.__version__,
         },
         "hardware": {
             "platform": platform.platform(),
             "processor": platform.processor(),
             "cpu_count": os.cpu_count(),
-            "torch_threads": torch.get_num_threads(),
             "device": "cpu",
             "dtype": "float64",
         },

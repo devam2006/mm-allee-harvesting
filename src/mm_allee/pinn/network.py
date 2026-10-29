@@ -1,50 +1,55 @@
-"""Small seeded MLP x_hat(tau) with fixed input scaling and optional hard initial condition."""
+"""Small seeded MLP x_hat(tau) with fixed input scaling and a hard initial condition."""
 
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 
-import torch
-from torch import nn
+import jax
+import jax.numpy as jnp
+
+from . import autodiff  # noqa: F401  (enables float64 before any array is created)
 
 
 @dataclass(frozen=True)
 class NetworkConfig:
     """Everything needed to rebuild a network; stored inside checkpoints."""
 
-    width: int = 32
-    depth: int = 3  # number of hidden layers
+    layers: tuple = (1, 32, 32, 1)  # input, hidden..., output
     t_end: float = 10.0  # fixed input scale: the network sees s = tau / t_end in [0, 1]
     x0: float = 0.8
-    hard_ic: bool = False
     seed: int = 11
 
+    def validate(self):
+        if len(self.layers) < 3 or self.layers[0] != 1 or self.layers[-1] != 1:
+            raise ValueError("layers must look like (1, h1, ..., 1)")
+        if min(self.layers) < 1 or self.t_end <= 0:
+            raise ValueError("Require positive layer sizes and t_end>0")
 
-class ForwardMLP(nn.Module):
-    """x_hat(tau) = x0 + s*N(s) (hard IC) or N(s) (soft IC), with s = tau / t_end.
 
-    ``forward`` takes *physical* dimensionless time, so autograd differentiates
-    through the scaling and ``dx/dtau = (1/t_end) dN/ds`` needs no manual chain rule.
-    The scale ``t_end`` is a fixed constant, never trained. Calling this constructor
-    seeds the global Torch RNG (``torch.manual_seed``) so initialisation is reproducible.
+def init_params(config: NetworkConfig):
+    """Glorot-normal weights, zero biases; reproducible from ``config.seed`` alone."""
+    config.validate()
+    keys = jax.random.split(jax.random.PRNGKey(config.seed), len(config.layers) - 1)
+    params = []
+    for key, n_in, n_out in zip(keys, config.layers[:-1], config.layers[1:]):
+        scale = jnp.sqrt(2.0 / (n_in + n_out))
+        params.append((scale * jax.random.normal(key, (n_in, n_out)), jnp.zeros(n_out)))
+    return params
+
+
+def mlp(params, s):
+    """N(s) for a scalar ``s``; tanh hidden layers, linear output."""
+    h = jnp.reshape(s, (1,))
+    for weight, bias in params[:-1]:
+        h = jnp.tanh(h @ weight + bias)
+    weight, bias = params[-1]
+    return (h @ weight + bias)[0]
+
+
+def x_hat(params, tau, config: NetworkConfig):
+    """Hard-constraint solution: x_hat(tau) = x0 + s*N(s), s = tau/t_end.
+
+    ``x_hat(0) = x0`` exactly for any weights, so no initial-condition loss is needed.
+    ``tau`` is physical dimensionless time, so autodiff with respect to ``tau`` applies
+    the chain rule dx/dtau = (1/t_end) d/ds [x0 + s N(s)] automatically.
     """
-
-    def __init__(self, config: NetworkConfig):
-        super().__init__()
-        if config.width < 1 or config.depth < 1 or config.t_end <= 0:
-            raise ValueError("Require width>=1, depth>=1, t_end>0")
-        self.config = config
-        torch.manual_seed(config.seed)
-        layers, size = [], 1
-        for _ in range(config.depth):
-            layers += [nn.Linear(size, config.width, dtype=torch.float64), nn.Tanh()]
-            size = config.width
-        layers.append(nn.Linear(size, 1, dtype=torch.float64))
-        self.body = nn.Sequential(*layers)
-
-    def forward(self, tau):
-        s = tau / self.config.t_end
-        out = self.body(s)
-        return self.config.x0 + s * out if self.config.hard_ic else out
-
-
-def config_dict(config: NetworkConfig) -> dict:
-    return asdict(config)
+    s = tau / config.t_end
+    return config.x0 + s * mlp(params, s)

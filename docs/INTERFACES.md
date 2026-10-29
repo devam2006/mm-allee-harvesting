@@ -21,20 +21,21 @@ All numerical code lives in `src/mm_allee/`; scripts import it. Core NumPy funct
 | WP01 | `equilibria.py`: `equilibria_a(a,q)`, `equilibria_logistic(q)`, `classify_equilibrium(...)`; list of root/stability/derivative records with a documented tolerance | WP02/WP03 reuse stability conventions and data schema |
 | WP02 | `model_b.py`: B equilibrium records; `history.py`: segmented ramp and explicit restocking policy | History output includes segment, control, time, population, event/intervention labels |
 | WP03 | `thresholds.py`: `critical_a(a) -> (x_star,q_c)`, `critical_b(a) -> e_c`; `collapse.py`: basin labels and extinction quadrature; `datasets.py`: generator | Reference CSV + manifest + train/val/test observation IDs |
-| WP04 (**implemented, PR pending review**) | `pinn/network.py`, `pinn/residual.py`, `pinn/train_forward.py`: small network, differentiable A/B residual, forward trainer | Frozen model/config/checkpoint format, history/metrics schema, trainable-parameter extension hook |
+| WP04 (**implemented, JAX; PR pending review**) | `pinn/network.py`, `pinn/residual.py`, `pinn/train_forward.py`: small network, differentiable A/B residual, forward trainer | Frozen model/config/checkpoint format, history/metrics schema, trainable-parameter extension hook |
 | WP05 | `pinn/inverse.py`, `inference.py`, `validation.py`: constrained parameters, ODE least-squares baseline, noise/held-out analysis | Recovery and prediction metrics, identifiability demo and failure tables |
 
 Names are agreed starting points; update the contract in a separate reviewed change if an API needs refinement. No placeholder functions return invented scientific outputs. Analysis modules must return data for tests and plots, not only write images.
 
-## Forward PINN engine (WP04, implemented)
+## Forward PINN engine (WP04, implemented; JAX)
 
-All Torch, dimensionless `x=N/K`, `tau=r t`, float64 on CPU; import from `mm_allee.pinn.*`.
+JAX, CPU, float64 (importing `mm_allee.pinn.autodiff` enables x64). Dimensionless `x=N/K`, `tau=r t`; import from `mm_allee.pinn.*`. Owner decisions of 29 Oct 2026: JAX replaces the originally planned PyTorch; network `(1,32,32,1)`; hard initial condition; physics loss only; 100 collocation points; Adam then L-BFGS.
 
-- `network.NetworkConfig(width,depth,t_end,x0,hard_ic,seed)`, `network.ForwardMLP(config)`: `forward(tau)` takes **physical** dimensionless time as an `(n,1)` tensor and scales internally by the fixed constant `t_end`. `hard_ic=True` returns `x0 + s*N(s)` (exact IC); constructing a network seeds the global Torch RNG.
-- `residual.torch_rhs(x,model,*,a,harvest)`: Torch twin of `models.rhs`; `a`/`harvest` may be floats **or tensors/Parameters** (no validation, no casts). `residual.collocation_residual(x_fn,tau,model,*,a,harvest) -> (x, dx/dtau - f)`; `residual.pinn_loss(x_fn,tau,x0,model,*,a,harvest,lambda_phys,lambda_ic) -> (total, physics, ic)`. `x_fn` is any callable `tau->x`.
-- `train_forward.ForwardConfig` (JSON-serialisable training recipe), `train_forward(config,*,parameters=None,extra_parameters=()) -> ForwardResult(net,config,history{loss,physics,ic},wall_seconds,status)`. **WP05 hook:** pass `parameters={"a":tensor,"harvest":tensor}` to replace the fixed values and `extra_parameters=[...]` so the optimiser updates them. Status is `ok | nonfinite_loss | budget_exhausted`.
-- `predict(net,tau_numpy)`, `evaluate_prediction(pred,ref,norm_floor=1e-8) -> {rmse,mae,relative_l2|None,max_abs,boundary_violations}`, `save_checkpoint(path,result)` / `load_checkpoint(path) -> (net, config)` (schema 1: config dict + `state_dict`, loaded with `weights_only=True`; `.pt` files are git-ignored).
-- Metrics CSV adds columns `case,max_abs,boundary_violations,final_loss,final_physics,final_ic,epochs,t_end,extinction_tau` to the schema below; forward rows have empty `noise_sigma` and `split=dense_reference`.
+- `network.NetworkConfig(layers,t_end,x0,seed)`, `network.init_params(config)` (Glorot-normal, seeded from `config.seed`), `network.x_hat(params,tau,config)`: scalar physical time in, scalar state out, `x0 + s*N(s)` with `s=tau/t_end`, so `x_hat(0)=x0` exactly. Vectorise with `jax.vmap`.
+- `autodiff.derivative(fn,time)`: elementwise `d fn/d time` via `vmap(grad)`; `fn` is a scalar function that may close over weights or physical parameters.
+- `residual.jax_rhs(x,model,*,a,harvest)`: JAX twin of `models.rhs` (q for logistic/A, e for B); `a`/`harvest` may be numbers or traced arrays; no validation, no casts. `residual.collocation_residual(x_fn,tau,model,*,a,harvest) -> (x, dx/dtau - f(x))`; `residual.physics_loss(x_fn,tau,model,*,a,harvest)` is the mean squared residual (the whole loss).
+- `train_forward.ForwardConfig` (JSON-serialisable: model,a,harvest,x0,t_end,layers,seed,n_collocation=100,adam_iters=1000,lbfgs_iters=2500,lr=1e-2,time_budget_s), `train_forward(config,*,physical=None) -> ForwardResult(params,config,physical,history{loss,phase},wall_seconds,status)`. Adam is hand-written; L-BFGS is SciPy L-BFGS-B on the JAX gradient. **WP05 hook:** pass `physical={"a":value,"harvest":value}` and those entries are trained jointly with the weights (reparametrise with fixed external scales on the caller's side). Status is `ok | nonfinite_loss | budget_exhausted`; `history["phase"]` is `"adam"` or `"lbfgs"` per iteration.
+- `predict(params,config,tau_numpy)`, `evaluate_prediction(pred,ref,norm_floor=1e-8) -> {rmse,mae,relative_l2|None,max_abs,boundary_violations}`, `save_checkpoint(path,result)` / `load_checkpoint(path) -> (params, config)` (schema 2, pickle-free `.npz`; schema 1 was the retired PyTorch format).
+- Metrics CSV adds columns `case,max_abs,boundary_violations,final_loss,iterations,t_end,extinction_tau` to the schema below; floats are written in scientific notation; forward rows have empty `noise_sigma` and `split=dense_reference`.
 
 ## Run/config contract
 

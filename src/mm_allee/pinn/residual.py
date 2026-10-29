@@ -1,21 +1,20 @@
-"""Differentiable ODE right-hand sides, residual and PINN loss (dimensionless x, tau).
+"""Differentiable ODE right-hand sides and the physics residual (dimensionless x, tau).
 
-Nothing here casts to Python floats or detaches: ``a`` and ``harvest`` may be plain
-numbers or tensors (e.g. ``torch.nn.Parameter`` for WP05) and gradients flow to both.
+Nothing here casts to Python floats: ``a`` and ``harvest`` may be numbers or JAX arrays
+(for WP05 they are traced arrays being optimised), and gradients flow to both.
 """
 
-import torch
+import jax.numpy as jnp
 
 from .autodiff import derivative
 
 MODELS = ("logistic", "A", "B")
 
 
-def torch_rhs(x, model, *, a, harvest):
-    """Torch twin of ``mm_allee.models.rhs`` (q for logistic/A, e for B).
+def jax_rhs(x, model, *, a, harvest):
+    """JAX twin of ``mm_allee.models.rhs`` (q for logistic/A, e for B).
 
-    Unlike the NumPy version it does no range validation, because ``a`` or
-    ``harvest`` may be trainable tensors whose values change during optimisation.
+    No range validation: ``a`` or ``harvest`` may be traced values during optimisation.
     """
     if model == "logistic":
         return x * (1 - x) - harvest
@@ -27,26 +26,19 @@ def torch_rhs(x, model, *, a, harvest):
 
 
 def collocation_residual(x_fn, tau, model, *, a, harvest):
-    """Return ``(x, dx/dtau - f(x))`` at times ``tau`` (shape (n, 1)).
+    """Return ``(x, dx/dtau - f(x))`` at the times ``tau`` (shape (n,)).
 
-    ``x_fn`` maps physical dimensionless time to the state. The derivative is taken
-    with respect to ``tau`` itself, so any internal time rescaling is differentiated
-    through by autograd. ``create_graph=True`` keeps the residual trainable.
+    ``x_fn`` maps one scalar physical time to the scalar state. The derivative is with
+    respect to ``tau`` itself, so any internal time rescaling is differentiated through.
     """
-    tau = tau.detach().clone().requires_grad_(True)
-    x = x_fn(tau)
-    dx = derivative(x, tau)
-    return x, dx - torch_rhs(x, model, a=a, harvest=harvest)
+    tau = jnp.asarray(tau, dtype=jnp.float64)
+    x = jnp.vectorize(x_fn)(tau)
+    dx = derivative(x_fn, tau)
+    return x, dx - jax_rhs(x, model, a=a, harvest=harvest)
 
 
-def pinn_loss(x_fn, tau, x0, model, *, a, harvest, lambda_phys=1.0, lambda_ic=1.0):
-    """``L = lambda_phys*MSE(dx/dtau - f) + lambda_ic*MSE(x(0) - x0)``.
-
-    Returns ``(total, physics_term, ic_term)`` as tensors. ``x(0)`` is evaluated by the
-    network, so with a hard-constraint architecture the IC term is exactly zero.
-    """
+def physics_loss(x_fn, tau, model, *, a, harvest):
+    """``MSE(dx/dtau - f(x))`` over the collocation times. The initial condition is hard-coded
+    in ``x_fn`` (see ``network.x_hat``), so this is the entire training loss."""
     _, residual = collocation_residual(x_fn, tau, model, a=a, harvest=harvest)
-    phys = torch.mean(residual**2)
-    zero = tau.new_zeros((1, 1))
-    ic = torch.mean((x_fn(zero) - x0) ** 2)
-    return lambda_phys * phys + lambda_ic * ic, phys, ic
+    return jnp.mean(residual**2)

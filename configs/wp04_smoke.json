@@ -2,21 +2,84 @@
   "schema_version": 1,
   "scope": "CPU smoke run: short budget, one seed. Not final evidence.",
   "manifest_name": "wp04_smoke.json",
-  "seeds": [11],
-  "reference": {"method": "DOP853", "rtol": 1e-12, "atol": 1e-14, "n_points": 1001},
+  "seeds": [
+    11
+  ],
+  "reference": {
+    "method": "DOP853",
+    "rtol": 1e-12,
+    "atol": 1e-14,
+    "n_points": 1001
+  },
   "inaccuracy_threshold_relative_l2": 0.05,
   "save_checkpoints": true,
   "training": {
-    "width": 16, "depth": 3, "hard_ic": false, "n_collocation": 200, "sampling": "grid",
-    "lambda_phys": 1.0, "lambda_ic": 1.0, "lr": 0.01,
-    "adam_epochs": 400, "lbfgs_epochs": 0, "time_budget_s": 30
+    "layers": [
+      1,
+      32,
+      32,
+      1
+    ],
+    "n_collocation": 100,
+    "lr": 0.01,
+    "adam_iters": 200,
+    "lbfgs_iters": 300,
+    "time_budget_s": 60
   },
   "cases": [
-    {"id": "A_regular", "model": "A", "regime": "regular", "a": 0.2, "harvest": 0.1, "x0": 0.8, "tau_end": 10.0},
-    {"id": "A_near_fold", "model": "A", "regime": "near-fold (q=1.047 q_c, bottleneck then collapse)", "a": 0.2, "harvest": 0.55, "x0": 0.8, "tau_end": 10.0},
-    {"id": "A_extinction", "model": "A", "regime": "subthreshold extinction", "a": 0.2, "harvest": 0.1, "x0": 0.25, "tau_end": 10.0},
-    {"id": "B_regular", "model": "B", "regime": "regular", "a": 0.2, "harvest": 0.3, "x0": 0.8, "tau_end": 10.0},
-    {"id": "B_near_fold", "model": "B", "regime": "near-fold (e=0.975 e_c)", "a": 0.2, "harvest": 0.78, "x0": 0.8, "tau_end": 10.0},
-    {"id": "B_extinction", "model": "B", "regime": "subthreshold (asymptotic decay)", "a": 0.2, "harvest": 0.3, "x0": 0.1, "tau_end": 10.0}
+    {
+      "id": "A_regular",
+      "model": "A",
+      "regime": "regular",
+      "a": 0.2,
+      "harvest": 0.1,
+      "x0": 0.8,
+      "tau_end": 10.0
+    },
+    {
+      "id": "A_near_fold",
+      "model": "A",
+      "regime": "near-fold (q=1.047 q_c, bottleneck then collapse)",
+      "a": 0.2,
+      "harvest": 0.55,
+      "x0": 0.8,
+      "tau_end": 10.0
+    },
+    {
+      "id": "A_extinction",
+      "model": "A",
+      "regime": "subthreshold extinction",
+      "a": 0.2,
+      "harvest": 0.1,
+      "x0": 0.25,
+      "tau_end": 10.0
+    },
+    {
+      "id": "B_regular",
+      "model": "B",
+      "regime": "regular",
+      "a": 0.2,
+      "harvest": 0.3,
+      "x0": 0.8,
+      "tau_end": 10.0
+    },
+    {
+      "id": "B_near_fold",
+      "model": "B",
+      "regime": "near-fold (e=0.975 e_c)",
+      "a": 0.2,
+      "harvest": 0.78,
+      "x0": 0.8,
+      "tau_end": 10.0
+    },
+    {
+      "id": "B_extinction",
+      "model": "B",
+      "regime": "subthreshold (asymptotic decay)",
+      "a": 0.2,
+      "harvest": 0.3,
+      "x0": 0.1,
+      "tau_end": 10.0
+    }
   ]
 }

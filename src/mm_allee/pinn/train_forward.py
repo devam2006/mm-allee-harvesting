@@ -1,22 +1,27 @@
-"""Forward PINN trainer: physics + initial-condition loss only, no solver labels.
+"""Forward PINN trainer (JAX): physics loss only, hard initial condition, Adam -> L-BFGS.
 
-The shared engine for WP04 and WP05. WP05 extends it through ``parameters`` (tensors
-replacing the fixed ``a``/``harvest``) and ``extra_parameters`` (added to the optimiser).
+The shared engine for WP04 and WP05. No solver solution is ever used as a label. WP05
+extends it through ``physical`` (initial values of ``a``/``harvest`` that are then trained
+jointly with the weights, e.g. after the caller's own fixed-scale reparametrisation).
 """
 
+import json
 import math
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+import jax
+import jax.numpy as jnp
 import numpy as np
-import torch
+from jax.flatten_util import ravel_pytree
+from scipy.optimize import minimize
 
 from ..metrics import errors
-from .network import ForwardMLP, NetworkConfig
-from .residual import MODELS, pinn_loss
+from .network import NetworkConfig, init_params, x_hat
+from .residual import MODELS, physics_loss
 
-CHECKPOINT_SCHEMA = 1
+CHECKPOINT_SCHEMA = 2  # 1 was the retired PyTorch format
 
 
 @dataclass(frozen=True)
@@ -28,17 +33,12 @@ class ForwardConfig:
     harvest: float = 0.3  # q for logistic/A, e for B
     x0: float = 0.8
     t_end: float = 10.0  # for A: the pre-extinction horizon, never beyond the event
-    width: int = 32
-    depth: int = 3
-    hard_ic: bool = False
+    layers: tuple = (1, 32, 32, 1)
     seed: int = 11
-    n_collocation: int = 200
-    sampling: str = "grid"  # "grid" (fixed, includes both ends) or "random" (Adam only)
-    adam_epochs: int = 3000
-    lr: float = 1e-2
-    lbfgs_epochs: int = 0
-    lambda_phys: float = 1.0
-    lambda_ic: float = 1.0
+    n_collocation: int = 100  # fixed uniform grid on [0, t_end], both ends included
+    adam_iters: int = 1000  # 2/7 of the 3500-iteration budget
+    lbfgs_iters: int = 2500
+    lr: float = 1e-2  # Adam learning rate
     time_budget_s: float | None = None  # wall-clock cap; status becomes "budget_exhausted"
 
     def validate(self):
@@ -46,111 +46,134 @@ class ForwardConfig:
             raise ValueError("model must be 'logistic', 'A' or 'B'")
         if not 0 < self.a < 1 or self.harvest < 0 or self.x0 < 0 or self.t_end <= 0:
             raise ValueError("Require 0<a<1, harvest>=0, x0>=0, t_end>0")
-        if self.sampling not in ("grid", "random") or self.n_collocation < 2:
-            raise ValueError("sampling must be 'grid'/'random' with n_collocation>=2")
-        if self.adam_epochs < 0 or self.lbfgs_epochs < 0 or self.lr <= 0:
-            raise ValueError("Require nonnegative epochs and lr>0")
+        if self.n_collocation < 2:
+            raise ValueError("n_collocation must be >=2")
+        if self.adam_iters < 0 or self.lbfgs_iters < 0 or self.lr <= 0:
+            raise ValueError("Require nonnegative iteration counts and lr>0")
+        self.network_config().validate()
 
     def network_config(self):
         return NetworkConfig(
-            width=self.width,
-            depth=self.depth,
-            t_end=self.t_end,
-            x0=self.x0,
-            hard_ic=self.hard_ic,
-            seed=self.seed,
+            layers=tuple(self.layers), t_end=self.t_end, x0=self.x0, seed=self.seed
         )
 
 
 @dataclass
 class ForwardResult:
-    net: ForwardMLP
+    params: list
     config: ForwardConfig
-    history: dict = field(default_factory=lambda: {"loss": [], "physics": [], "ic": []})
+    physical: dict = field(default_factory=dict)  # trained a/harvest when a hook was used
+    history: dict = field(default_factory=lambda: {"loss": [], "phase": []})
     wall_seconds: float = 0.0
     status: str = "ok"  # ok | nonfinite_loss | budget_exhausted
 
 
-def train_forward(config: ForwardConfig, *, parameters=None, extra_parameters=()):
-    """Train ``x_hat`` on the ODE residual and initial condition.
+def train_forward(config: ForwardConfig, *, physical=None):
+    """Train ``x_hat`` on the ODE residual alone (initial condition is hard-coded).
 
-    ``parameters`` may map ``"a"``/``"harvest"`` to tensors (kept in the graph);
-    ``extra_parameters`` are optimised together with the network weights.
+    ``physical`` may map ``"a"``/``"harvest"`` to starting values that are optimised
+    together with the weights; otherwise the config values are fixed constants.
     """
     config.validate()
-    a = config.a if parameters is None else parameters.get("a", config.a)
-    harvest = config.harvest if parameters is None else parameters.get("harvest", config.harvest)
-    net = ForwardMLP(config.network_config())
-    result = ForwardResult(net=net, config=config)
-    gen = torch.Generator().manual_seed(config.seed)
-    grid = torch.linspace(0, config.t_end, config.n_collocation, dtype=torch.float64)[:, None]
-    params = list(net.parameters()) + list(extra_parameters)
+    ncfg = config.network_config()
+    tau = jnp.linspace(0.0, config.t_end, config.n_collocation)
+    theta = (
+        init_params(ncfg),
+        {k: jnp.asarray(v, dtype=jnp.float64) for k, v in (physical or {}).items()},
+    )
+
+    def loss(theta):
+        params, phys = theta
+        a = phys.get("a", config.a)
+        harvest = phys.get("harvest", config.harvest)
+        return physics_loss(
+            lambda t: x_hat(params, t, ncfg), tau, config.model, a=a, harvest=harvest
+        )
+
+    result = ForwardResult(params=theta[0], config=config)
     start = time.perf_counter()
 
-    def loss_on(tau):
-        return pinn_loss(
-            net,
-            tau,
-            config.x0,
-            config.model,
-            a=a,
-            harvest=harvest,
-            lambda_phys=config.lambda_phys,
-            lambda_ic=config.lambda_ic,
-        )
+    def over_budget():
+        return bool(config.time_budget_s) and time.perf_counter() - start > config.time_budget_s
 
-    def record(total, phys, ic):
-        result.history["loss"].append(float(total))
-        result.history["physics"].append(float(phys))
-        result.history["ic"].append(float(ic))
+    # ---- phase 1: Adam, a short push into a good basin ----
+    zeros = jax.tree_util.tree_map(jnp.zeros_like, theta)
+    m, v = zeros, zeros
+    b1, b2, eps = 0.9, 0.999, 1e-8
+
+    @jax.jit
+    def adam_step(theta, m, v, t):
+        value, grad = jax.value_and_grad(loss)(theta)
+        m = jax.tree_util.tree_map(lambda m_, g: b1 * m_ + (1 - b1) * g, m, grad)
+        v = jax.tree_util.tree_map(lambda v_, g: b2 * v_ + (1 - b2) * g * g, v, grad)
+        theta = jax.tree_util.tree_map(
+            lambda p, m_, v_: (
+                p - config.lr * (m_ / (1 - b1**t)) / (jnp.sqrt(v_ / (1 - b2**t)) + eps)
+            ),
+            theta,
+            m,
+            v,
+        )
+        return theta, m, v, value
+
+    for step in range(1, config.adam_iters + 1):
+        theta, m, v, value = adam_step(theta, m, v, step)
+        result.history["loss"].append(float(value))
+        result.history["phase"].append("adam")
         if not math.isfinite(result.history["loss"][-1]):
             result.status = "nonfinite_loss"
-        elif config.time_budget_s and time.perf_counter() - start > config.time_budget_s:
+            break
+        if over_budget():
             result.status = "budget_exhausted"
-        return result.status == "ok"
-
-    optimiser = torch.optim.Adam(params, lr=config.lr)
-    for _ in range(config.adam_epochs):
-        if config.sampling == "random":
-            tau = config.t_end * torch.rand(
-                config.n_collocation, 1, dtype=torch.float64, generator=gen
-            )
-        else:
-            tau = grid
-        optimiser.zero_grad()
-        total, phys, ic = loss_on(tau)
-        total.backward()
-        optimiser.step()
-        if not record(total.detach(), phys.detach(), ic.detach()):
             break
 
-    if result.status == "ok" and config.lbfgs_epochs:
-        lbfgs = torch.optim.LBFGS(
-            params, lr=1.0, max_iter=20, history_size=50, line_search_fn="strong_wolfe"
+    # ---- phase 2: L-BFGS takes over from the Adam solution ----
+    if result.status == "ok" and config.lbfgs_iters:
+        flat0, unravel = ravel_pytree(theta)
+        flat_vg = jax.jit(jax.value_and_grad(lambda flat: loss(unravel(flat))))
+
+        def fun(flat):
+            value, grad = flat_vg(jnp.asarray(flat))
+            return float(value), np.asarray(grad, dtype=np.float64)
+
+        def callback(intermediate_result):
+            result.history["loss"].append(float(intermediate_result.fun))
+            result.history["phase"].append("lbfgs")
+            if over_budget():
+                result.status = "budget_exhausted"
+                raise StopIteration
+
+        fit = minimize(
+            fun,
+            np.asarray(flat0, dtype=np.float64),
+            jac=True,
+            method="L-BFGS-B",
+            callback=callback,
+            options={
+                "maxiter": config.lbfgs_iters,
+                "maxfun": 20 * config.lbfgs_iters,
+                "maxcor": 50,
+                "ftol": 0.0,
+                "gtol": 0.0,
+            },
         )
-        last = {}
+        if np.all(np.isfinite(fit.x)):
+            theta = unravel(jnp.asarray(fit.x))
+        else:
+            result.status = "nonfinite_loss"
 
-        def closure():
-            lbfgs.zero_grad()
-            total, phys, ic = loss_on(grid)
-            total.backward()
-            last["terms"] = (total.detach(), phys.detach(), ic.detach())
-            return total
-
-        for _ in range(config.lbfgs_epochs):
-            lbfgs.step(closure)
-            if not record(*last["terms"]):
-                break
-
+    result.params, result.physical = theta[0], {k: float(val) for k, val in theta[1].items()}
+    if result.status == "ok" and not math.isfinite(float(loss(theta))):
+        result.status = "nonfinite_loss"
     result.wall_seconds = time.perf_counter() - start
     return result
 
 
-def predict(net, tau):
-    """NumPy in, NumPy out; no gradient tracking."""
-    with torch.no_grad():
-        x = net(torch.as_tensor(np.asarray(tau, dtype=float), dtype=torch.float64)[:, None])
-    return x[:, 0].numpy()
+def predict(params, config: ForwardConfig, tau):
+    """NumPy in, NumPy out."""
+    ncfg = config.network_config()
+    fn = jax.jit(jax.vmap(lambda t: x_hat(params, t, ncfg)))
+    return np.asarray(fn(jnp.asarray(np.asarray(tau, dtype=float))))
 
 
 def evaluate_prediction(prediction, reference, *, norm_floor=1e-8):
@@ -170,24 +193,26 @@ def evaluate_prediction(prediction, reference, *, norm_floor=1e-8):
 
 
 def save_checkpoint(path, result):
+    """Write config + weights to a pickle-free ``.npz`` file."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    torch.save(
-        {
-            "schema": CHECKPOINT_SCHEMA,
-            "config": asdict(result.config),
-            "state_dict": result.net.state_dict(),
-        },
-        path,
-    )
+    arrays = {}
+    for i, (weight, bias) in enumerate(result.params):
+        arrays[f"W{i}"], arrays[f"b{i}"] = np.asarray(weight), np.asarray(bias)
+    meta = {
+        "schema": CHECKPOINT_SCHEMA,
+        "config": asdict(result.config),
+        "physical": result.physical,
+    }
+    np.savez(path, meta=np.array(json.dumps(meta)), **arrays)
 
 
 def load_checkpoint(path):
-    """Rebuild the network from a checkpoint written by ``save_checkpoint``."""
-    data = torch.load(Path(path), weights_only=True)
-    if data["schema"] != CHECKPOINT_SCHEMA:
-        raise ValueError(f"Unsupported checkpoint schema {data['schema']}")
-    config = ForwardConfig(**data["config"])
-    net = ForwardMLP(config.network_config())
-    net.load_state_dict(data["state_dict"])
-    return net, config
+    """Return ``(params, config)`` from a checkpoint written by ``save_checkpoint``."""
+    with np.load(Path(path), allow_pickle=False) as data:
+        meta = json.loads(str(data["meta"]))
+        if meta["schema"] != CHECKPOINT_SCHEMA:
+            raise ValueError(f"Unsupported checkpoint schema {meta['schema']}")
+        n_layers = len([k for k in data.files if k.startswith("W")])
+        params = [(jnp.asarray(data[f"W{i}"]), jnp.asarray(data[f"b{i}"])) for i in range(n_layers)]
+    return params, ForwardConfig(**{**meta["config"], "layers": tuple(meta["config"]["layers"])})

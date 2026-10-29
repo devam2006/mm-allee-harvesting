@@ -7,50 +7,74 @@ population, compared with a standard solver.
 
 \subsection{Method}
 For Model A, $\dot x=G(x)-q$, and Model B, $\dot x=G(x)-ex$, with $G(x)=x(1-x)(x/a-1)$ and
-$\dot x=dx/d\tau$, write $\dot x=f(x)$. A network $\hat x(\tau;\theta)$ (3 hidden $\tanh$ layers, width 32,
-float64) receives the scaled time $s=\tau/T$ with $T$ a fixed constant. Automatic differentiation
-gives $d\hat x/d\tau=T^{-1}\,d\hat x/ds$ exactly, so the chain rule for the rescaling is applied
-by the differentiation itself. The residual and loss are
+$\dot x=dx/d\tau$, write $\dot x=f(x)$. The network is a fully connected $\tanh$ network with layer sizes
+$(1,32,32,1)$ in float64 (JAX). The initial condition is enforced \emph{exactly} by the hard embedding
+\begin{equation}
+\hat x(\tau)=x_0+s\,N(s;\theta),\qquad s=\tau/T,
+\end{equation}
+where $N$ is the network and $T$ a fixed constant, so $\hat x(0)=x_0$ for any weights $\theta$ and no
+initial-condition loss is needed. Automatic differentiation with respect to the physical time $\tau$ applies the chain
+rule $d\hat x/d\tau=T^{-1}\,d\hat x/ds$ (including the product rule on $s\,N(s)$). The residual and the only loss are
 \begin{equation}
 R(\tau)=\frac{d\hat x}{d\tau}-f(\hat x),\qquad
-\mathcal L=\lambda_{\rm phys}\frac1n\sum_{i=1}^n R(\tau_i)^2+\lambda_{\rm ic}\,(\hat x(0)-x_0)^2 .
+\mathcal L(\theta)=\frac1n\sum_{i=1}^n R(\tau_i)^2 ,
 \end{equation}
-The $\tau_i$ are $n=200$ collocation points on a uniform grid of $[0,T]$. We use soft
-initial-condition enforcement (the second term); a hard alternative $\hat x=x_0+s\,N(s)$ is
-implemented and tested but not used in the final sweep. Training is Adam (4000 steps, rate $10^{-2}$) followed by 20 L-BFGS steps; no solver
+with $n=100$ collocation points, a fixed uniform grid on $[0,T]$ including both endpoints.
+Training uses 3500 iterations: Adam (1000 iterations, rate $10^{-2}$, about $2/7$ of the budget) to move into a good region,
+then L-BFGS-B (2500 iterations, SciPy, using the exact JAX gradient) to converge. No solver
 solution is used as a label. For Model A, $T$ is the extinction time of the reference solution
 (a domain endpoint only), so the original residual is never evaluated on a post-extinction zero tail.
-For B, $T=10$.
+For Model B, $T=10$.
 
 \subsection{Evaluation}
 Predictions are compared on a separate dense grid of 1001 points with DOP853
 ($\mathrm{rtol}=10^{-12}$, $\mathrm{atol}=10^{-14}$), not used in training. We report RMSE, MAE, global relative
-$L^2$ error, the maximum absolute error, the number of negative predicted samples, and wall-clock time.
-A run is labelled \emph{inaccurate} if its relative $L^2$ error exceeds $0.05$, a threshold fixed
+$L^2$ error $\|\hat x-x_{\rm ref}\|_2/\|x_{\rm ref}\|_2$ (always given in scientific notation, never as a percentage),
+the maximum absolute error, the number of negative predicted samples, and wall-clock time.
+A run is labelled \emph{inaccurate} if its relative $L^2$ error exceeds $5\times10^{-2}$, a threshold fixed
 before the final run. The classical baseline is the project RK45 wrapper, scored on the same grid.
 
 \subsection{Results (3 seeds: 11, 22, 33; 18 PINN runs)}
+Relative $L^2$ errors by case (seeds 11, 22, 33):
+\begin{center}\small
+\begin{tabular}{lccc}
+Case & seed 11 & seed 22 & seed 33\\\hline
+A regular & $7.6\times10^{-1}$ & $1.9\times10^{-5}$ & $8.5\times10^{-1}$\\
+A near-fold & $9.1\times10^{-2}$ & $6.0\times10^{-3}$ & $4.2\times10^{-4}$\\
+A subthreshold extinction & $8.3\times10^{-7}$ & $1.2\times10^{-7}$ & $1.9\times10^{-7}$\\
+B regular & $7.3\times10^{-1}$ & $6.8\times10^{-1}$ & $9.2\times10^{-1}$\\
+B near-fold & $9.3\times10^{-8}$ & $5.5\times10^{-7}$ & $8.5\times10^{-7}$\\
+B subthreshold decay & $1.0\times10^{-4}$ & $8.2\times10^{-5}$ & $3.2\times10^{-5}$\\
+\end{tabular}
+\end{center}
+Twelve runs met the accuracy threshold and six did not; none produced a non-finite loss.
 \begin{itemize}
-\item \textbf{Model B} (regular, near-fold $e=0.975\,e_c$, subthreshold decay): all nine runs are accurate,
-relative $L^2$ between $1.9\times10^{-4}$ and $5.7\times10^{-3}$. Two subthreshold runs (seeds 22, 33) have
-123 and 90 slightly negative predicted samples (maximum error $<3\times10^{-4}$) near the zero limit.
-\item \textbf{Model A, subthreshold extinction}: accurate (relative $L^2$ $1.5$--$5.9\times10^{-4}$).
-\item \textbf{Model A, near-fold} ($q=1.047\,q_c$, bottleneck then collapse): inaccurate for all seeds
-(relative $L^2$ $0.089$--$0.121$); the network lags the sharp final collapse.
-\item \textbf{Model A, regular}: failure for all seeds (relative $L^2$ $0.69$--$0.81$) \emph{despite training losses of
-$10^{-6}$--$10^{-3}$}. The network drops from $0.8$ to $\approx0.296$ between $\tau=0$ and the first
-collocation point and stays there. This value equals the unstable equilibrium $x_-=0.29598$, where $f=0$
-and hence $R=0$: a spurious zero-residual solution that a low loss cannot distinguish from the true one.
+\item \textbf{Accurate cases.} A subthreshold extinction, B near-fold and B subthreshold decay reach
+$10^{-7}$--$10^{-4}$ for every seed. B subthreshold decay has 68 and 69 slightly negative predicted samples
+(seeds 11, 22; largest error $4.9\times10^{-6}$) near the zero limit, and A extinction seed 11 has one.
+\item \textbf{B regular fails for all three seeds} ($6.8\times10^{-1}$--$9.2\times10^{-1}$)
+\emph{despite training losses of $2\times10^{-8}$--$3\times10^{-6}$}. Seeds 11 and 22 leave $x_0=0.8$ within the first
+collocation interval and settle at $0.2837$ and $0.2838$, the unstable equilibrium $x_-=0.28377$ where $f=0$ and so $R=0$.
+Seed 33 decays toward the equilibrium $x=0$. These are spurious zero-residual solutions that a small loss cannot distinguish
+from the true one. The hard initial condition fixes $\hat x(0)$ but does not prevent this.
+\item \textbf{A regular} fails for seeds 11 and 33 and succeeds for seed 22. Seed 11 jumps to
+$\approx0.30$ near the unstable root $x_-=0.29598$ and later drifts negative; seed 33 has not converged
+(final loss $5.8\times10^{-2}$).
+\item \textbf{A near-fold} (bottleneck then collapse) is inaccurate for seed 11 ($9.1\times10^{-2}$) and accurate for the others.
 \end{itemize}
-In total 12 runs met the accuracy threshold and 6 did not; none diverged. Every PINN run took
-about 8.4--11 s, whereas RK45 took about $10^{-2}$ s with error of order $10^{-10}$. On this scalar ODE the
-conventional solver is faster and more accurate by many orders of magnitude, so the value of the PINN here is as a
-method to be understood and as the engine for the inverse problems (Task 5), not as a better solver.
+The L-BFGS phase is decisive: the loss typically sits on a plateau during Adam and drops by several orders of magnitude only
+after L-BFGS takes over, and for the failed seeds it often escapes the plateau only at a spurious solution.
+Every PINN run took $2.4$--$3.6$ s (including compilation), whereas RK45 took $3\times10^{-3}$--$9\times10^{-3}$ s with relative $L^2$ error of
+order $10^{-10}$--$10^{-9}$. On this scalar ODE the conventional solver is faster and more accurate by many orders
+of magnitude, so the value of the PINN here is as a method to be understood and as the engine for the inverse problems
+(Task 5), not as a better solver.
 
 \subsection{Limitations}
-One parameter set ($a=0.2$) per regime; a single hyperparameter configuration, deliberately not tuned on the
-reported results; CPU timings from one machine (see manifest). Remedies for the Model A regular failure (hard
-initial condition, denser early collocation, time-causal training) are untested and are \emph{not} claimed to work.
+One parameter set ($a=0.2$) per regime; one hyperparameter configuration, deliberately not tuned on the
+reported results; three seeds only, and the failures are strongly seed dependent; CPU timings from one machine (see manifest).
+With only $n=100$ collocation points a fast initial transient can fit between two points, which is consistent with, but was not
+separately shown to be the cause of, the observed jumps to equilibria. Remedies (denser early collocation, causal time-marching, more seeds) are
+untested and are \emph{not} claimed to work.
 Reproduce: \texttt{python experiments/wp04/run.py --config configs/wp04\_final.json --output results/wp04 --artifacts artifacts}.
 
 \begin{figure}[ht]\centering
@@ -59,5 +83,5 @@ Reproduce: \texttt{python experiments/wp04/run.py --config configs/wp04\_final.j
 \end{figure}
 \begin{figure}[ht]\centering
 \includegraphics[width=\textwidth]{../artifacts/figures/wp04_error_loss.eps}
-\caption{Absolute error (top) and training loss history (bottom) for the six cases.}
+\caption{Absolute error (top) and physics-loss history (bottom); the vertical line marks the Adam to L-BFGS hand-over.}
 \end{figure}
