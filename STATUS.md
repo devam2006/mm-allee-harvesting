@@ -8,7 +8,7 @@ Initial state: repository scaffold prepared; scientific work packages are **not 
 | WP01 | @RaghavSinghal15 | Not started | Fill after assignment |
 | WP02 | @AshChan07 | Not started | Fill after assignment |
 | WP03 | @devam2006 | Not started | Fill after assignment |
-| WP04 | @Prem-Mehta03 | In progress | Branch `wp04/forward-pinn-engine` pushed, PR to be opened: JAX engine, 42 tests, final sweep (swish, 300 points, seeds 0/1/42: 17/18 accurate), diagnostic and activation selection done; PR, four reviews, WP05 hook check and reproduction pending |
+| WP04 | @Prem-Mehta03 | PR review | [PR #6](https://github.com/devam2006/mm-allee-harvesting/pull/6), branch `wp04/forward-pinn-engine`: JAX engine, 42 tests, final sweep (swish, 300 points, seeds 0/1/42: 17/18 accurate), diagnostic and activation selection done; four reviews, GitHub CI result, WP05 hook check and other-member reproduction pending |
 | WP05 | @rohanagrawal28 | Not started | Fill after assignment |
 <!-- team-sync:status:end -->
 
