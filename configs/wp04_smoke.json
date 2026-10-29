@@ -3,7 +3,7 @@
   "scope": "CPU smoke run: short budget, one seed. Not final evidence.",
   "manifest_name": "wp04_smoke.json",
   "seeds": [
-    11
+    0
   ],
   "reference": {
     "method": "DOP853",
