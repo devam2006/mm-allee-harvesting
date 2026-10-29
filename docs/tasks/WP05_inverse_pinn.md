@@ -67,3 +67,14 @@ Deliver future command `python experiments/wp05/run.py --config configs/wp05_smo
 - [ ] Owner can explain parameter versus trajectory accuracy, structural versus practical identifiability in plain terms, leakage, noise and why a PINN can fit data with wrong parameters.
 
 **Presentation:** 20–25 min: inverse setup, identifiability warning, noisy recovery and held-out results, failure/limitations, final project conclusions. All five handle 25–30 min Q&A.
+
+
+## Current handoff
+
+- **Owner:** Rohan (`rohanagrawal28`); Devam requested uploading his supplied ZIP on his behalf. Technical PR author is Devam; Rohan stays assignee/code owner.
+- **Branch:** `wp05/rohan-inverse-validation`, based on WP03 PR #4 (`wp03/collapse-analysis`, `6ba1555`); retarget to main after the dependency merges.
+- **Delivered for review:** constrained PyTorch inverse trainer, SciPy ODE fit, noise/split utilities, WP05 tests/configs/runner, submitted figures/tables/report/notebook. No acceptance checkbox or human understanding claim is marked complete solely from the ZIP.
+- **Evidence and exact next steps:** see [submission review](../WP05_SUBMISSION_REVIEW.md) for actual checks, reproduction commands and blockers. First reconcile results (33 supplied prediction records vs 108 configured) and the independent PyTorch engine with WP04's JAX PR #6. Preserve failed seeds and disclose the physics-supported prediction domain.
+- **Source record:** `artifacts/manifests/wp05_submission.json` contains archive/import hashes. Existing WP03 code/fixtures/sections are retained; assembled notebook is regenerated from current fragments.
+- **Question for owner defence:** why can a fitted trajectory look accurate while the inferred parameters are wrong, and what additional information makes Model B identifiable?
+- **Pending:** corrected evidence, final sweep, all core acceptance checks, framework/API agreement, non-owner reproduction and required human approvals. Never merge on the basis of the submitted `completed` manifest alone.
