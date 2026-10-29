@@ -117,7 +117,7 @@ python scripts/smoke.py
 python scripts/assemble_notebook.py
 ```
 
-WP04/WP05 additionally install `python -m pip install -e ".[pinn]"`. Nothing needs an API key. Run `ruff check .` and `ruff format --check .` before a PR. The [testing guide](docs/TESTING.md) distinguishes existing scaffold checks from still-required scientific validation.
+WP04/WP05 additionally install `python -m pip install -e ".[pinn]"` (JAX, CPU, float64; the PINN engine is JAX-based). Nothing needs an API key. Run `ruff check .` and `ruff format --check .` before a PR. The [testing guide](docs/TESTING.md) distinguishes existing scaffold checks from still-required scientific validation.
 
 ## Actual course deliverables
 

@@ -23,8 +23,8 @@ If the selected slot makes these targets impossible, compress internal milestone
 
 1. **WP01 + WP03 foundation PRs:** common units/RHS/root records, solver boundary policy, threshold conventions and reference-data schema. Small verified pieces merge first.
 2. **WP02/WP03 analysis PRs:** B branches, history, collapse/quadrature/basins, early synthetic fixtures. Classical analysis is a useful standalone milestone.
-3. **WP04 engine PR:** differentiable shared residual/network and short A/B runs; WP05 reviews extension hooks. WP05 can already build identifiability checks, observation splits and conventional fit in parallel.
-4. **WP04/WP05 evidence PRs:** frozen configs, seed-level metrics, failure cases and curated PNG/EPS figures. Both use WP03's references and one data schema.
+3. **WP04 engine PR (JAX; open for review):** differentiable shared residual/network and short A/B runs; WP05 reviews the extension hooks (`train_forward(physical=..., tau=...)`, `NetworkConfig.activation`) and the PyTorch-to-JAX dependency change (see `DECISIONS.md`). WP05 can already build identifiability checks, observation splits and conventional fit in parallel.
+4. **WP04/WP05 evidence PRs** (WP04's forward evidence is in the engine PR: `configs/wp04_final.json`, `artifacts/*/wp04_*`): frozen configs, seed-level metrics, failure cases and curated PNG/EPS figures. Both use WP03's references and one data schema.
 5. **Integration PRs:** WP01 owner assembles LaTeX; WP05 owner assembles the notebook; WP02 owner assembles slides. Each integration PR still needs all other four reviews. WP03 owner reruns and packages only after these integrate.
 
 Different members can open independent PRs simultaneously. Avoid one giant last-day PR that combines five incompatible APIs. Each PR includes its report/notebook updates so explanations do not fall behind code.

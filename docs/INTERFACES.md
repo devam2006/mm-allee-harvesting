@@ -12,7 +12,7 @@ Freeze names before independent implementations. Existing scaffold APIs below ar
 - `data.validate_splits(train_ids,val_ids,test_ids)`: rejects overlap, duplicates or empty splits. IDs identify individual observations, not merely row numbers reset per file.
 - `plotting.save_figure(fig,stem)`: writes paired `.png` and `.eps` to the supplied stem. Caller supplies labels/style and a provenance manifest.
 
-All numerical code lives in `src/mm_allee/`; scripts import it. Core NumPy functions must not import Torch. Do not use `Parameters` for trainable inverse values: float validation would detach/autograd-break them.
+All numerical code lives in `src/mm_allee/`; scripts import it. Core NumPy functions must not import JAX (or any other optional PINN dependency). Do not use `Parameters` for trainable inverse values: float validation would detach/autograd-break them.
 
 ## Planned work-package modules
 
