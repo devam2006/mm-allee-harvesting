@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "scope": "exploratory diagnostic; not part of the frozen WP04 sweep",
+  "run_id": "wp04-diagnose-20261029T185516Z",
+  "git": {
+    "sha": "d2271befdefec62c59f083b47a589907b987671f",
+    "dirty": true
+  },
+  "command": "python experiments/wp04/diagnose.py --config configs/wp04_diagnose.json --output results/wp04_diagnose",
+  "config": {
+    "schema_version": 1,
+    "scope": "Exploratory diagnostic of the regular-regime failures; not the frozen final sweep.",
+    "seeds": [
+      11,
+      22,
+      33,
+      44,
+      55,
+      66,
+      77,
+      88,
+      99,
+      100
+    ],
+    "reference": {
+      "method": "DOP853",
+      "rtol": 1e-12,
+      "atol": 1e-14,
+      "n_points": 1001
+    },
+    "inaccuracy_threshold_relative_l2": 0.05,
+    "not_converged_loss": 0.001,
+    "state_tolerance": 0.03,
+    "dense_points": 4001,
+    "lr": 0.01,
+    "time_budget_s": 120,
+    "variants": [
+      {
+        "id": "U100",
+        "grid": "uniform",
+        "n": 100,
+        "adam_iters": 1000,
+        "lbfgs_iters": 2500
+      },
+      {
+        "id": "U200",
+        "grid": "uniform",
+        "n": 200,
+        "adam_iters": 1000,
+        "lbfgs_iters": 2500
+      },
+      {
+        "id": "U400",
+        "grid": "uniform",
+        "n": 400,
+        "adam_iters": 1000,
+        "lbfgs_iters": 2500
+      },
+      {
+        "id": "P100",
+        "grid": "power2",
+        "n": 100,
+        "adam_iters": 1000,
+        "lbfgs_iters": 2500
+      },
+      {
+        "id": "U100_long",
+        "grid": "uniform",
+        "n": 100,
+        "adam_iters": 1000,
+        "lbfgs_iters": 10000
+      }
+    ],
+    "cases": [
+      {
+        "id": "A_regular",
+        "model": "A",
+        "regime": "regular",
+        "a": 0.2,
+        "harvest": 0.1,
+        "x0": 0.8,
+        "tau_end": 10.0
+      },
+      {
+        "id": "B_regular",
+        "model": "B",
+        "regime": "regular",
+        "a": 0.2,
+        "harvest": 0.3,
+        "x0": 0.8,
+        "tau_end": 10.0
+      }
+    ]
+  },
+  "jax": "0.11.2",
+  "elapsed_seconds": 487.4,
+  "outputs": {
+    "wp04_diagnose_runs.csv": "52c0be34b58811bc12de7930b8356753d9484030f1e126884ab14339f32ebc56",
+    "wp04_diagnose_summary.csv": "a4c18f800851a76d4e8f3e7a6d17931356f43037cbb10b789ea5aa1d7fdc66d5",
+    "wp04_diagnose.png": "723d2219b1b49b8435fa9fbe460f9e7631267c71cf6f4ed2d8e0be93d4d76de5",
+    "wp04_diagnose.eps": "137f0c5c263b92c85eaa8fb4dfc720e4efabd2fb91ab89cf51b3b6ae719df6ed"
+  }
+}

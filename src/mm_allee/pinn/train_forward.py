@@ -35,6 +35,7 @@ class ForwardConfig:
     t_end: float = 10.0  # for A: the pre-extinction horizon, never beyond the event
     layers: tuple = (1, 32, 32, 1)
     seed: int = 11
+    activation: str = "tanh"  # tanh | swish | sigmoid
     n_collocation: int = 100  # fixed uniform grid on [0, t_end], both ends included
     adam_iters: int = 1000  # 2/7 of the 3500-iteration budget
     lbfgs_iters: int = 2500
@@ -54,7 +55,11 @@ class ForwardConfig:
 
     def network_config(self):
         return NetworkConfig(
-            layers=tuple(self.layers), t_end=self.t_end, x0=self.x0, seed=self.seed
+            layers=tuple(self.layers),
+            t_end=self.t_end,
+            x0=self.x0,
+            seed=self.seed,
+            activation=self.activation,
         )
 
 
@@ -68,15 +73,22 @@ class ForwardResult:
     status: str = "ok"  # ok | nonfinite_loss | budget_exhausted
 
 
-def train_forward(config: ForwardConfig, *, physical=None):
+def train_forward(config: ForwardConfig, *, physical=None, tau=None):
     """Train ``x_hat`` on the ODE residual alone (initial condition is hard-coded).
 
     ``physical`` may map ``"a"``/``"harvest"`` to starting values that are optimised
     together with the weights; otherwise the config values are fixed constants.
+    ``tau`` optionally replaces the default uniform collocation grid (1-D, within
+    ``[0, t_end]``); used by diagnostics, the frozen sweeps use the default.
     """
     config.validate()
     ncfg = config.network_config()
-    tau = jnp.linspace(0.0, config.t_end, config.n_collocation)
+    if tau is None:
+        tau = jnp.linspace(0.0, config.t_end, config.n_collocation)
+    else:
+        tau = jnp.asarray(tau, dtype=jnp.float64)
+        if tau.ndim != 1 or tau.size < 2 or float(tau.min()) < 0 or float(tau.max()) > config.t_end:
+            raise ValueError("tau must be a 1-D array of >=2 times inside [0, t_end]")
     theta = (
         init_params(ncfg),
         {k: jnp.asarray(v, dtype=jnp.float64) for k, v in (physical or {}).items()},

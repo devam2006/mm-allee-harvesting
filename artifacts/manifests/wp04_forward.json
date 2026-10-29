@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
-  "run_id": "wp04-20261029T174846Z",
-  "created_utc": "2026-10-29T17:48:46.260857+00:00",
+  "run_id": "wp04-20261029T191033Z",
+  "created_utc": "2026-10-29T19:10:33.993087+00:00",
   "git": {
-    "sha": "14dfc1de5cabf35a7e44c77eed3b8037159c831d",
+    "sha": "d2271befdefec62c59f083b47a589907b987671f",
     "dirty": true
   },
   "command": "python experiments/wp04/run.py --config configs/wp04_final.json --output results/wp04",
   "config": {
     "schema_version": 1,
-    "scope": "Frozen final forward sweep (JAX, hard IC, Adam then L-BFGS; settings chosen before inspecting final results).",
+    "scope": "Frozen final forward sweep: JAX, hard IC, swish activation (selected by the pre-declared rule in experiments/wp04/README.md), 300 uniform collocation points, seeds 0/1/42, Adam then L-BFGS.",
     "manifest_name": "wp04_forward.json",
     "seeds": [
-      11,
-      22,
-      33
+      0,
+      1,
+      42
     ],
     "reference": {
       "method": "DOP853",
@@ -31,11 +31,12 @@
         32,
         1
       ],
-      "n_collocation": 100,
+      "n_collocation": 300,
       "lr": 0.01,
       "adam_iters": 1000,
       "lbfgs_iters": 2500,
-      "time_budget_s": 300
+      "time_budget_s": 300,
+      "activation": "swish"
     },
     "cases": [
       {
@@ -95,9 +96,9 @@
     ]
   },
   "seeds": [
-    11,
-    22,
-    33
+    0,
+    1,
+    42
   ],
   "model_and_units": "dimensionless x=N/K, tau=r*t; A: q=H/(rK), B: e=h/r; synthetic only",
   "reference_solver": {
@@ -117,10 +118,10 @@
   "runtime_budget_s_per_run": 300,
   "supervised_labels_used": false,
   "pinn_status_counts": {
-    "inaccurate": 6,
-    "ok": 12
+    "ok": 17,
+    "inaccurate": 1
   },
-  "elapsed_seconds": 54.49,
+  "elapsed_seconds": 96.53,
   "dependencies": {
     "python": "3.13.4",
     "numpy": "2.5.2",
@@ -136,11 +137,11 @@
     "dtype": "float64"
   },
   "outputs": {
-    "wp04_forward_metrics.csv": "0e89591bce0bd1681102d12d4e6f7ff79e271e4459cde61a1b8d7f4ab0f6cfd4",
-    "wp04_forward.png": "c94c0bc20b4ac6fc5506f2772534431fddcd78450a5f718b64fb69d4a33eb605",
-    "wp04_forward.eps": "bb8aa0887f24aac526f0fa52df533b29575f5f19351523ac8f16a5313979a311",
-    "wp04_error_loss.png": "99b7e1e72def88bc4f64a20f21b050e2a888aaf79f5db299327f55f56b36b85d",
-    "wp04_error_loss.eps": "56334d1d3554c5931a364483337889faad04ccc2cbe55683e0cc2ee4c428ce31"
+    "wp04_forward_metrics.csv": "b08b52d8997ccd39d7918752acd4cd5d9a00009b0c44f1df0e07175b9220598e",
+    "wp04_forward.png": "e563283b764bda5d51b4bc51bc8eadfd167c81f26557ca52ea8f0a3e7928ee06",
+    "wp04_forward.eps": "fa374f1ac56f1bfa15b2154191a61cfcea7ec4a743d68c38b26d38f36378fbd8",
+    "wp04_error_loss.png": "71c3f920244ecc4d73fe32abd8957031c9626775f4a79d0d2f9e03428c55d739",
+    "wp04_error_loss.eps": "799b8be22e0476b451112934643de7d547700ab291acb07d1e27d99d234e14c9"
   },
   "status": "completed"
 }

@@ -7,8 +7,9 @@ population, compared with a standard solver.
 
 \subsection{Method}
 For Model A, $\dot x=G(x)-q$, and Model B, $\dot x=G(x)-ex$, with $G(x)=x(1-x)(x/a-1)$ and
-$\dot x=dx/d\tau$, write $\dot x=f(x)$. The network is a fully connected $\tanh$ network with layer sizes
-$(1,32,32,1)$ in float64 (JAX). The initial condition is enforced \emph{exactly} by the hard embedding
+$\dot x=dx/d\tau$, write $\dot x=f(x)$. The network is a fully connected network with layer sizes
+$(1,32,32,1)$ in float64 (JAX) and the \emph{swish} activation $\sigma(z)=z/(1+e^{-z})$ (chosen among tanh, swish and sigmoid, see below).
+The initial condition is enforced \emph{exactly} by the hard embedding
 \begin{equation}
 \hat x(\tau)=x_0+s\,N(s;\theta),\qquad s=\tau/T,
 \end{equation}
@@ -19,7 +20,8 @@ rule $d\hat x/d\tau=T^{-1}\,d\hat x/ds$ (including the product rule on $s\,N(s)$
 R(\tau)=\frac{d\hat x}{d\tau}-f(\hat x),\qquad
 \mathcal L(\theta)=\frac1n\sum_{i=1}^n R(\tau_i)^2 ,
 \end{equation}
-with $n=100$ collocation points, a fixed uniform grid on $[0,T]$ including both endpoints.
+with $n=300$ collocation points, a fixed uniform grid on $[0,T]$ including both endpoints. The time input is only scaled by the fixed constant $T$
+(no centring or nonlinear input map).
 Training uses 3500 iterations: Adam (1000 iterations, rate $10^{-2}$, about $2/7$ of the budget) to move into a good region,
 then L-BFGS-B (2500 iterations, SciPy, using the exact JAX gradient) to converge. No solver
 solution is used as a label. For Model A, $T$ is the extinction time of the reference solution
@@ -34,52 +36,79 @@ the maximum absolute error, the number of negative predicted samples, and wall-c
 A run is labelled \emph{inaccurate} if its relative $L^2$ error exceeds $5\times10^{-2}$, a threshold fixed
 before the final run. The classical baseline is the project RK45 wrapper, scored on the same grid.
 
-\subsection{Results (3 seeds: 11, 22, 33; 18 PINN runs)}
-Relative $L^2$ errors by case (seeds 11, 22, 33):
+\subsection{Activation selection}
+With the design above (seeds 0, 1, 42; six cases; 54 runs) tanh, swish and sigmoid were compared. The selection rule was fixed beforehand: the activation with the
+most accurate runs out of 18, ties broken by the smaller geometric-mean relative $L^2$ error.
 \begin{center}\small
 \begin{tabular}{lccc}
-Case & seed 11 & seed 22 & seed 33\\\hline
-A regular & $7.6\times10^{-1}$ & $1.9\times10^{-5}$ & $8.5\times10^{-1}$\\
-A near-fold & $9.1\times10^{-2}$ & $6.0\times10^{-3}$ & $4.2\times10^{-4}$\\
-A subthreshold extinction & $8.3\times10^{-7}$ & $1.2\times10^{-7}$ & $1.9\times10^{-7}$\\
-B regular & $7.3\times10^{-1}$ & $6.8\times10^{-1}$ & $9.2\times10^{-1}$\\
-B near-fold & $9.3\times10^{-8}$ & $5.5\times10^{-7}$ & $8.5\times10^{-7}$\\
-B subthreshold decay & $1.0\times10^{-4}$ & $8.2\times10^{-5}$ & $3.2\times10^{-5}$\\
+Activation & accurate runs (of 18) & geometric-mean rel.\ $L^2$ & median rel.\ $L^2$\\\hline
+swish & 17 & $2.3\times10^{-5}$ & $2.2\times10^{-5}$\\
+tanh & 11 & $2.9\times10^{-4}$ & $7.5\times10^{-5}$\\
+sigmoid & 10 & $1.4\times10^{-3}$ & $4.0\times10^{-3}$\\
 \end{tabular}
 \end{center}
-Twelve runs met the accuracy threshold and six did not; none produced a non-finite loss.
+Swish was accurate in A regular and B regular for all three seeds, where tanh managed 0 of 3 and 1 of 3 and sigmoid 0 of 3 and 1 of 3.
+\emph{Caveat:} the winner was selected on the same seeds as the final sweep, so its reported accuracy is optimistic; a confirmation on other seeds is advisable.
+We do not claim to know why swish works better here.
+
+\subsection{Results (swish, 300 points, seeds 0, 1, 42; 18 PINN runs)}
+Relative $L^2$ errors by case:
+\begin{center}\small
+\begin{tabular}{lccc}
+Case & seed 0 & seed 1 & seed 42\\\hline
+A regular & $1.8\times10^{-5}$ & $3.6\times10^{-5}$ & $2.1\times10^{-5}$\\
+A near-fold & $\mathbf{5.8\times10^{-2}}$ & $2.9\times10^{-3}$ & $4.2\times10^{-3}$\\
+A subthreshold extinction & $1.2\times10^{-6}$ & $2.9\times10^{-7}$ & $9.5\times10^{-7}$\\
+B regular & $5.0\times10^{-5}$ & $2.4\times10^{-5}$ & $1.3\times10^{-6}$\\
+B near-fold & $8.4\times10^{-7}$ & $5.1\times10^{-6}$ & $8.0\times10^{-8}$\\
+B subthreshold decay & $1.6\times10^{-4}$ & $3.5\times10^{-5}$ & $4.2\times10^{-4}$\\
+\end{tabular}
+\end{center}
+Seventeen runs met the accuracy threshold and one did not (bold); none produced a non-finite loss.
 \begin{itemize}
-\item \textbf{Accurate cases.} A subthreshold extinction, B near-fold and B subthreshold decay reach
-$10^{-7}$--$10^{-4}$ for every seed. B subthreshold decay has 68 and 69 slightly negative predicted samples
-(seeds 11, 22; largest error $4.9\times10^{-6}$) near the zero limit, and A extinction seed 11 has one.
-\item \textbf{B regular fails for all three seeds} ($6.8\times10^{-1}$--$9.2\times10^{-1}$)
-\emph{despite training losses of $2\times10^{-8}$--$3\times10^{-6}$}. Seeds 11 and 22 leave $x_0=0.8$ within the first
-collocation interval and settle at $0.2837$ and $0.2838$, the unstable equilibrium $x_-=0.28377$ where $f=0$ and so $R=0$.
-Seed 33 decays toward the equilibrium $x=0$. These are spurious zero-residual solutions that a small loss cannot distinguish
-from the true one. The hard initial condition fixes $\hat x(0)$ but does not prevent this.
-\item \textbf{A regular} fails for seeds 11 and 33 and succeeds for seed 22. Seed 11 jumps to
-$\approx0.30$ near the unstable root $x_-=0.29598$ and later drifts negative; seed 33 has not converged
-(final loss $5.8\times10^{-2}$).
-\item \textbf{A near-fold} (bottleneck then collapse) is inaccurate for seed 11 ($9.1\times10^{-2}$) and accurate for the others.
+\item \textbf{A near-fold seed 0} ($5.8\times10^{-2}$) just exceeds the threshold; the A near-fold case (collapse after a bottleneck) is the hardest, with errors up to two orders of magnitude above the other cases.
+\item \textbf{Negative samples.} Some runs predict slightly negative populations near the zero limit: B subthreshold decay seeds 0 and 42 (83 and 114 of 1001 samples, largest error $\le2\times10^{-5}$), A near-fold seed 42 (2), A extinction seeds 0 and 42 (1 each).
+\item \textbf{Cost.} Every PINN run took $4.8$--$6.0$ s (including compilation); RK45 took about $10^{-2}$ s with relative $L^2$ error of order $10^{-10}$--$10^{-9}$.
+On this scalar ODE the conventional solver is faster and more accurate by many orders of magnitude, so the value of the PINN here is as a method to be
+understood and as the engine for the inverse problems (Task 5), not as a better solver.
 \end{itemize}
-The L-BFGS phase is decisive: the loss typically sits on a plateau during Adam and drops by several orders of magnitude only
-after L-BFGS takes over, and for the failed seeds it often escapes the plateau only at a spurious solution.
-Every PINN run took $2.4$--$3.6$ s (including compilation), whereas RK45 took $3\times10^{-3}$--$9\times10^{-3}$ s with relative $L^2$ error of
-order $10^{-10}$--$10^{-9}$. On this scalar ODE the conventional solver is faster and more accurate by many orders
-of magnitude, so the value of the PINN here is as a method to be understood and as the engine for the inverse problems
-(Task 5), not as a better solver.
+
+\subsection{Diagnostic: why the regular cases failed with tanh and 100 points}
+This is an \emph{exploratory} experiment (script \texttt{experiments/wp04/diagnose.py}, hypotheses written before running) performed on the earlier design (tanh, 100 uniform points, seeds 11, 22, 33), where
+both regular cases failed for most seeds despite a tiny training loss. It trains A regular and B regular with 10 seeds under five collocation designs and, besides the error
+against the reference, measures the ODE residual $|R|$ on a dense grid of 4001 times, \emph{between} the training points.
+\begin{center}\small
+\begin{tabular}{lccccc}
+Accurate runs out of 10 (tanh) & U100 & U200 & U400 & P100 & U100\_long\\\hline
+A regular & 3 & 3 & 5 & 10 & 3\\
+B regular & 2 & 3 & 4 & 10 & 2\\
+\end{tabular}
+\end{center}
+U$n$: $n$ uniform points; P100: 100 points $\tau_i=T(i/99)^2$ clustered near $\tau=0$; U100\_long: U100 with 10000 instead of 2500 L-BFGS iterations.
+\begin{itemize}
+\item \textbf{Mechanism.} Every accurate run (45 of 100) has $\max|R|\le1.2\times10^{-3}$ on the dense grid and every failed run (55) has
+$\max|R|\ge8.4\times10^{-1}$, while 45 of the 55 failures had $\max|R|<10^{-1}$ at the training points. The loss at the training points cannot reveal
+these failures; a residual check on a denser grid separates all 100 runs.
+\item \textbf{Where they end.} Failures settle on spurious equilibria of the ODE: the unstable root (22 runs), zero (6), the unphysical negative root of the Model A polynomial
+(2) or elsewhere; 10 runs had not converged (all Model A, uniform grids).
+\item \textbf{Resolution near $\tau=0$ matters, not the point count.} Denser uniform grids help only modestly (U400: 5 and 4 of 10 accurate), but the same 100 points clustered
+near $\tau=0$ gave 10 of 10 in both cases (median relative $L^2$ $6.5\times10^{-6}$ for A and $5.3\times10^{-6}$ for B).
+\item \textbf{More L-BFGS iterations do not help} (U100\_long: 3 and 2 of 10): stalled runs reached other spurious solutions.
+\end{itemize}
+The final design (swish, 300 uniform points) was chosen separately from this diagnostic; tanh with 300 points still failed A regular (0 of 3 seeds) and B regular (1 of 3).
+\emph{Caveats:} two cases only; the clustered grid was chosen after seeing the failures and has not been run in a frozen sweep for all six cases; 10 seeds cannot exclude a failure
+rate up to about $25$--$30\%$; outcomes are sensitive to round-off (a grid differing by one rounding unit changed one failing seed's error from $7.6\times10^{-1}$ to $9.8\times10^{-1}$).
 
 \subsection{Limitations}
-One parameter set ($a=0.2$) per regime; one hyperparameter configuration, deliberately not tuned on the
-reported results; three seeds only, and the failures are strongly seed dependent; CPU timings from one machine (see manifest).
-With only $n=100$ collocation points a fast initial transient can fit between two points, which is consistent with, but was not
-separately shown to be the cause of, the observed jumps to equilibria. Remedies (denser early collocation, causal time-marching, more seeds) are
-untested and are \emph{not} claimed to work.
+One parameter set ($a=0.2$) per regime; one hyperparameter configuration apart from the activation, which was selected on the same three seeds that are reported;
+three seeds only, and failures in other designs were strongly seed dependent; CPU timings from one machine (see manifest). The reason swish outperforms tanh and sigmoid is not understood.
+Early-clustered collocation and causal time-marching were not combined with swish. The previous sweep (tanh, 100 points, seeds 11, 22, 33; 12 of 18 accurate) is kept for provenance in
+\texttt{artifacts/tables/wp04\_forward\_metrics\_n100\_tanh\_seeds11-22-33.csv}.
 Reproduce: \texttt{python experiments/wp04/run.py --config configs/wp04\_final.json --output results/wp04 --artifacts artifacts}.
 
 \begin{figure}[ht]\centering
 \includegraphics[width=\textwidth]{../artifacts/figures/wp04_forward.eps}
-\caption{Synthetic forward PINN predictions (three seeds) versus DOP853 reference, Models A and B.}
+\caption{Synthetic forward PINN predictions (swish, three seeds) versus DOP853 reference, Models A and B.}
 \end{figure}
 \begin{figure}[ht]\centering
 \includegraphics[width=\textwidth]{../artifacts/figures/wp04_error_loss.eps}

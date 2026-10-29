@@ -7,6 +7,8 @@ import jax.numpy as jnp
 
 from . import autodiff  # noqa: F401  (enables float64 before any array is created)
 
+ACTIVATIONS = {"tanh": jnp.tanh, "swish": jax.nn.silu, "sigmoid": jax.nn.sigmoid}
+
 
 @dataclass(frozen=True)
 class NetworkConfig:
@@ -16,12 +18,15 @@ class NetworkConfig:
     t_end: float = 10.0  # fixed input scale: the network sees s = tau / t_end in [0, 1]
     x0: float = 0.8
     seed: int = 11
+    activation: str = "tanh"  # tanh | swish | sigmoid
 
     def validate(self):
         if len(self.layers) < 3 or self.layers[0] != 1 or self.layers[-1] != 1:
             raise ValueError("layers must look like (1, h1, ..., 1)")
         if min(self.layers) < 1 or self.t_end <= 0:
             raise ValueError("Require positive layer sizes and t_end>0")
+        if self.activation not in ACTIVATIONS:
+            raise ValueError(f"activation must be one of {sorted(ACTIVATIONS)}")
 
 
 def init_params(config: NetworkConfig):
@@ -35,11 +40,12 @@ def init_params(config: NetworkConfig):
     return params
 
 
-def mlp(params, s):
-    """N(s) for a scalar ``s``; tanh hidden layers, linear output."""
+def mlp(params, s, activation="tanh"):
+    """N(s) for a scalar ``s``; ``activation`` hidden layers, linear output."""
+    act = ACTIVATIONS[activation]
     h = jnp.reshape(s, (1,))
     for weight, bias in params[:-1]:
-        h = jnp.tanh(h @ weight + bias)
+        h = act(h @ weight + bias)
     weight, bias = params[-1]
     return (h @ weight + bias)[0]
 
@@ -52,4 +58,4 @@ def x_hat(params, tau, config: NetworkConfig):
     the chain rule dx/dtau = (1/t_end) d/ds [x0 + s N(s)] automatically.
     """
     s = tau / config.t_end
-    return config.x0 + s * mlp(params, s)
+    return config.x0 + s * mlp(params, s, config.activation)

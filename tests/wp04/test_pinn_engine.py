@@ -144,6 +144,39 @@ def test_network_config_validation():
         init_params(NetworkConfig(t_end=0.0))
 
 
+# ---- 4b. Activation options -------------------------------------------------------------
+
+
+def test_activation_functions_hand_values_and_validation():
+    from mm_allee.pinn.network import ACTIVATIONS
+
+    x = jnp.array([-2.0, 0.0, 1.5])
+    np.testing.assert_allclose(ACTIVATIONS["tanh"](x), np.tanh(np.asarray(x)), atol=1e-15)
+    sig = 1 / (1 + np.exp(-np.asarray(x)))
+    np.testing.assert_allclose(ACTIVATIONS["sigmoid"](x), sig, atol=1e-15)
+    np.testing.assert_allclose(
+        ACTIVATIONS["swish"](x), np.asarray(x) * sig, atol=1e-15
+    )  # x*sigmoid(x)
+    with pytest.raises(ValueError):
+        init_params(NetworkConfig(activation="relu"))
+
+
+@pytest.mark.parametrize("activation", ["tanh", "swish", "sigmoid"])
+def test_every_activation_keeps_hard_ic_and_gradients(activation):
+    cfg = NetworkConfig(layers=(1, 8, 8, 1), t_end=5.0, seed=4, activation=activation)
+    params = init_params(cfg)
+    assert float(x_hat(params, jnp.asarray(0.0), cfg)) == cfg.x0  # exact for any activation
+    tau = jnp.linspace(0, 5, 25)
+    g = jax.grad(make_loss(cfg, "B", tau))(params, 0.2, 0.3)
+    assert all(bool(jnp.all(jnp.isfinite(w))) and float(jnp.abs(w).sum()) > 0 for w, _ in g)
+    # a different activation really changes the function (the option is wired through)
+    other = NetworkConfig(layers=(1, 8, 8, 1), t_end=5.0, seed=4, activation="tanh")
+    if activation != "tanh":
+        assert float(x_hat(params, jnp.asarray(2.0), cfg)) != float(
+            x_hat(params, jnp.asarray(2.0), other)
+        )
+
+
 # ---- 5. Training behaviour (short, generous, seeded) -----------------------------------
 
 SMOKE = dict(model="B", a=0.2, harvest=0.3, x0=0.8, t_end=10.0, adam_iters=100, lbfgs_iters=500)
@@ -166,6 +199,20 @@ def test_trainer_hook_updates_physical_parameter():
     cfg = ForwardConfig(**{**SMOKE, "adam_iters": 30, "lbfgs_iters": 0})
     result = train_forward(cfg, physical={"harvest": 0.5})
     assert result.physical["harvest"] != 0.5  # the optimiser moved it: gradient reached the hook
+
+
+def test_custom_collocation_grid_is_used_and_validated():
+    cfg = ForwardConfig(**{**SMOKE, "adam_iters": 5, "lbfgs_iters": 0})
+    grid = np.linspace(0, 10, 7) ** 1.0
+    custom = train_forward(cfg, tau=grid)
+    default = train_forward(cfg)  # 100 uniform points, a different loss value
+    assert custom.history["loss"][0] != default.history["loss"][0]
+    same = train_forward(cfg, tau=np.linspace(0, 10, cfg.n_collocation))
+    # default == explicit uniform grid (NumPy vs JAX linspace differ in the last bit)
+    np.testing.assert_allclose(same.history["loss"], default.history["loss"], rtol=1e-12)
+    for bad in (np.array([0.0]), np.array([-1.0, 1.0]), np.array([0.0, 11.0])):
+        with pytest.raises(ValueError):
+            train_forward(cfg, tau=bad)
 
 
 def test_budget_and_validation():

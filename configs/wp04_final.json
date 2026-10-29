@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "scope": "Frozen final forward sweep (JAX, hard IC, Adam then L-BFGS; settings chosen before inspecting final results).",
+  "scope": "Frozen final forward sweep: JAX, hard IC, swish activation (selected by the pre-declared rule in experiments/wp04/README.md), 300 uniform collocation points, seeds 0/1/42, Adam then L-BFGS.",
   "manifest_name": "wp04_forward.json",
   "seeds": [
-    11,
-    22,
-    33
+    0,
+    1,
+    42
   ],
   "reference": {
     "method": "DOP853",
@@ -22,11 +22,12 @@
       32,
       1
     ],
-    "n_collocation": 100,
+    "n_collocation": 300,
     "lr": 0.01,
     "adam_iters": 1000,
     "lbfgs_iters": 2500,
-    "time_budget_s": 300
+    "time_budget_s": 300,
+    "activation": "swish"
   },
   "cases": [
     {

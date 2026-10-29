@@ -20,11 +20,12 @@
       32,
       1
     ],
-    "n_collocation": 100,
+    "n_collocation": 300,
     "lr": 0.01,
     "adam_iters": 200,
     "lbfgs_iters": 300,
-    "time_budget_s": 60
+    "time_budget_s": 60,
+    "activation": "swish"
   },
   "cases": [
     {
