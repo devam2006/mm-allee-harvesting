@@ -8,7 +8,7 @@ Initial state: repository scaffold prepared; scientific work packages are **not 
 | WP01 | @RaghavSinghal15 | Not started | Fill after assignment |
 | WP02 | @AshChan07 | Not started | Fill after assignment |
 | WP03 | @devam2006 | Not started | Fill after assignment |
-| WP04 | @Prem-Mehta03 | Not started | Fill after assignment |
+| WP04 | @Prem-Mehta03 | In progress | Branch `wp04/forward-pinn-engine`: engine, 33 tests, final sweep done; PR/reviews pending |
 | WP05 | @rohanagrawal28 | Not started | Fill after assignment |
 <!-- team-sync:status:end -->
 

@@ -1,4 +1,63 @@
 \section{Forward PINNs}
-\textbf{SCAFFOLD\_ONLY:} Differentiable network and residual; initial condition/physics loss; optimiser/collocation algorithm; both models and independent solver errors/runtime.
 
-Replace this template with derivations, algorithms, labelled figures/tables, interpretation, limitations and verified references from WP04.
+\paragraph{Scope and labels.} All trajectories are \emph{synthetic} and dimensionless
+($x=N/K$, $\tau=rt$); no species-specific claim is made. The question is how well a small
+neural network that is given only the ODE and the initial condition reproduces the
+population, compared with a standard solver.
+
+\subsection{Method}
+For Model A, $\dot x=G(x)-q$, and Model B, $\dot x=G(x)-ex$, with $G(x)=x(1-x)(x/a-1)$ and
+$\dot x=dx/d\tau$, write $\dot x=f(x)$. A network $\hat x(\tau;\theta)$ (3 hidden $\tanh$ layers, width 32,
+float64) receives the scaled time $s=\tau/T$ with $T$ a fixed constant. Automatic differentiation
+gives $d\hat x/d\tau=T^{-1}\,d\hat x/ds$ exactly, so the chain rule for the rescaling is applied
+by the differentiation itself. The residual and loss are
+\begin{equation}
+R(\tau)=\frac{d\hat x}{d\tau}-f(\hat x),\qquad
+\mathcal L=\lambda_{\rm phys}\frac1n\sum_{i=1}^n R(\tau_i)^2+\lambda_{\rm ic}\,(\hat x(0)-x_0)^2 .
+\end{equation}
+The $\tau_i$ are $n=200$ collocation points on a uniform grid of $[0,T]$. We use soft
+initial-condition enforcement (the second term); a hard alternative $\hat x=x_0+s\,N(s)$ is
+implemented and tested but not used in the final sweep. Training is Adam (4000 steps, rate $10^{-2}$) followed by 20 L-BFGS steps; no solver
+solution is used as a label. For Model A, $T$ is the extinction time of the reference solution
+(a domain endpoint only), so the original residual is never evaluated on a post-extinction zero tail.
+For B, $T=10$.
+
+\subsection{Evaluation}
+Predictions are compared on a separate dense grid of 1001 points with DOP853
+($\mathrm{rtol}=10^{-12}$, $\mathrm{atol}=10^{-14}$), not used in training. We report RMSE, MAE, global relative
+$L^2$ error, the maximum absolute error, the number of negative predicted samples, and wall-clock time.
+A run is labelled \emph{inaccurate} if its relative $L^2$ error exceeds $0.05$, a threshold fixed
+before the final run. The classical baseline is the project RK45 wrapper, scored on the same grid.
+
+\subsection{Results (3 seeds: 11, 22, 33; 18 PINN runs)}
+\begin{itemize}
+\item \textbf{Model B} (regular, near-fold $e=0.975\,e_c$, subthreshold decay): all nine runs are accurate,
+relative $L^2$ between $1.9\times10^{-4}$ and $5.7\times10^{-3}$. Two subthreshold runs (seeds 22, 33) have
+123 and 90 slightly negative predicted samples (maximum error $<3\times10^{-4}$) near the zero limit.
+\item \textbf{Model A, subthreshold extinction}: accurate (relative $L^2$ $1.5$--$5.9\times10^{-4}$).
+\item \textbf{Model A, near-fold} ($q=1.047\,q_c$, bottleneck then collapse): inaccurate for all seeds
+(relative $L^2$ $0.089$--$0.121$); the network lags the sharp final collapse.
+\item \textbf{Model A, regular}: failure for all seeds (relative $L^2$ $0.69$--$0.81$) \emph{despite training losses of
+$10^{-6}$--$10^{-3}$}. The network drops from $0.8$ to $\approx0.296$ between $\tau=0$ and the first
+collocation point and stays there. This value equals the unstable equilibrium $x_-=0.29598$, where $f=0$
+and hence $R=0$: a spurious zero-residual solution that a low loss cannot distinguish from the true one.
+\end{itemize}
+In total 12 runs met the accuracy threshold and 6 did not; none diverged. Every PINN run took
+about 8.4--11 s, whereas RK45 took about $10^{-2}$ s with error of order $10^{-10}$. On this scalar ODE the
+conventional solver is faster and more accurate by many orders of magnitude, so the value of the PINN here is as a
+method to be understood and as the engine for the inverse problems (Task 5), not as a better solver.
+
+\subsection{Limitations}
+One parameter set ($a=0.2$) per regime; a single hyperparameter configuration, deliberately not tuned on the
+reported results; CPU timings from one machine (see manifest). Remedies for the Model A regular failure (hard
+initial condition, denser early collocation, time-causal training) are untested and are \emph{not} claimed to work.
+Reproduce: \texttt{python experiments/wp04/run.py --config configs/wp04\_final.json --output results/wp04 --artifacts artifacts}.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\textwidth]{../artifacts/figures/wp04_forward.eps}
+\caption{Synthetic forward PINN predictions (three seeds) versus DOP853 reference, Models A and B.}
+\end{figure}
+\begin{figure}[ht]\centering
+\includegraphics[width=\textwidth]{../artifacts/figures/wp04_error_loss.eps}
+\caption{Absolute error (top) and training loss history (bottom) for the six cases.}
+\end{figure}

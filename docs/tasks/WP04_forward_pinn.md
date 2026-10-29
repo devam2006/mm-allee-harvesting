@@ -45,21 +45,31 @@ Deliver future command `python experiments/wp04/run.py --config configs/wp04_smo
 
 ## Acceptance tests
 
-- [ ] Torch RHS matches NumPy for A/B arrays and edge populations/harvests.
-- [ ] Analytic test function produces the expected derivative/residual, including time scaling.
-- [ ] Backpropagation reaches network weights and optional physical-parameter tensors with finite, nonzero expected gradients; no accidental float cast or detach.
-- [ ] Initial-condition handling correct; a short seeded optimiser smoke run reduces a meaningful loss, with generous numerical tolerances.
-- [ ] Reference grid/data are independent of supervised labels; A's post-event zero tail never enters the original ODE residual or error metric.
-- [ ] Error metrics checked against simple hand-calculated vectors; near-zero reference norm handled explicitly.
-- [ ] Save/load predictions agree for a small checkpoint; script import has no training side effect.
-- [ ] Final evidence includes both models, three seeds, difficult regimes, measured runtime and failed-run counts. Accuracy is reported, not fabricated to pass a fixed target.
+- [x] Torch RHS matches NumPy for A/B arrays and edge populations/harvests.
+- [x] Analytic test function produces the expected derivative/residual, including time scaling.
+- [x] Backpropagation reaches network weights and optional physical-parameter tensors with finite, nonzero expected gradients; no accidental float cast or detach.
+- [x] Initial-condition handling correct; a short seeded optimiser smoke run reduces a meaningful loss, with generous numerical tolerances.
+- [x] Reference grid/data are independent of supervised labels; A's post-event zero tail never enters the original ODE residual or error metric.
+- [x] Error metrics checked against simple hand-calculated vectors; near-zero reference norm handled explicitly.
+- [x] Save/load predictions agree for a small checkpoint; script import has no training side effect.
+- [x] Final evidence includes both models, three seeds, difficult regimes, measured runtime and failed-run counts. Accuracy is reported, not fabricated to pass a fixed target.
 
 ## Handoff and done
 
 - [ ] Shared PINN API documented and tested with WP05 before long sweeps.
 - [ ] Two paired figures, metrics table, configs/manifests, report/notebook section, real Torch CI tests.
-- [ ] Forward notebook runs from a clean kernel under its declared budget; all equations/methods cited or derived.
+- [x] Forward notebook runs from a clean kernel under its declared budget; all equations/methods cited or derived.
 - [ ] Other member reproduction; four approvals; AI log/citations/status current.
 - [ ] Owner can explain automatic differentiation, physics/IC losses, collocation, RK45 comparison and why failure near a fold matters.
 
 **Presentation:** 15–20 min: PINN construction, loss/derivative, forward results for A/B, quantitative comparison and a failure example.
+
+## Current handoff
+
+- **Owner:** Prem (`Prem-Mehta03`), Task 4. **Branch:** `wp04/forward-pinn-engine`; PR not opened yet (needs `gh` or the GitHub web form; see PR body below/`pr-body.md`).
+- **Done (evidence):** engine `src/mm_allee/pinn/{network,residual,train_forward}.py`; `experiments/wp04/run.py`; `configs/wp04_{smoke,final}.json`; `tests/wp04/test_pinn_engine.py` (33 tests, mutation-checked: B sign, residual sign, detached parameter, time scaling); final sweep (18 PINN runs + 6 RK45 baselines, 166 s CPU) in `artifacts/{figures,tables,manifests}/wp04_*`; report section and notebook fragment written. Acceptance checkboxes above are ticked only where a named test or the recorded sweep supports them.
+- **Result:** B (3 regimes) and A-extinction accurate (relative L2 about 1e-4 to 6e-3); A near-fold inaccurate (9-12%); **A regular fails for all seeds (69-81%) with tiny loss**: the network jumps to the unstable root x_-=0.29598, a spurious zero-residual solution. 12 accurate / 6 inaccurate / 0 diverged. RK45 is about 1e-10 accurate in 0.01 s vs 8-11 s per PINN run.
+- **Not done:** hand-off check of the shared API with WP05 (owner Rohan); other-member reproduction; four approvals; CI result on GitHub (not run); untested remedies for the A-regular failure (hard IC `hard_ic=true`, denser early collocation, causal training); WP03 reference fixtures are not on main (merge was reverted), so the reference here is generated independently by DOP853 in `run.py`.
+- **Next command:** `python -m pytest tests/wp04 -q`, then `python experiments/wp04/run.py --config configs/wp04_smoke.json --output results/wp04_smoke`.
+- **Interface decisions:** documented in `docs/INTERFACES.md` ("Forward PINN engine"); `parameters`/`extra_parameters` of `train_forward` are the WP05 hook. Not yet recorded in `docs/DECISIONS.md`.
+- **Open understanding question for the owner:** why can the loss be about 1e-6 while the trajectory is wrong, and where does the A-regular network sit in terms of equilibria?
