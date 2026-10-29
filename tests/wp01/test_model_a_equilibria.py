@@ -12,7 +12,7 @@ import pytest
 from scipy.optimize import minimize_scalar
 
 from mm_allee.equilibria import (
-    FOLD_TOL,
+    FOLD_RTOL,
     classify_equilibrium,
     equilibria_a,
     extinction_boundary,
@@ -134,7 +134,7 @@ def test_close_roots_near_fold_are_both_retained():
         assert upper.x - lower.x == pytest.approx(expected, rel=1e-2)
         assert (lower.stability, upper.stability) == ("unstable", "stable")
     # Inside the documented tolerance the fold is reported once, as a double root.
-    (rec,) = equilibria_a(a, q_c - 0.5 * FOLD_TOL)
+    (rec,) = equilibria_a(a, q_c * (1 - 0.5 * FOLD_RTOL))
     assert rec.multiplicity == 2
 
 

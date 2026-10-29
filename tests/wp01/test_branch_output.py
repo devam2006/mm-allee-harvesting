@@ -70,7 +70,7 @@ def test_experiment_writes_all_promised_outputs(tmp_path):
         "versions",
         "hardware",
         "root_finding",
-        "solver",
+        "solver_effective",
         "elapsed_seconds",
         "outputs",
         "units",

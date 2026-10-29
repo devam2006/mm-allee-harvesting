@@ -125,9 +125,19 @@ one of them lies in $(a,1)$; it is the maximum of $G$ on $[a,1]$:
   q_c = G(x^*) = \frac{2(1-a+a^2)^{3/2} + (1+a)(2a-1)(a-2)}{27a}.
   \label{eq:fold}
 \end{equation}
-The closed form for $q_c$ was obtained by substituting $x^*$ into $G$ and simplifying; it is
-checked numerically against an independent bounded maximisation of $G$ for five values of $a$
-(relative agreement $10^{-12}$). Dimensionally, $N^*=Kx^*$ and $H_c=rKq_c$. For $a=0.2$,
+The closed form for $q_c$ was obtained by substituting $x^*$ into $G$ and simplifying. For
+computation we use an equivalent form: with $s=\sqrt{1-a+a^2}$, rationalising gives
+$1-x^*=(1-a)/(2-a+s)$ and $x^*-a=(1-a)(1-a+s)/(2-a+s)$, so
+\begin{equation}
+  q_c = \frac{x^*\,(1-a)^2\,(1-a+s)}{a\,(2-a+s)^2}.
+  \label{eq:qc_stable}
+\end{equation}
+Every term in \eqref{eq:qc_stable} is a sum of positive quantities, whereas the numerator of
+\eqref{eq:fold} is a difference of two nearly equal numbers when $a\to1$ (at $a=0.999999$,
+$q_c\approx2.5\times10^{-13}$ and the expanded form loses essentially all digits). The stable
+form agrees with a 60-digit evaluation of $G(x^*)$ to within $8$ machine epsilons for $a$ from
+$10^{-6}$ to $1-2^{-30}$, and with an independent bounded maximisation of $G$ for five values
+of $a$ (relative agreement $10^{-12}$). Dimensionally, $N^*=Kx^*$ and $H_c=rKq_c$. For $a=0.2$,
 $x^*=0.7055$ and $q_c=0.5251$. As an illustration only, with $r=0.5\,\text{yr}^{-1}$,
 $K=1000$\,t and $A=200$\,t this is $H_c\approx 262.6$\,t/yr at $N^*\approx 705.5$\,t.
 
@@ -175,12 +185,18 @@ complex pairs with small imaginary parts near the fold (at $a=0.2$, $q=q_c$ it g
 $0.70550505\pm1.3\times10^{-8}\,i$), and deciding whether to keep them requires an arbitrary
 tolerance. Instead the analysis above gives guaranteed sign-change brackets $[a,x^*]$ and
 $[x^*,1]$ for $0<q<q_c$, and Brent's method \cite{brent1973algorithms,scipy_brentq} refines
-each root (bracket width $10^{-14}$). The fold is detected by comparing $q$ with the
-closed-form $q_c$; the tolerance $|q-q_c|\le10^{-12}$ only absorbs rounding error in $q_c$.
-Just outside it the two roots are about $2\sqrt{2(q_c-q)/|G''(x^*)|}\approx 10^{-6}$ apart
-and are returned separately, never merged or dropped. Stability is classified from the signs
-of $f$ at $x_e\pm\delta$ with $\delta=\min(10^{-4},\text{gap}/4)$, so a probe never crosses a
-neighbouring root; $f'(x_e)$ is reported alongside.
+each root to a relative tolerance of $4\varepsilon$ ($\varepsilon\approx2.2\times10^{-16}$ is
+machine epsilon), so small roots keep their sign and size. Inside the solver $G$ is evaluated
+as $x(1-x)(x-a)/a$, which avoids the rounding error of $x/a-1$ when $x$ is close to $a$. The
+fold is detected by $|q-q_c|\le 64\varepsilon\,q_c$: a rounding allowance \emph{relative to the
+scale of $q_c$}, so it is meaningful for every $a\in(0,1)$, including $a$ near $1$ where $q_c$
+itself is tiny. Just outside it the two roots are about $2\sqrt{2(q_c-q)/|G''(x^*)|}$ apart
+and are returned separately, never merged or dropped. Stability is classified from the signs of
+$f$ at $x_e\pm\delta$, where $\delta=\min(10^{-4},d/4)$ and $d$ is the distance to the nearest
+other real root of the cubic (the excluded negative root included) and, for a positive root,
+to $x=0$. A probe therefore never crosses another root or leaves the physical domain, and the
+labels do not depend on whether the negative root is displayed; $f'(x_e)$ is reported
+alongside.
 
 \paragraph{Validation.} The implementation is checked against independent evidence:
 (i)~all roots agree with NumPy's companion-matrix roots away from the fold for five values of
@@ -189,7 +205,12 @@ finite differences; (iv)~stability labels agree with trajectories started $\pm0.
 equilibrium and integrated by RK45 (Figure~\ref{fig:wp01_perturb}); (v)~at the fold,
 trajectories from $x^*+0.05$ approach $x^*$ while those from $x^*-0.05$ reach zero; and
 (vi)~deliberately introduced errors (wrong fold root, wrong $q_c$ formula, swapped stability
-labels, a negative root marked physical, an over-wide fold tolerance) each cause a test to fail.
+labels, a negative root marked physical, an over-wide fold tolerance) each cause a test to fail;
+(vii)~regression tests cover the edge cases found in peer review: fold classification at
+$a=10^{-6}$ and $a=0.999999$, harvests $10^{-13}$ either side of $q_c$, a negative root of size
+$10^{-15}$ (it stays negative and excluded, matching the series $-q-(1+a)q^2/a$), a positive
+root of size $10^{-5}$ whose label is confirmed by trajectories on both sides, and solver
+tolerances from the configuration actually reaching the integrator.
 
 \begin{figure}[htbp]
   \centering
@@ -257,9 +278,12 @@ For a constant quota, the stable population $x_+$ and the collapse threshold $x_
 each other as the quota increases (Table~\ref{tab:wp01_equilibria}). Near the maximum quota the
 safety margin $x_+-x_-$ shrinks to zero like $\sqrt{q_c-q}$ (at $q=0.5$ it is only $0.149$),
 and the restoring rate $|f'(x_+)|$ also tends to zero, so the stock recovers ever more slowly
-from disturbances. Harvesting at or near $q_c$ is therefore fragile: any downward shock
-crosses the threshold, and once below it the population declines to extinction even though
-the quota was ``sustainable'' at equilibrium. This is the mathematical core of the collapse,
+from disturbances. A downward shock pushes the stock below the threshold only if it is larger
+than the basin margin $x_+-x_-$: at $a=0.2$, $q=0.5$ a shock of $0.01$ is absorbed and the
+stock returns to $x_+$, but a shock above $0.149$ is not. Because the margin vanishes at $q_c$,
+harvesting at or very near the maximum quota is fragile: there, even a small downward shock
+crosses the threshold, and once below it the population declines to extinction even though the
+quota was ``sustainable'' at equilibrium. This is the mathematical core of the collapse,
 hysteresis and recovery questions examined in Sections~2 and~3.
 
 \paragraph{Limitations.} The analysis is deterministic and unstructured, so it ignores the

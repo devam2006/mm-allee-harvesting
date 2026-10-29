@@ -30,9 +30,9 @@ import scipy  # noqa: E402
 
 from mm_allee import __version__  # noqa: E402
 from mm_allee.equilibria import (  # noqa: E402
-    FOLD_TOL,
+    BRENT_RTOL,
+    FOLD_RTOL,
     PROBE_MAX,
-    XTOL,
     equilibria_a,
     equilibria_logistic,
     fold_a,
@@ -84,10 +84,33 @@ def save_all(fig, stem):
     return paths + [pdf]
 
 
+SUPPORTED_SOLVER_KEYS = {"method", "rtol", "atol", "max_step"}
+
+
+def solver_settings(config):
+    """Validate the config's solver block and return the keyword arguments actually used.
+
+    The shared solver integrates with RK45 only, so any other method is rejected rather
+    than silently recorded. Tolerances must be positive finite numbers.
+    """
+    block = dict(config.get("solver", {}))
+    unknown = set(block) - SUPPORTED_SOLVER_KEYS
+    if unknown:
+        raise ValueError(f"Unsupported solver settings: {sorted(unknown)}")
+    if block.get("method", "RK45") != "RK45":
+        raise ValueError("WP01 uses the shared RK45 solver; method must be 'RK45'")
+    settings = {
+        k: float(block.get(k, d)) for k, d in (("rtol", 1e-9), ("atol", 1e-11), ("max_step", 0.1))
+    }
+    if not all(np.isfinite(v) and v > 0 for v in settings.values()):
+        raise ValueError("Solver tolerances and max_step must be positive and finite")
+    return settings
+
+
 def regime(q, q_c):
     if q == 0:
         return "zero_harvest"
-    if abs(q - q_c) <= FOLD_TOL:
+    if abs(q - q_c) <= FOLD_RTOL * q_c:
         return "critical"
     return "subcritical" if q < q_c else "supercritical"
 
@@ -204,6 +227,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     start = time.perf_counter()
     config = json.loads(args.config.read_text())
+    solver = solver_settings(config)  # fail before writing anything
     out = args.output
     (out / "figures").mkdir(parents=True, exist_ok=True)
     (out / "tables").mkdir(parents=True, exist_ok=True)
@@ -222,7 +246,7 @@ def main(argv=None):
     files += save_all(fig, out / "figures" / "wp01_model_a_branches")
     plt.close(fig)
     pert = config["perturbation"]
-    fig = perturbation_figure(a, pert["q"], pert["delta"], pert["tau_end"])
+    fig = perturbation_figure(a, pert["q"], pert["delta"], pert["tau_end"], **solver)
     files += save_all(fig, out / "figures" / "wp01_model_a_perturbations")
     plt.close(fig)
 
@@ -251,11 +275,15 @@ def main(argv=None):
         "data_type": "analytical/numerical root finding and RK45 simulation; no observations",
         "root_finding": {
             "method": "scipy.optimize.brentq on calculus-derived brackets",
-            "xtol": XTOL,
-            "fold_tolerance_q": FOLD_TOL,
+            "brent_relative_tolerance": BRENT_RTOL,
+            "fold_relative_tolerance_q": FOLD_RTOL,
             "sign_probe_max_offset": PROBE_MAX,
         },
-        "solver": config["solver"] | {"event_policy": "stop at first downward zero for q>0"},
+        "solver_effective": {
+            "method": "RK45",
+            **solver,
+            "event_policy": "stop at first downward zero for q>0",
+        },
         "versions": {
             "python": sys.version.split()[0],
             "numpy": np.__version__,

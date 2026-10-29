@@ -260,8 +260,14 @@ def branch_figure(a=0.2, n_q=400):
     return fig
 
 
-def perturbation_figure(a=0.2, q=0.3, delta=0.01, tau_end=12.0):
-    """Trajectories started just above/below each Model A equilibrium (RK45)."""
+def perturbation_figure(
+    a=0.2, q=0.3, delta=0.01, tau_end=12.0, *, rtol=1e-9, atol=1e-11, max_step=0.1
+):
+    """Trajectories started just above/below each Model A equilibrium (RK45).
+
+    ``rtol``, ``atol`` and ``max_step`` are passed unchanged to
+    :func:`mm_allee.solver.solve_trajectory` for every trajectory.
+    """
     lower, upper = equilibria_a(a, q)
     fig, ax = plt.subplots(figsize=(7.5, 4.6))
     starts = [
@@ -271,7 +277,17 @@ def perturbation_figure(a=0.2, q=0.3, delta=0.01, tau_end=12.0):
         (lower.x - delta, SERIES[1], "-", r"$x_- - \delta$"),
     ]
     for x0, color, style, label in starts:
-        traj = solve_trajectory("A", a=a, harvest=q, x0=x0, tau_end=tau_end, n_points=600)
+        traj = solve_trajectory(
+            "A",
+            a=a,
+            harvest=q,
+            x0=x0,
+            tau_end=tau_end,
+            n_points=600,
+            rtol=rtol,
+            atol=atol,
+            max_step=max_step,
+        )
         suffix = (
             "" if traj.extinction_tau is None else rf" (hits 0 at $\tau={traj.extinction_tau:.2f}$)"
         )
@@ -289,7 +305,7 @@ def perturbation_figure(a=0.2, q=0.3, delta=0.01, tau_end=12.0):
         ylim=(-0.03, 1.02),
         xlabel=r"time $\tau = rt$",
         ylabel=r"population $x=N/K$",
-        title=rf"Model A, $a={a:g}$, $q={q:g}$: perturbations $\delta={delta:g}$ (RK45)",
+        title=rf"Model A, $a={a:g}$, $q={q:g}$: perturbations $\delta={delta:g}$ (RK45, rtol={rtol:g})",
     )
     ax.legend(loc="lower right", fontsize=8.5, framealpha=1)
     _style(ax)

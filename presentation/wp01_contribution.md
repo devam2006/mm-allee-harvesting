@@ -44,14 +44,14 @@ maximum sustainable yield rK over 4, and above that every population crashes."
 - 0 < q < q_c: unstable x_- in (a, x*), stable x_+ in (x*, 1); the negative cubic root is not a population.
 - q = q_c: double root at x* = (1 + a + sqrt(1 - a + a^2))/3, semistable (f' = 0, so check signs).
 - q > q_c: no equilibrium. For q > 0, x = 0 is not an equilibrium: the stock hits zero in finite time.
-- a = 0.2: x* = 0.706, q_c = 0.525. At q = 0.5 the safety margin x_+ - x_- is only 0.149.
+- a = 0.2: x* = 0.706, q_c = 0.525. At q = 0.5 the safety margin x_+ - x_- is only 0.149: a 0.01 shock is absorbed, a shock above 0.149 causes collapse.
 
 **Script:** "With the Allee factor the hill dips below zero between 0 and a, so even without harvest
 there is a threshold. As the quota rises, the stable state x-plus and the threshold x-minus move towards
 each other and meet at the fold, at x star and q_c, which come from setting G prime to zero. At the fold
 the derivative is zero, so linearisation tells us nothing; looking at signs, the flow is downward on
 both sides, so it attracts from above and repels below: semistable. Past q_c nothing survives. Near q_c
-the safety margin shrinks like the square root of q_c minus q, so a small shock tips the stock over.
+the safety margin shrinks like the square root of q_c minus q. A shock only causes collapse if it is bigger than that margin, so close to q_c even a small shock tips the stock over.
 We found the roots with Brent's method on brackets from this calculus and checked every stability label
 by simulating small perturbations. Devam will now quantify when collapse happens and how long it takes."
 

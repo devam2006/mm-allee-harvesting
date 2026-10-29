@@ -4,7 +4,7 @@ Everything here uses the dimensionless variables of the scientific contract:
 ``x = N/K``, ``tau = r t``, ``a = A/K`` and ``q = H/(rK)``. The vector fields are
 
 * logistic: ``f(x) = x(1-x) - q``
-* Model A:  ``f(x) = G(x) - q`` with ``G(x) = x(1-x)(x/a - 1)``.
+* Model A:  ``f(x) = G(x) - q`` with ``G(x) = x(1-x)(x/a - 1) = x(1-x)(x-a)/a``.
 
 An equilibrium is a root of ``f``. Stability is decided from the sign of ``f`` just
 below and just above the root (a phase-line argument), not from ``f'`` alone, so the
@@ -12,21 +12,27 @@ repeated root at the fold is classified correctly as semistable. The linearisati
 ``f'(x_eq)`` is reported alongside and agrees with the sign test at simple roots.
 
 Root finding avoids a generic polynomial solver. The calculus of Section 1 of the
-report brackets every physical root between points where ``f`` changes sign, and
-Brent's method (``scipy.optimize.brentq``) refines it. Near the fold the two roots are
-returned separately until ``q`` is within ``FOLD_TOL`` of ``q_c``; they are never
-silently merged or dropped.
+report brackets every root between points where ``f`` changes sign, and Brent's method
+(``scipy.optimize.brentq``) refines it to a *relative* tolerance, so small roots near
+``x = 0`` keep their sign and magnitude.
 
-Tolerances (dimensionless, documented in the report):
+Numerical conventions (dimensionless, documented in the report):
 
-* ``FOLD_TOL = 1e-12``: ``|q - q_c| <= FOLD_TOL`` is treated as the critical case.
-  ``q_c`` is computed in double precision to roughly ``1e-16`` relative error, so this
-  margin only absorbs roundoff. Just below it the two roots are still about
-  ``sqrt(2*FOLD_TOL/|G''(x_star)|) ~ 1e-6`` apart and are resolved separately.
-* ``XTOL = 1e-14``: Brent bracket width at termination (absolute, on ``x in [0,1]``).
-* One-sided sign probes sit at ``x_eq +/- delta`` with
-  ``delta = min(1e-4, gap/4)``, where ``gap`` is the distance to the nearest other root,
-  so a probe never crosses a neighbouring root.
+* Model A is evaluated internally as ``x(1-x)(x-a)/a - q``. For ``x`` in ``[a, 1]``
+  with ``a >= 1/2`` the differences ``1-x`` and ``x-a`` are exact in floating point
+  (Sterbenz), so ``G`` keeps full relative accuracy even when ``q_c`` is tiny (``a``
+  near 1). It equals ``models.rhs`` algebraically; tests check the parity.
+* ``q_c`` uses a rationalised closed form without cancellation (see :func:`fold_a`).
+* Critical case: ``|q - q_c| <= FOLD_RTOL * q_c`` with ``FOLD_RTOL = 64 * eps``
+  (about ``1.4e-14``). This is a rounding-error allowance *relative to the scale of
+  q_c*, so it is meaningful for every ``a`` in ``(0, 1)``. Just outside it the two
+  roots are about ``2*sqrt(2*FOLD_RTOL*q_c/|G''(x_star)|)`` apart and are returned
+  separately, never merged or dropped.
+* Sign probes sit at ``x_eq +/- delta`` with ``delta = min(1e-4, d/4)``, where ``d`` is
+  the distance to the nearest other real root of the polynomial (excluded negative
+  roots included) and, for positive roots, to the boundary ``x = 0``. A probe can
+  therefore never cross another root or leave the physical domain, and the
+  classification never depends on whether excluded roots are displayed.
 
 For ``q > 0`` the point ``x = 0`` is **not** an equilibrium of Model A or the logistic
 model (``f(0) = -q``). Trajectories reach it in finite time; the solver stops there
@@ -40,15 +46,17 @@ from math import isfinite, sqrt
 import numpy as np
 from scipy.optimize import brentq
 
-from .models import growth, rhs
-
-FOLD_TOL = 1e-12
-XTOL = 1e-14
+EPS = float(np.finfo(float).eps)
+FOLD_RTOL = 64 * EPS
+BRENT_RTOL = 4 * EPS
+BRENT_XTOL = 1e-300  # effectively pure relative termination
+BRENT_MAXITER = 500
 PROBE_MAX = 1e-4
 
 STABLE = "stable"
 UNSTABLE = "unstable"
 SEMISTABLE = "semistable"
+EXCLUDED = "excluded"
 
 
 @dataclass(frozen=True)
@@ -90,6 +98,22 @@ def _validate_q(q):
         raise ValueError("Harvest q must be finite and nonnegative")
 
 
+def _f_logistic(q):
+    def f(x):
+        return x * (1 - x) - q
+
+    return f
+
+
+def _f_a(a, q):
+    """Model A vector field in the cancellation-free form ``x(1-x)(x-a)/a - q``."""
+
+    def f(x):
+        return x * (1 - x) * ((x - a) / a) - q
+
+    return f
+
+
 def growth_derivative(x, a):
     """``G'(x) = -3x^2/a + 2(1+a)x/a - 1``, derived by differentiating ``growth``."""
     _validate_a(a)
@@ -114,20 +138,23 @@ def fold_a(a):
     """Fold (saddle-node) point of Model A: ``(x_star, q_c)``.
 
     ``G'(x) = 0`` is the quadratic ``3x^2 - 2(1+a)x + a = 0`` with roots
-    ``((1+a) +/- sqrt(1-a+a^2))/3``. The larger root lies in ``(a, 1)`` because
-    ``G'(a) = 1-a > 0`` and ``G'(1) = (a-1)/a < 0``; it is the maximum of ``G`` on
-    ``[a, 1]``. Substituting gives the closed form
+    ``((1+a) +/- s)/3``, ``s = sqrt(1-a+a^2)``. The larger root lies in ``(a, 1)``
+    because ``G'(a) = 1-a > 0`` and ``G'(1) = (a-1)/a < 0``; it is the maximum of ``G``
+    on ``[a, 1]``. Rationalising the two small factors,
 
-    ``q_c = [2(1-a+a^2)^(3/2) + (1+a)(2a-1)(a-2)] / (27a)``.
+    ``1 - x_star = (1-a)/(2-a+s)`` and ``x_star - a = (1-a)(1-a+s)/(2-a+s)``,
 
-    WP03's ``thresholds.critical_a`` is planned to provide the same quantity with an
-    independent numerical-maximisation check; this helper exists so WP01 can classify
-    the critical case without depending on an unmerged module.
+    so ``q_c = G(x_star) = x_star (1-a)^2 (1-a+s) / (a (2-a+s)^2)``. Every term is a
+    sum of positive quantities, so ``q_c`` has full relative accuracy even as
+    ``a -> 1`` (where the expanded form
+    ``[2s^3 + (1+a)(2a-1)(a-2)]/(27a)`` loses all digits to cancellation).
+    This agrees with WP03's ``thresholds.critical_a``.
     """
     _validate_a(a)
     s = sqrt(1 - a + a * a)
+    d = 2 - a + s
     x_star = (1 + a + s) / 3
-    q_c = (2 * s**3 + (1 + a) * (2 * a - 1) * (a - 2)) / (27 * a)
+    q_c = x_star * (1 - a) ** 2 * (1 - a + s) / (a * d * d)
     return x_star, q_c
 
 
@@ -135,12 +162,24 @@ def _sign(value):
     return int(np.sign(value))
 
 
-def _classify(f, x_eq, neighbours, *, boundary=False):
-    """Phase-line classification from one-sided signs of ``f``."""
-    gaps = [abs(x_eq - other) for other in neighbours if other != x_eq]
-    delta = min([PROBE_MAX] + [g / 4 for g in gaps])
+def _classify(f, deriv, x_eq, others, *, boundary=False):
+    """Phase-line classification from one-sided signs of ``f``.
+
+    ``others`` lists every other real root of the polynomial. For a positive root the
+    physical boundary ``0`` also limits the probe distance.
+    """
+    limits = [abs(x_eq - other) for other in others if other != x_eq]
+    if x_eq > 0:
+        limits.append(x_eq)
+    delta = min([PROBE_MAX] + [d / 4 for d in limits])
     right = _sign(f(x_eq + delta))
     left = None if boundary else _sign(f(x_eq - delta))
+    # A probe value can only round to exactly zero if the root is extremely flat; the
+    # derivative sign then supplies the local direction.
+    if right == 0:
+        right = _sign(deriv)
+    if left == 0:
+        left = -_sign(deriv)
     if boundary:
         # Only x >= 0 is physical: the root attracts if trajectories just above move down.
         if right < 0:
@@ -154,41 +193,75 @@ def _classify(f, x_eq, neighbours, *, boundary=False):
         return SEMISTABLE, "above", left, right
     if left > 0 and right > 0:
         return SEMISTABLE, "below", left, right
-    raise RuntimeError(f"Sign probe hit zero near x={x_eq}; refine probe settings")
+    raise RuntimeError(f"Sign probes undetermined near x={x_eq}")
 
 
-def _records(model, a, q, roots, f, *, multiplicities=None, boundary_roots=(), notes=None):
+def _records(
+    model,
+    a,
+    q,
+    physical_roots,
+    f,
+    *,
+    excluded_roots=(),
+    multiplicities=None,
+    boundary_roots=(),
+    notes=None,
+    include_excluded=False,
+):
+    """Classify physical roots against *all* real roots; output is flag-independent."""
     multiplicities = multiplicities or {}
     notes = notes or {}
+    all_roots = list(excluded_roots) + list(physical_roots)
     out = []
-    for x_eq in roots:
-        physical = x_eq >= 0
+    for x_eq in physical_roots:
         deriv = float(rhs_derivative(x_eq, model, a=a, q=q))
-        residual = float(abs(f(x_eq)))
-        if physical:
-            stability, attracts, left, right = _classify(
-                f, x_eq, roots, boundary=x_eq in boundary_roots
-            )
-        else:
-            stability, attracts, left, right = "excluded", "neither", None, None
+        stability, attracts, left, right = _classify(
+            f, deriv, x_eq, all_roots, boundary=x_eq in boundary_roots
+        )
         out.append(
             Equilibrium(
                 model=model,
                 a=a,
                 q=float(q),
                 x=float(x_eq),
-                physical=physical,
+                physical=True,
                 multiplicity=multiplicities.get(x_eq, 1),
                 derivative=deriv,
                 left_sign=left,
                 right_sign=right,
                 stability=stability,
                 attracts_from=attracts,
-                residual=residual,
+                residual=float(abs(f(x_eq))),
                 note=notes.get(x_eq, ""),
             )
         )
-    return out
+    if include_excluded:
+        for x_eq in excluded_roots:
+            if not x_eq < 0:  # pragma: no cover - guarded by _negative_root_a
+                raise RuntimeError("Excluded root must be negative")
+            out.append(
+                Equilibrium(
+                    model=model,
+                    a=a,
+                    q=float(q),
+                    x=float(x_eq),
+                    physical=False,
+                    multiplicity=1,
+                    derivative=float(rhs_derivative(x_eq, model, a=a, q=q)),
+                    left_sign=None,
+                    right_sign=None,
+                    stability=EXCLUDED,
+                    attracts_from="neither",
+                    residual=float(abs(f(x_eq))),
+                    note="negative algebraic root; not a population",
+                )
+            )
+    return sorted(out, key=lambda r: r.x)
+
+
+def _is_critical(q, q_c):
+    return abs(q - q_c) <= FOLD_RTOL * q_c
 
 
 def equilibria_logistic(q, *, include_excluded=False):
@@ -200,23 +273,19 @@ def equilibria_logistic(q, *, include_excluded=False):
     for a uniform interface.
     """
     _validate_q(q)
-
-    def f(x):
-        return rhs(x, "logistic", a=0.5, harvest=q)
-
+    f = _f_logistic(q)
     q_c = 0.25
     if q == 0:
-        roots = [0.0, 1.0]
         return _records(
             "logistic",
             None,
             q,
-            roots,
+            [0.0, 1.0],
             f,
             boundary_roots=(0.0,),
             notes={0.0: "extinct state; unstable for logistic growth", 1.0: "carrying capacity"},
         )
-    if abs(q - q_c) <= FOLD_TOL:
+    if _is_critical(q, q_c):
         return _records(
             "logistic",
             None,
@@ -241,16 +310,27 @@ def equilibria_logistic(q, *, include_excluded=False):
     )
 
 
+def _brent(f, lo, hi):
+    return brentq(f, lo, hi, xtol=BRENT_XTOL, rtol=BRENT_RTOL, maxiter=BRENT_MAXITER)
+
+
 def _negative_root_a(a, q):
     """Single negative root of ``G(x) = q`` for ``q > 0``.
 
     For ``x < 0``, ``G(x) > 0`` and ``G'(x) < 0`` so ``G`` decreases from ``+inf`` to 0
-    and crosses ``q`` exactly once. It is a polynomial root but not a population.
+    and crosses ``q`` exactly once. Since ``G(x) ~ -x`` near 0 the root is close to
+    ``-q`` when ``q`` is small; the bracket starts there and Brent's method runs to a
+    relative tolerance, so even a root of size ``1e-15`` stays strictly negative.
+    It is a polynomial root but not a population.
     """
-    lo = -1.0
-    while growth(lo, a) - q <= 0:
+    f = _f_a(a, q)
+    lo = -2.0 * q
+    while f(lo) <= 0:
         lo *= 2
-    return brentq(lambda x: growth(x, a) - q, lo, 0.0, xtol=XTOL, rtol=4 * np.finfo(float).eps)
+    root = _brent(f, lo, 0.0)  # f(0) = -q < 0, f(lo) > 0
+    if not root < 0:
+        raise RuntimeError("Negative root bracketing failed")
+    return root
 
 
 def equilibria_a(a, q, *, include_excluded=False):
@@ -261,32 +341,26 @@ def equilibria_a(a, q, *, include_excluded=False):
     * ``q = 0``: roots ``0, a, 1`` (stable, unstable, stable).
     * ``0 < q < q_c``: one root in ``(a, x_star)`` (unstable) and one in
       ``(x_star, 1)`` (stable).
-    * ``|q - q_c| <= FOLD_TOL``: one double root at ``x_star`` (semistable, attracts
-      from above).
+    * ``|q - q_c| <= FOLD_RTOL*q_c``: one double root at ``x_star`` (semistable,
+      attracts from above).
     * ``q > q_c``: no physical equilibrium.
 
-    For ``q > 0`` the cubic always has one negative root; it is returned only when
-    ``include_excluded=True`` with ``physical=False`` and ``stability='excluded'``.
+    For ``q > 0`` the cubic always has one negative root. It is always used to bound
+    the sign probes but is returned only when ``include_excluded=True``, with
+    ``physical=False`` and ``stability='excluded'``. Physical records are identical
+    either way.
     """
     _validate_a(a)
     _validate_q(q)
-
-    def f(x):
-        return rhs(x, "A", a=a, harvest=q)
-
+    f = _f_a(a, q)
     x_star, q_c = fold_a(a)
-    excluded = []
-    if q > 0 and include_excluded:
-        excluded = [_negative_root_a(a, q)]
-    excluded_notes = {r: "negative algebraic root; not a population" for r in excluded}
 
     if q == 0:
-        roots = [0.0, a, 1.0]
         return _records(
             "A",
             a,
             q,
-            roots,
+            [0.0, a, 1.0],
             f,
             boundary_roots=(0.0,),
             notes={
@@ -294,21 +368,33 @@ def equilibria_a(a, q, *, include_excluded=False):
                 a: "Allee threshold (minimum viable population)",
                 1.0: "carrying capacity",
             },
+            include_excluded=include_excluded,
         )
-    if abs(q - q_c) <= FOLD_TOL:
+
+    excluded = [_negative_root_a(a, q)]
+    if _is_critical(q, q_c):
         physical = [x_star]
         mult = {x_star: 2}
         notes = {x_star: "fold: double root, one-sided signs decide stability"}
     elif q < q_c:
-        lower = brentq(f, a, x_star, xtol=XTOL, rtol=4 * np.finfo(float).eps)
-        upper = brentq(f, x_star, 1.0, xtol=XTOL, rtol=4 * np.finfo(float).eps)
+        lower = _brent(f, a, x_star)
+        upper = _brent(f, x_star, 1.0)
         physical = [lower, upper]
         mult = {}
         notes = {lower: "harvest-shifted Allee threshold", upper: "persistent state"}
     else:
         physical, mult, notes = [], {}, {}
-    roots = sorted(excluded + physical)
-    return _records("A", a, q, roots, f, multiplicities=mult, notes={**notes, **excluded_notes})
+    return _records(
+        "A",
+        a,
+        q,
+        physical,
+        f,
+        excluded_roots=excluded,
+        multiplicities=mult,
+        notes=notes,
+        include_excluded=include_excluded,
+    )
 
 
 def extinction_boundary(model, q):
@@ -329,7 +415,7 @@ def extinction_boundary(model, q):
 def classify_equilibrium(model, x_eq, *, a=None, q=0.0):
     """Classify a user-supplied root by one-sided signs (convenience for WP02/WP03).
 
-    Raises if ``x_eq`` is not a root to within ``1e-10`` absolute residual.
+    Raises if ``x_eq`` is not within ``1e-10`` (relative to ``max(1, |x|)``) of a root.
     """
     _validate_q(q)
     if model == "A":
@@ -340,7 +426,7 @@ def classify_equilibrium(model, x_eq, *, a=None, q=0.0):
     else:
         raise ValueError("classify_equilibrium supports 'logistic' or 'A'")
     for record in records:
-        if abs(record.x - x_eq) <= 1e-10:
+        if abs(record.x - x_eq) <= 1e-10 * max(1.0, abs(x_eq)):
             return record
     raise ValueError(f"x={x_eq} is not an equilibrium of {model} at q={q}")
 
