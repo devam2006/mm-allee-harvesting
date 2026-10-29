@@ -1,6 +1,6 @@
 # Rohan's WP05 submission: intake and review
 
-Owner: **@rohanagrawal28**. Uploaded by **@devam2006** at his request, from `Rohan_RK45_Completed_Code.zip`. This is a contribution submitted for review, not a completed or approved WP05 package.
+[**Draft PR #7**](https://github.com/devam2006/mm-allee-harvesting/pull/7). Owner/assignee: **@rohanagrawal28**. Uploaded by **@devam2006** at his request, from `Rohan_RK45_Completed_Code.zip`. This is a contribution submitted for review, not a completed or approved WP05 package.
 
 ## Scope and dependencies
 
@@ -71,4 +71,4 @@ The current CI workflow filters PRs to base `main`. A PR stacked on the WP03 bra
 
 ## Review ownership
 
-Rohan remains the code owner and assignee. Devam is the technical GitHub PR author because the upload uses his connected account; this exception is explicit and does not impersonate Rohan. Request Prem (`Prem-Mehta03`), Ash (`AshChan07`) and Raghav (`RaghavSinghal15`) as peer reviewers. Devam's assisted review is recorded here; GitHub cannot count his approval on his own PR. Resolve how to record the four non-owner human reviews before merge. Rohan should verify the upload and answer the findings. No approval, merge or final readiness is asserted.
+Rohan remains the code owner and assignee. Devam is the technical GitHub PR author because the upload uses his connected account; this exception is explicit and does not impersonate Rohan. Review requests are verified for Prem (`Prem-Mehta03`), Ash (`AshChan07`) and Raghav (`RaghavSinghal15`). Devam's assisted review is recorded here; GitHub cannot count his approval on his own PR. Resolve how to record the four non-owner human reviews before merge. Rohan should verify the upload and answer the findings. No approval, merge or final readiness is asserted.

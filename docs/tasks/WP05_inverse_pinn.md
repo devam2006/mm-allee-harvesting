@@ -72,9 +72,11 @@ Deliver future command `python experiments/wp05/run.py --config configs/wp05_smo
 ## Current handoff
 
 - **Owner:** Rohan (`rohanagrawal28`); Devam requested uploading his supplied ZIP on his behalf. Technical PR author is Devam; Rohan stays assignee/code owner.
-- **Branch:** `wp05/rohan-inverse-validation`, based on WP03 PR #4 (`wp03/collapse-analysis`, `6ba1555`); retarget to main after the dependency merges.
+- **Branch/PR:** `wp05/rohan-inverse-validation`, [draft PR #7](https://github.com/devam2006/mm-allee-harvesting/pull/7), based on WP03 PR #4 (`wp03/collapse-analysis`, `6ba1555`); retarget to main after the dependency merges.
 - **Delivered for review:** constrained PyTorch inverse trainer, SciPy ODE fit, noise/split utilities, WP05 tests/configs/runner, submitted figures/tables/report/notebook. No acceptance checkbox or human understanding claim is marked complete solely from the ZIP.
 - **Evidence and exact next steps:** see [submission review](../WP05_SUBMISSION_REVIEW.md) for actual checks, reproduction commands and blockers. First reconcile results (33 supplied prediction records vs 108 configured) and the independent PyTorch engine with WP04's JAX PR #6. Preserve failed seeds and disclose the physics-supported prediction domain.
 - **Source record:** `artifacts/manifests/wp05_submission.json` contains archive/import hashes. Existing WP03 code/fixtures/sections are retained; assembled notebook is regenerated from current fragments.
 - **Question for owner defence:** why can a fitted trajectory look accurate while the inferred parameters are wrong, and what additional information makes Model B identifiable?
 - **Pending:** corrected evidence, final sweep, all core acceptance checks, framework/API agreement, non-owner reproduction and required human approvals. Never merge on the basis of the submitted `completed` manifest alone.
+
+PR #7 is assigned to Rohan; review requests were verified for Prem-Mehta03, AshChan07 and RaghavSinghal15. Intake validation: 27 WP05 / 207 full-suite tests passed, CPU smoke completed and 13 notebook code cells ran. Lint/format, final result reconciliation, shared-engine integration and full Jupyter execution remain unresolved; see the linked review.
