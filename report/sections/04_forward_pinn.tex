@@ -32,7 +32,8 @@ For Model B, $T=10$.
 Predictions are compared on a separate dense grid of 1001 points with DOP853
 ($\mathrm{rtol}=10^{-12}$, $\mathrm{atol}=10^{-14}$), not used in training. We report RMSE, MAE, global relative
 $L^2$ error $\|\hat x-x_{\rm ref}\|_2/\|x_{\rm ref}\|_2$ (always given in scientific notation, never as a percentage),
-the maximum absolute error, the number of negative predicted samples, and wall-clock time.
+the maximum absolute error, the maximum absolute error over the times where $x_{\rm ref}<0.05$ (the near-zero error; undefined if the reference never goes below $0.05$), the number of negative predicted samples, and wall-clock time.
+A prediction containing NaN or infinity is never scored: it is labelled \emph{invalid} and has no error score (it can never count as accurate), and a run that raises an exception is recorded as \emph{failed} without stopping the sweep.
 A run is labelled \emph{inaccurate} if its relative $L^2$ error exceeds $5\times10^{-2}$, a threshold fixed
 before the final run. The classical baseline is the project RK45 wrapper, scored on the same grid.
 
@@ -48,7 +49,7 @@ sigmoid & 10 & $1.4\times10^{-3}$ & $4.0\times10^{-3}$\\
 \end{tabular}
 \end{center}
 Swish was accurate in A regular and B regular for all three seeds, where tanh managed 0 of 3 and 1 of 3 and sigmoid 0 of 3 and 1 of 3.
-\emph{Caveat:} the winner was selected on the same seeds as the final sweep, so its reported accuracy is optimistic; a confirmation on other seeds is advisable.
+\emph{Caveat:} the winner was selected on the same seeds as the final sweep, so its reported accuracy is optimistic; the held-out confirmation below (seeds 11, 22, 33, not used for the choice) found 18 of 18 runs accurate.
 We do not claim to know why swish works better here.
 
 \subsection{Results (swish, 300 points, seeds 0, 1, 42; 18 PINN runs)}
@@ -64,14 +65,19 @@ B near-fold & $8.4\times10^{-7}$ & $5.1\times10^{-6}$ & $8.0\times10^{-8}$\\
 B subthreshold decay & $1.6\times10^{-4}$ & $3.5\times10^{-5}$ & $4.2\times10^{-4}$\\
 \end{tabular}
 \end{center}
-Seventeen runs met the accuracy threshold and one did not (bold); none produced a non-finite loss.
+Seventeen runs met the accuracy threshold and one did not (bold); none was invalid, failed or produced a non-finite loss. In every run L-BFGS stopped at its 2500-iteration limit (SciPy exit ``iteration limit reached'', not an abnormal line-search exit), so the iteration budget is binding; longer runs were not tried.
 \begin{itemize}
-\item \textbf{A near-fold seed 0} ($5.8\times10^{-2}$) just exceeds the threshold; the A near-fold case (collapse after a bottleneck) is the hardest, with errors up to two orders of magnitude above the other cases.
+\item \textbf{A near-fold} (collapse after a bottleneck) is the hardest case. In this run one of three seeds (seed 0, $5.8\times10^{-2}$) just exceeds the threshold, but a different seed failed in independent reruns on other machines and library versions (see below), so the robust statement is that \emph{about one in three seeds misses the threshold}, not that a particular seed does.
+\item \textbf{Near-zero error} (largest absolute error where $x_{\rm ref}<0.05$): A extinction $5.1\times10^{-8}$--$3.1\times10^{-7}$, B decay $1.3\times10^{-6}$--$1.8\times10^{-5}$, A near-fold $6.2\times10^{-3}$--$1.3\times10^{-1}$ (largest for the seed that missed the threshold).
 \item \textbf{Negative samples.} Some runs predict slightly negative populations near the zero limit: B subthreshold decay seeds 0 and 42 (83 and 114 of 1001 samples, largest error $\le2\times10^{-5}$), A near-fold seed 42 (2), A extinction seeds 0 and 42 (1 each).
 \item \textbf{Cost.} Every PINN run took $4.8$--$6.0$ s (including compilation); RK45 took about $10^{-2}$ s with relative $L^2$ error of order $10^{-10}$--$10^{-9}$.
 On this scalar ODE the conventional solver is faster and more accurate by many orders of magnitude, so the value of the PINN here is as a method to be
 understood and as the engine for the inverse problems (Task 5), not as a better solver.
 \end{itemize}
+
+\subsection{Held-out confirmation and reproducibility}
+\paragraph{Held-out confirmation.} The frozen design (swish, 300 points, 3500 iterations) was run unchanged on seeds 11, 22, 33, which were not used to choose swish (selection used seeds 0, 1, 42). All 18 runs were accurate; relative $L^2$ errors by case: A regular $8.1\times10^{-7}$--$4.6\times10^{-5}$, A near-fold $1.3\times10^{-4}$--$3.9\times10^{-2}$, A extinction $2.9\times10^{-7}$--$1.0\times10^{-6}$, B regular $1.2\times10^{-6}$--$9.6\times10^{-6}$, B near-fold $4.8\times10^{-7}$--$7.6\times10^{-7}$, B decay $4.9\times10^{-5}$--$1.9\times10^{-4}$ (\texttt{artifacts/tables/wp04\_confirmation\_metrics.csv}). The A near-fold seed 22 error ($3.9\times10^{-2}$) is close to the threshold, so 18 of 18 should not be read as a guarantee.
+\paragraph{Independent reruns.} Reviewers reran the frozen design on Linux with Python 3.11 and newer library versions (JAX 0.10.2) and reported 17 of 18 on seeds 0, 1, 42 but with a \emph{different} failing run (A near-fold seed 1, $8.3\times10^{-2}$), 16 of 18 in a third rerun, and 18 of 18 on seeds 11, 22, 33. Per-seed results are therefore sensitive to platform and library version even with fixed seeds, while the counts are reasonably stable. The exact versions behind every reported table (JAX, jaxlib, NumPy, SciPy, Matplotlib, Python, operating system) are recorded in the run manifests and in \texttt{artifacts/manifests/wp04\_forward\_requirements.txt} and \texttt{wp04\_confirmation\_requirements.txt}.
 
 \subsection{Diagnostic: why the regular cases failed with tanh and 100 points}
 This is an \emph{exploratory} experiment (script \texttt{experiments/wp04/diagnose.py}, hypotheses written before running) performed on the earlier design (tanh, 100 uniform points, seeds 11, 22, 33), where
@@ -100,17 +106,21 @@ The final design (swish, 300 uniform points) was chosen separately from this dia
 rate up to about $25$--$30\%$; outcomes are sensitive to round-off (a grid differing by one rounding unit changed one failing seed's error from $7.6\times10^{-1}$ to $9.8\times10^{-1}$).
 
 \subsection{Limitations}
-One parameter set ($a=0.2$) per regime; one hyperparameter configuration apart from the activation, which was selected on the same three seeds that are reported;
-three seeds only, and failures in other designs were strongly seed dependent; CPU timings from one machine (see manifest). The reason swish outperforms tanh and sigmoid is not understood.
+One parameter set ($a=0.2$) per regime; one hyperparameter configuration apart from the activation, which was selected on the same three seeds that are reported (and then confirmed on three others);
+three seeds only, and failures in other designs were strongly seed dependent; CPU timings from one machine (see manifest). For Model A the horizon $T$ is the extinction time computed by the reference solver, so the forward PINN does \emph{not} predict the extinction time itself: it is supplied, and only the path up to it is fitted. The reason swish outperforms tanh and sigmoid is not understood.
 Early-clustered collocation and causal time-marching were not combined with swish. The previous sweep (tanh, 100 points, seeds 11, 22, 33; 12 of 18 accurate) is kept for provenance in
-\texttt{artifacts/tables/wp04\_forward\_metrics\_n100\_tanh\_seeds11-22-33.csv}.
-Reproduce: \texttt{python experiments/wp04/run.py --config configs/wp04\_final.json --output results/wp04 --artifacts artifacts}.
+\texttt{artifacts/tables/}\allowbreak\texttt{wp04\_forward\_metrics\_n100\_tanh\_seeds11-22-33.csv}.
+Reproduce:
+\begin{verbatim}
+python experiments/wp04/run.py --config configs/wp04_final.json \
+    --output results/wp04 --artifacts artifacts
+\end{verbatim}
 
 \begin{figure}[ht]\centering
-\includegraphics[width=\textwidth]{../artifacts/figures/wp04_forward.eps}
+\includegraphics[width=\textwidth]{wp04_forward}
 \caption{Synthetic forward PINN predictions (swish, three seeds) versus DOP853 reference, Models A and B.}
 \end{figure}
 \begin{figure}[ht]\centering
-\includegraphics[width=\textwidth]{../artifacts/figures/wp04_error_loss.eps}
+\includegraphics[width=\textwidth]{wp04_error_loss}
 \caption{Absolute error (top) and physics-loss history (bottom); the vertical line marks the Adam to L-BFGS hand-over.}
 \end{figure}

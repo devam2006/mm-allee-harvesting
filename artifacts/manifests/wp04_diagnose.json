@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "scope": "exploratory diagnostic; not part of the frozen WP04 sweep",
-  "run_id": "wp04-diagnose-20261029T185516Z",
+  "run_id": "wp04-diagnose-20261030T181820Z",
   "git": {
-    "sha": "d2271befdefec62c59f083b47a589907b987671f",
+    "sha": "3bb8d25750e01d6d49d83472039f56c8fb5ffec5",
     "dirty": true
   },
   "command": "python experiments/wp04/diagnose.py --config configs/wp04_diagnose.json --output results/wp04_diagnose",
@@ -93,11 +93,11 @@
     ]
   },
   "jax": "0.11.2",
-  "elapsed_seconds": 487.4,
+  "elapsed_seconds": 511.1,
   "outputs": {
-    "wp04_diagnose_runs.csv": "52c0be34b58811bc12de7930b8356753d9484030f1e126884ab14339f32ebc56",
-    "wp04_diagnose_summary.csv": "a4c18f800851a76d4e8f3e7a6d17931356f43037cbb10b789ea5aa1d7fdc66d5",
-    "wp04_diagnose.png": "723d2219b1b49b8435fa9fbe460f9e7631267c71cf6f4ed2d8e0be93d4d76de5",
-    "wp04_diagnose.eps": "137f0c5c263b92c85eaa8fb4dfc720e4efabd2fb91ab89cf51b3b6ae719df6ed"
+    "wp04_diagnose_runs.csv": "0f984be0ecc5c5c557e54930837d6e228bbcbd84a477b984eb866818532c0015",
+    "wp04_diagnose_summary.csv": "455b5a3f106edea3c562ea6053773a717709c1fe1025a891a31d4b515283adc0",
+    "wp04_diagnose.png": "0bba9413cf500dc945a838a61b64d19453ee436bb1805530b69bfb2733c46f5b",
+    "wp04_diagnose.eps": "ba101b69d577ded4cc4a704b042139c366b70000d911ee2a5688ef4d54d01cf0"
   }
 }
