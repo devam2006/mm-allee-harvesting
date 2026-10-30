@@ -70,7 +70,10 @@ Deliver future command `python experiments/wp02/run.py --config configs/wp02.jso
 
 - **Owner / branch:** @AshChan07; `codex/wp02/model-b-history`. PR draft prepared in
   local `pr-body.md`; remote fetch/push unavailable because Git HTTPS authentication
-  is not configured. Do not merge without the four human reviews.
+  is not configured. The completed implementation is commit `f7d5956`. A push
+  attempt was also rejected by automatic approval review pending explicit upload
+  authorization to `devam2006/mm-allee-harvesting`. No remote work was published.
+  Do not merge without the four human reviews.
 - **Dependency:** this branch restores WP01 PR #3 in commit `9a1132a`. A PR against
   main therefore includes that dependency; disclose it explicitly. WP01 numerical
   edge cases remain upstream; comparison APIs exclude unsupported a values and
