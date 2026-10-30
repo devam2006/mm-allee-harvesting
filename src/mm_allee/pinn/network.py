@@ -1,85 +1,61 @@
-"""Custom Physics-Informed Neural Network (PINN) architecture.
+"""Small seeded MLP x_hat(tau) with fixed input scaling and a hard initial condition."""
 
-Engineered independently for WP05 inverse parameter estimation and forward surrogates.
-Includes fixed-reference scale conditioning, Xavier initialization, and CPU/GPU portability.
-"""
+from dataclasses import dataclass
 
-from typing import Sequence
+import jax
+import jax.numpy as jnp
 
-try:
-    import torch
-    import torch.nn as nn
+from . import autodiff  # noqa: F401  (enables float64 before any array is created)
 
-    _BASE_CLASS = nn.Module
-except ImportError:
-    torch = None
-    nn = None
-    _BASE_CLASS = object
+ACTIVATIONS = {"tanh": jnp.tanh, "swish": jax.nn.silu, "sigmoid": jax.nn.sigmoid}
 
 
-class PINN(_BASE_CLASS):
-    """Fully-connected multi-layer perceptron for scalar ODE population dynamics.
+@dataclass(frozen=True)
+class NetworkConfig:
+    """Everything needed to rebuild a network; stored inside checkpoints."""
 
-    Maps time t -> population N(t).
-    Uses fixed external reference scales (t_ref, N_ref) to ensure that internal network
-    activations operate on O(1) dimensionless variables:
-        tau_scaled = t / t_ref
-        N_hat = N / N_ref
+    layers: tuple = (1, 32, 32, 1)  # input, hidden..., output
+    t_end: float = 10.0  # fixed input scale: the network sees s = tau / t_end in [0, 1]
+    x0: float = 0.8
+    seed: int = 11
+    activation: str = "tanh"  # tanh | swish | sigmoid
+
+    def validate(self):
+        if len(self.layers) < 3 or self.layers[0] != 1 or self.layers[-1] != 1:
+            raise ValueError("layers must look like (1, h1, ..., 1)")
+        if min(self.layers) < 1 or self.t_end <= 0:
+            raise ValueError("Require positive layer sizes and t_end>0")
+        if self.activation not in ACTIVATIONS:
+            raise ValueError(f"activation must be one of {sorted(ACTIVATIONS)}")
+
+
+def init_params(config: NetworkConfig):
+    """Glorot-normal weights, zero biases; reproducible from ``config.seed`` alone."""
+    config.validate()
+    keys = jax.random.split(jax.random.PRNGKey(config.seed), len(config.layers) - 1)
+    params = []
+    for key, n_in, n_out in zip(keys, config.layers[:-1], config.layers[1:]):
+        scale = jnp.sqrt(2.0 / (n_in + n_out))
+        params.append((scale * jax.random.normal(key, (n_in, n_out)), jnp.zeros(n_out)))
+    return params
+
+
+def mlp(params, s, activation="tanh"):
+    """N(s) for a scalar ``s``; ``activation`` hidden layers, linear output."""
+    act = ACTIVATIONS[activation]
+    h = jnp.reshape(s, (1,))
+    for weight, bias in params[:-1]:
+        h = act(h @ weight + bias)
+    weight, bias = params[-1]
+    return (h @ weight + bias)[0]
+
+
+def x_hat(params, tau, config: NetworkConfig):
+    """Hard-constraint solution: x_hat(tau) = x0 + s*N(s), s = tau/t_end.
+
+    ``x_hat(0) = x0`` exactly for any weights, so no initial-condition loss is needed.
+    ``tau`` is physical dimensionless time, so autodiff with respect to ``tau`` applies
+    the chain rule dx/dtau = (1/t_end) d/ds [x0 + s N(s)] automatically.
     """
-
-    def __init__(
-        self,
-        hidden_layers: Sequence[int] = (64, 64),
-        activation: str = "tanh",
-        t_ref: float = 1.0,
-        n_ref: float = 100.0,
-    ):
-        if torch is None:
-            raise ImportError("PyTorch is required to instantiate PINN")
-        super().__init__()
-
-        if t_ref <= 0 or n_ref <= 0:
-            raise ValueError("t_ref and n_ref must be positive")
-
-        self.t_ref = float(t_ref)
-        self.n_ref = float(n_ref)
-
-        activations = {
-            "tanh": nn.Tanh(),
-            "silu": nn.SiLU(),
-            "gelu": nn.GELU(),
-            "sigmoid": nn.Sigmoid(),
-        }
-        if activation.lower() not in activations:
-            raise ValueError(f"Activation '{activation}' not supported. Choose from {list(activations.keys())}")
-        act_fn = activations[activation.lower()]
-
-        layers: list[nn.Module] = []
-        in_dim = 1
-        for out_dim in hidden_layers:
-            linear = nn.Linear(in_dim, out_dim)
-            nn.init.xavier_normal_(linear.weight)
-            nn.init.zeros_(linear.bias)
-            layers.append(linear)
-            layers.append(act_fn)
-            in_dim = out_dim
-
-        final_linear = nn.Linear(in_dim, 1)
-        nn.init.xavier_normal_(final_linear.weight)
-        nn.init.zeros_(final_linear.bias)
-        layers.append(final_linear)
-
-        self.net = nn.Sequential(*layers)
-
-    def forward(self, t: "torch.Tensor") -> "torch.Tensor":
-        """Forward pass taking dimensional time t [shape: (B, 1)] and returning
-
-        dimensionless population N_hat = N / N_ref [shape: (B, 1)].
-        """
-        # Dimensionless normalized time input
-        t_scaled = t / self.t_ref
-        return self.net(t_scaled)
-
-    def predict_population(self, t: "torch.Tensor") -> "torch.Tensor":
-        """Evaluate dimensional population N(t) = N_hat(t) * N_ref."""
-        return self.forward(t) * self.n_ref
+    s = tau / config.t_end
+    return config.x0 + s * mlp(params, s, config.activation)

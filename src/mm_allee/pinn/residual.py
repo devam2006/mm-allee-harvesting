@@ -1,88 +1,44 @@
-"""Differentiable physics residuals for strong Allee effect Models A and B.
+"""Differentiable ODE right-hand sides and the physics residual (dimensionless x, tau).
 
-Computes dN/dt - f(N) using autograd without detaching physical parameters.
+Nothing here casts to Python floats: ``a`` and ``harvest`` may be numbers or JAX arrays
+(for WP05 they are traced arrays being optimised), and gradients flow to both.
 """
 
-from typing import Literal
+import jax.numpy as jnp
 
 from .autodiff import derivative
 
-try:
-    import torch
-except ImportError:
-    torch = None
+MODELS = ("logistic", "A", "B")
 
 
-def torch_growth(N: "torch.Tensor", r: "torch.Tensor", K: "torch.Tensor", A: "torch.Tensor") -> "torch.Tensor":
-    """Allee production vector field in PyTorch:
+def jax_rhs(x, model, *, a, harvest):
+    """JAX twin of ``mm_allee.models.rhs`` (q for logistic/A, e for B).
 
-    g(N) = r * N * (1 - N/K) * (N/A - 1).
-    Does not detach tensors or break the autograd computation graph.
+    No range validation: ``a`` or ``harvest`` may be traced values during optimisation.
     """
-    return r * N * (1.0 - N / K) * (N / A - 1.0)
-
-
-def torch_rhs(
-    N: "torch.Tensor",
-    model: Literal["A", "B"],
-    r: "torch.Tensor",
-    K: "torch.Tensor",
-    A: "torch.Tensor",
-    H: "torch.Tensor" = None,
-    h: "torch.Tensor" = None,
-) -> "torch.Tensor":
-    """Differentiable dimensional right-hand side f(N) for Model A or Model B."""
-    g = torch_growth(N, r, K, A)
+    if model == "logistic":
+        return x * (1 - x) - harvest
     if model == "A":
-        if H is None:
-            raise ValueError("Model A requires harvest parameter H")
-        return g - H
-    elif model == "B":
-        if h is None:
-            raise ValueError("Model B requires harvest parameter h")
-        return g - h * N
-    raise ValueError(f"Model must be 'A' or 'B', got '{model}'")
+        return x * (1 - x) * (x / a - 1) - harvest
+    if model == "B":
+        return x * (1 - x) * (x / a - 1) - harvest * x
+    raise ValueError("Model must be 'logistic', 'A' or 'B'")
 
 
-def physics_residual(
-    net: "torch.nn.Module",
-    t_colloc: "torch.Tensor",
-    model: Literal["A", "B"],
-    parameters: dict[str, "torch.Tensor"],
-    r_ref: float = 1.0,
-    n_ref: float = 100.0,
-) -> "torch.Tensor":
-    """Compute the normalized physics ODE residual at collocation times t_colloc:
+def collocation_residual(x_fn, tau, model, *, a, harvest):
+    """Return ``(x, dx/dtau - f(x))`` at the times ``tau`` (shape (n,)).
 
-        Residual = (dN/dt - f(N; parameters)) / (r_ref * n_ref)
-
-    Retains the computation graph for both network weights and physical parameters.
+    ``x_fn`` maps one scalar physical time to the scalar state. The derivative is with
+    respect to ``tau`` itself, so any internal time rescaling is differentiated through.
     """
-    if torch is None:
-        raise ImportError("PyTorch is required for physics_residual")
+    tau = jnp.asarray(tau, dtype=jnp.float64)
+    x = jnp.vectorize(x_fn)(tau)
+    dx = derivative(x_fn, tau)
+    return x, dx - jax_rhs(x, model, a=a, harvest=harvest)
 
-    if not t_colloc.requires_grad:
-        t_colloc = t_colloc.clone().detach().requires_grad_(True)
 
-    # Evaluate dimensional population prediction
-    if hasattr(net, "predict_population"):
-        N_pred = net.predict_population(t_colloc)
-    else:
-        # Fallback if raw module
-        N_pred = net(t_colloc / 1.0) * n_ref
-
-    # Compute time derivative dN/dt via autograd
-    dN_dt = derivative(N_pred, t_colloc)
-
-    # Compute ODE RHS
-    r = parameters["r"]
-    K = parameters["K"]
-    A = parameters["A"]
-    H = parameters.get("H")
-    h = parameters.get("h")
-
-    rhs_val = torch_rhs(N_pred, model, r, K, A, H=H, h=h)
-
-    # Normalized residual to ensure O(1) physics loss gradient
-    residual = (dN_dt - rhs_val) / (r_ref * n_ref)
-    return residual
+def physics_loss(x_fn, tau, model, *, a, harvest):
+    """``MSE(dx/dtau - f(x))`` over the collocation times. The initial condition is hard-coded
+    in ``x_fn`` (see ``network.x_hat``), so this is the entire training loss."""
+    _, residual = collocation_residual(x_fn, tau, model, a=a, harvest=harvest)
+    return jnp.mean(residual**2)

@@ -1,6 +1,6 @@
 """CLI runner for WP05 staged inverse parameter estimation, ODE baseline, and noise sweeps.
 
-Usage:
+Shared JAX neural engine:
     python experiments/wp05/run.py --config configs/wp05_smoke.json --output results/wp05
 """
 
@@ -9,7 +9,7 @@ import csv
 import datetime
 import hashlib
 import json
-import os
+import math
 import sys
 import time
 from pathlib import Path
@@ -33,15 +33,15 @@ from mm_allee.validation import (
     write_prediction_metrics_csv,
 )
 
-# Optional PyTorch import
+# Optional JAX import
 try:
-    import torch
+    import jax
     from mm_allee.pinn.inverse import InversePINNTrainer, TrainableParameters
-    from mm_allee.pinn.network import PINN
+    from mm_allee.pinn.network import NetworkConfig
 
-    HAS_TORCH = True
+    HAS_JAX = True
 except ImportError:
-    HAS_TORCH = False
+    HAS_JAX = False
 
 
 def _sha256(path: Path) -> str:
@@ -81,7 +81,7 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
     trajectory_runs_for_plot = []
 
     print(f"Starting WP05 experiment: {config.get('scope', 'Inverse inference')}")
-    print(f"Cases: {len(cases)}, Noise levels: {sigmas}, Seeds: {seeds}, PyTorch available: {HAS_TORCH}")
+    print(f"Cases: {len(cases)}, Noise levels: {sigmas}, Seeds: {seeds}, JAX available: {HAS_JAX}")
 
     run_counter = 0
 
@@ -99,8 +99,13 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
         # Ground truth parameters for evaluation ONLY (never passed to trainer)
         p_true = truth_data.get(case_id, {}).get("parameters", {})
         if not p_true:
-            # Fallback evaluation truth defaults if truth.json not present
-            p_true = {"r": 0.7, "K": 100.0, "A": 20.0, "H": 10.0 if model == "A" else 0.0, "h": 0.21 if model == "B" else 0.0}
+            p_true = {
+                "r": 0.7,
+                "K": 100.0,
+                "A": 20.0,
+                "H": 10.0 if model == "A" else 0.0,
+                "h": 0.21 if model == "B" else 0.0,
+            }
 
         for sigma in sigmas:
             for seed in seeds:
@@ -133,7 +138,9 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                 )
 
                 # Parameter metrics for ODE
-                ode_param_metrics = compute_parameter_metrics(p_true, ode_res.estimated_parameters, fit_params)
+                ode_param_metrics = compute_parameter_metrics(
+                    p_true, ode_res.estimated_parameters, fit_params
+                )
                 for pm in ode_param_metrics:
                     param_metric_records.append(
                         {
@@ -152,6 +159,7 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                         }
                     )
 
+                # Prediction metrics for ODE
                 pred_metric_records.append(
                     {
                         "run_id": run_id,
@@ -170,31 +178,38 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                     }
                 )
 
-                if sigma == 0.01 and seed == seeds[0]:
+                if seed == seeds[0]:
                     trajectory_runs_for_plot.append(
                         {
+                            "case_id": case_id,
                             "model": model,
-                            "regime": regime,
                             "method": "ODE_LS",
-                            "time": obs["time"],
-                            "observed_population": obs["observed_population"],
-                            "predicted_population": ode_res.predicted_trajectory["population"],
-                            "train_indices": obs["train_indices"],
-                            "val_indices": obs["val_indices"],
-                            "test_indices": obs["test_indices"],
+                            "noise_sigma": sigma,
+                            "time": ode_res.predicted_trajectory["time"],
+                            "pred_population": ode_res.predicted_trajectory["population"],
+                            "ref_population": ref_pops,
+                            "obs_time": obs["time"].to_numpy(),
+                            "obs_population": obs["observed_population"].to_numpy(),
+                            "obs_split": obs["split"].to_numpy(),
                         }
                     )
 
                 # ==============================================================
-                # 2. Inverse Physics-Informed Neural Network (PINN)
+                # 2. Physics-Informed Neural Network (JAX Inverse Engine)
                 # ==============================================================
-                if HAS_TORCH:
+                if HAS_JAX:
                     pinn_cfg = config.get("pinn_settings", {})
-                    net = PINN(
-                        hidden_layers=pinn_cfg.get("hidden_layers", [32, 32]),
-                        activation=pinn_cfg.get("activation", "tanh"),
-                        t_ref=1.0,
-                        n_ref=n_ref,
+                    hidden_layers = pinn_cfg.get("hidden_layers", [32, 32])
+                    layers = tuple([1] + list(hidden_layers) + [1])
+                    act = pinn_cfg.get("activation", "tanh")
+
+                    # Explicit seeding before network weight construction
+                    ncfg = NetworkConfig(
+                        layers=layers,
+                        t_end=float(ref_times.max()),
+                        x0=float(ref_pops[0]) / n_ref,
+                        seed=seed,
+                        activation=act,
                     )
                     tp = TrainableParameters(
                         model=model,
@@ -203,27 +218,53 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                         initial_guesses=init_guess,
                     )
                     trainer = InversePINNTrainer(
-                        net,
-                        tp,
+                        network_config=ncfg,
+                        trainable_params=tp,
+                        lr_net=pinn_cfg.get("lr_net", 0.001),
+                        lr_params=pinn_cfg.get("lr_params", 0.01),
                         lambda_data=pinn_cfg.get("lambda_data", 1.0),
                         lambda_phys=pinn_cfg.get("lambda_phys", 0.1),
-                        lambda_ic=pinn_cfg.get("lambda_ic", 1.0),
-                        lr_net=pinn_cfg.get("lr_net", 1e-3),
-                        lr_params=pinn_cfg.get("lr_params", 1e-2),
-                        n_ref=n_ref,
-                    )
-                    pinn_res = trainer.fit(
-                        obs,
-                        known_conditions=known_cond,
-                        epochs=pinn_cfg.get("epochs", 100),
-                        n_collocation=pinn_cfg.get("n_collocation", 50),
-                        patience=pinn_cfg.get("patience", 20),
-                        seed=seed,
                     )
 
-                    pinn_param_metrics = compute_parameter_metrics(p_true, pinn_res.estimated_parameters, fit_params)
-                    for pm in pinn_param_metrics:
-                        param_metric_records.append(
+                    try:
+                        pinn_res = trainer.fit(
+                            obs,
+                            known_conditions=known_cond,
+                            epochs=pinn_cfg.get("epochs", 1000),
+                            patience=pinn_cfg.get("patience", 100),
+                            n_collocation=pinn_cfg.get("n_collocation", 100),
+                            seed=seed,
+                            eval_every=pinn_cfg.get("eval_every", 10),
+                        )
+                    except Exception as exc:
+                        # Record failed run per seed without crashing the whole sweep
+                        print(f"Warning: PINN fit failed on {run_id}: {exc}")
+                        pinn_res = None
+                        fail_status = f"failed_{type(exc).__name__}"
+
+                    if pinn_res is not None:
+                        pinn_param_metrics = compute_parameter_metrics(
+                            p_true, pinn_res.estimated_parameters, fit_params
+                        )
+                        for pm in pinn_param_metrics:
+                            param_metric_records.append(
+                                {
+                                    "run_id": run_id,
+                                    "model": model,
+                                    "regime": regime,
+                                    "method": "PINN",
+                                    "noise_sigma": sigma,
+                                    "seed": seed,
+                                    "parameter": pm["parameter"],
+                                    "true_value": pm["true_value"],
+                                    "estimated_value": pm["estimated_value"],
+                                    "absolute_error": pm["absolute_error"],
+                                    "relative_error": pm["relative_error"],
+                                    "status": pinn_res.status,
+                                }
+                            )
+
+                        pred_metric_records.append(
                             {
                                 "run_id": run_id,
                                 "model": model,
@@ -231,34 +272,67 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                 "method": "PINN",
                                 "noise_sigma": sigma,
                                 "seed": seed,
-                                "parameter": pm["parameter"],
-                                "true_value": pm["true_value"],
-                                "estimated_value": pm["estimated_value"],
-                                "absolute_error": pm["absolute_error"],
-                                "relative_error": pm["relative_error"],
+                                "train_rmse": pinn_res.train_metrics["rmse"],
+                                "val_rmse": pinn_res.val_metrics["rmse"],
+                                "test_rmse": pinn_res.test_metrics["rmse"],
+                                "test_mae": pinn_res.test_metrics["mae"],
+                                "test_relative_l2": pinn_res.test_metrics["relative_l2"],
+                                "wall_seconds": pinn_res.wall_seconds,
                                 "status": pinn_res.status,
                             }
                         )
 
-                    pred_metric_records.append(
-                        {
-                            "run_id": run_id,
-                            "model": model,
-                            "regime": regime,
-                            "method": "PINN",
-                            "noise_sigma": sigma,
-                            "seed": seed,
-                            "train_rmse": pinn_res.train_metrics["rmse"],
-                            "val_rmse": pinn_res.val_metrics["rmse"],
-                            "test_rmse": pinn_res.test_metrics["rmse"],
-                            "test_mae": pinn_res.test_metrics["mae"],
-                            "test_relative_l2": pinn_res.test_metrics["relative_l2"],
-                            "wall_seconds": pinn_res.wall_seconds,
-                            "status": pinn_res.status,
-                        }
-                    )
+                        if seed == seeds[0]:
+                            trajectory_runs_for_plot.append(
+                                {
+                                    "case_id": case_id,
+                                    "model": model,
+                                    "method": "PINN",
+                                    "noise_sigma": sigma,
+                                    "time": pinn_res.predicted_trajectory["time"],
+                                    "pred_population": pinn_res.predicted_trajectory["population"],
+                                    "ref_population": ref_pops,
+                                    "obs_time": obs["time"].to_numpy(),
+                                    "obs_population": obs["observed_population"].to_numpy(),
+                                    "obs_split": obs["split"].to_numpy(),
+                                }
+                            )
+                    else:
+                        for p_name in fit_params:
+                            param_metric_records.append(
+                                {
+                                    "run_id": run_id,
+                                    "model": model,
+                                    "regime": regime,
+                                    "method": "PINN",
+                                    "noise_sigma": sigma,
+                                    "seed": seed,
+                                    "parameter": p_name,
+                                    "true_value": p_true.get(p_name, float("nan")),
+                                    "estimated_value": float("nan"),
+                                    "absolute_error": float("nan"),
+                                    "relative_error": float("nan"),
+                                    "status": fail_status,
+                                }
+                            )
+                        pred_metric_records.append(
+                            {
+                                "run_id": run_id,
+                                "model": model,
+                                "regime": regime,
+                                "method": "PINN",
+                                "noise_sigma": sigma,
+                                "seed": seed,
+                                "train_rmse": float("nan"),
+                                "val_rmse": float("nan"),
+                                "test_rmse": float("nan"),
+                                "test_mae": float("nan"),
+                                "test_relative_l2": None,
+                                "wall_seconds": 0.0,
+                                "status": fail_status,
+                            }
+                        )
                 else:
-                    # In environments without PyTorch installed, log honest status
                     for p_name in fit_params:
                         param_metric_records.append(
                             {
@@ -273,7 +347,7 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                 "estimated_value": float("nan"),
                                 "absolute_error": float("nan"),
                                 "relative_error": float("nan"),
-                                "status": "skipped_no_torch_environment",
+                                "status": "skipped_no_jax_environment",
                             }
                         )
                     pred_metric_records.append(
@@ -290,7 +364,7 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                             "test_mae": float("nan"),
                             "test_relative_l2": None,
                             "wall_seconds": 0.0,
-                            "status": "skipped_no_torch_environment",
+                            "status": "skipped_no_jax_environment",
                         }
                     )
 
@@ -321,7 +395,7 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
         "cases_evaluated": [c["case_id"] for c in cases],
         "noise_sigmas": sigmas,
         "seeds": seeds,
-        "methods": ["ODE_LS", "PINN" if HAS_TORCH else "PINN (code ready, torch pending)"],
+        "methods": ["ODE_LS", "PINN" if HAS_JAX else "PINN (code ready, jax pending)"],
         "summary": {
             "total_runs": run_counter,
             "parameter_records": len(param_metric_records),
