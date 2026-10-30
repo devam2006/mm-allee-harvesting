@@ -222,6 +222,8 @@ class InversePINNTrainer:
         lambda_phys: float = 0.1,
         time_budget_s: float | None = None,
         lbfgs_iters: int = 200,
+        lbfgs_ftol: float = 1e-12,
+        lbfgs_gtol: float = 1e-8,
         # Backward compatibility with positional (net, tp) constructor
         *args,
         **kwargs,
@@ -238,6 +240,8 @@ class InversePINNTrainer:
         self.lambda_phys = float(lambda_phys)
         self.time_budget_s = time_budget_s
         self.lbfgs_iters = int(lbfgs_iters)
+        self.lbfgs_ftol = float(lbfgs_ftol)  # 0 disables the stop, as in the forward trainer
+        self.lbfgs_gtol = float(lbfgs_gtol)
 
     def fit(
         self,
@@ -498,8 +502,8 @@ class InversePINNTrainer:
                         "maxiter": n_lbfgs,
                         "maxfun": 20 * n_lbfgs,
                         "maxcor": 50,
-                        "ftol": 1e-12,
-                        "gtol": 1e-8,
+                        "ftol": self.lbfgs_ftol,
+                        "gtol": self.lbfgs_gtol,
                     },
                 )
                 if np.all(np.isfinite(fit.x)):
