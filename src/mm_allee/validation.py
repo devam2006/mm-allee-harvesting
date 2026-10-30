@@ -108,6 +108,8 @@ def write_prediction_metrics_csv(path: str | Path, records: list[dict[str, Any]]
         "test_clean_relative_l2",
         "wall_seconds",
         "status",
+        "lbfgs_outcome",
+        "lbfgs_message",
     ]
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)

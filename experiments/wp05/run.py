@@ -322,6 +322,9 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                 "test_clean_relative_l2": pinn_clean_test_err["relative_l2"],
                                 "wall_seconds": pinn_res.wall_seconds,
                                 "status": pinn_res.status,
+                                "lbfgs_outcome": pinn_res.optimizer.get("lbfgs_outcome"),
+                                "lbfgs_message": pinn_res.optimizer.get("error")
+                                or pinn_res.optimizer.get("lbfgs_message"),
                             }
                         )
 

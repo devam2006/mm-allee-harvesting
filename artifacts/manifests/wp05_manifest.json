@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "run_id": "wp05_experiment_1793392221",
-  "utc_timestamp": "2026-10-30T20:30:21.860854+00:00",
-  "total_wall_seconds": 385.23658180003986,
+  "run_id": "wp05_experiment_1793398376",
+  "utc_timestamp": "2026-10-30T22:12:56.601299+00:00",
+  "total_wall_seconds": 622.7702446000185,
   "cases_evaluated": [
     "a_regular",
     "b_regular",
