@@ -1,0 +1,61 @@
+{
+  "scope": "WP01-WP05 notebook, synthetic data and figures; Overleaf report separate",
+  "source_heads": {
+    "WP01_PR8": "b83bba8c7f3c7d094d4439cf9b6d281a325ae4d0",
+    "WP02_PR9": "879b110b0b5bfac52840b6e2db5b6cf00cbec050",
+    "WP03_PR4": "16a05ce2f2c8eabfca7a95bcecf78dd7b5e190c8",
+    "classical_PR11": "649e0c1bd545d73f2ea153e09a4a214c6fd2324e",
+    "WP04_WP05_PR10": "c84a0bf7c52c29661018d9bfa0df8b0fa69c93fa"
+  },
+  "full_suite": {
+    "passed": 511,
+    "seconds": 40.8,
+    "environment": "existing Python 3.14.3 scientific/JAX environment; no fresh dependency install"
+  },
+  "classical_notebook": {
+    "executed_code_cells": 16,
+    "errors": 0,
+    "wall_seconds": 20.49
+  },
+  "final_notebook": {
+    "executed_code_cells": 27,
+    "errors": 0,
+    "wall_seconds": 26.83,
+    "sha256": "25e6b180bc509c0911bd95408974daf33abc35d7d389f10444a5efc957242353"
+  },
+  "extracted_zip_notebook": {
+    "executed_code_cells": 27,
+    "errors": 0,
+    "first_to_last_cell_seconds": 24.48,
+    "no_repository_checkout_required": true
+  },
+  "figures": {
+    "png_eps_pairs": 17,
+    "historical_wp05_pairs": 2,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "data": {
+    "synthetic": true,
+    "clean_trajectory_csvs": 6,
+    "reconstructed_scenarios": 54,
+    "reconstructed_rows": 5454
+  },
+  "classical_github_ci": {
+    "commit": "649e0c1bd545d73f2ea153e09a4a214c6fd2324e",
+    "core": "success",
+    "pinn": "success",
+    "url": "https://github.com/devam2006/mm-allee-harvesting/actions/runs/41132098743"
+  },
+  "limitations": [
+    "WP05 validation-selection-off loss histories undefined",
+    "WP05 optimizer status can misreport nonconvergence or exceptions",
+    "Full historical PINN sweeps not rerun",
+    "Human approvals/understanding and final Overleaf/presentation remain pending"
+  ]
+}

@@ -90,6 +90,7 @@ def package_delivery(executed_notebook, target):
     for directory, prefix in [
         ("src", "source/src"),
         ("scripts", "source/scripts"),
+        ("experiments", "source/experiments"),
         ("configs", "configs"),
         ("artifacts/tables", "tables"),
         ("artifacts/manifests", "provenance"),
@@ -138,6 +139,10 @@ def package_delivery(executed_notebook, target):
         "docs/SCIENTIFIC_CONTRACT.md",
         "docs/INTERFACES.md",
         "docs/CLASSICAL_INTEGRATION.md",
+        "docs/END_TO_END_INTEGRATION.md",
+        "docs/DRAFT_SOURCES.md",
+        "docs/DATA_PROVENANCE.md",
+        "team.json",
         "pyproject.toml",
     ]:
         files[f"source/{name}"] = (ROOT / name).read_bytes()
@@ -155,8 +160,14 @@ def package_delivery(executed_notebook, target):
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
         ).strip(),
         source_dirty=bool(
-            subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()
+            subprocess.check_output(
+                ["git", "status", "--porcelain", "--", ".", ":(exclude)deliverables"],
+                cwd=ROOT,
+                text=True,
+            ).strip()
         ),
+        source_dirty_excludes=["deliverables/"],
+        executed_notebook_sha256=hashlib.sha256(files["project.ipynb"]).hexdigest(),
         executed_code_cells=len(cells),
         synthetic_observation_rows=observation_count,
         figure_pairs=len(inventory),
@@ -175,7 +186,7 @@ def package_delivery(executed_notebook, target):
         "The saved notebook includes the actual successful kernel outputs; its ordinary demonstrations are not reruns of all recorded research sweeps.\n\n"
         "figures/ includes PNG/EPS pairs and available PDFs; use EPS files in the separately maintained Overleaf report. Historical alternatives are labelled in INVENTORY.json. "
         "datasets/ includes clean synthetic fixtures and reconstructed noisy training/validation/test inputs. tables/ and provenance/ preserve recorded evidence and its limitations. "
-        "source/ contains readable implementation, authoring scripts and disclosures.\n\n"
+        "source/ contains readable implementation, authoring/experiment scripts and disclosures. Run the notebook directly; source/ is a readable companion, not a second copy of the complete repository layout.\n\n"
         "This is a technically verified integration candidate, not certification of the unresolved WP05 reporting labels, human approvals, presentation readiness or final Overleaf report.\n"
     ).encode()
     files["SHA256SUMS.json"] = json.dumps(

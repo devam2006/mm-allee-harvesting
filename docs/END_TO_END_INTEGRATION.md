@@ -25,6 +25,21 @@ by the agent. The report is maintained in Overleaf, not assembled here.
 
 ## Deliverables and reproduction
 
+The final PR #5 handoff rerun passed all **511 tests in 40.80 seconds**. Its
+portable notebook ran **27 code cells with no errors in 26.83 seconds**. The
+same notebook was then extracted from the actual delivery ZIP and rerun in a
+second isolated fresh kernel: **27 executed cells, no errors** (24.48 seconds
+between the first cell starting and the last cell completing). Its bytes are
+bound by the archive manifest's `executed_notebook_sha256`.
+
+The ZIP contains **17 PNG/EPS pairs across all five packages** (15 current or
+exploratory figures and two explicitly historical WP05 pairs), available PDF
+partners, six clean synthetic trajectory CSVs, and **5,454 reconstructed
+observation rows in 54 scenarios**. Every file is covered by SHA-256 inventory;
+the checksum inventory itself is excluded from its own list. Representative
+WP04 forward and WP05 held-out plots were visually inspected. Classical PR #11
+also passed both GitHub CI jobs on `649e0c1`.
+
 `notebooks/project.ipynb` is the readable repository notebook;
 `notebooks/project_standalone.ipynb` embeds its source/config/data/evidence.
 The download archive contains an executed standalone `project.ipynb`, readable

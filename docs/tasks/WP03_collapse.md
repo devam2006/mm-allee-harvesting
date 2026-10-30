@@ -70,6 +70,18 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
 
 ## Current handoff
 
+- **31 October integration update:** source WP03 remains PR #4 `16a05ce`.
+  Classical integration PR #11 `649e0c1` combines current WP01/WP02 fixes,
+  shared thresholds/branches and basin conventions; 421 tests and a real
+  16-code-cell portable kernel run passed. PR #5 now includes Prem PR #10
+  `c84a0bf`, all five packages, and a tested notebook/data/EPS download.
+  All 511 tests and both isolated 27-cell kernel runs passed. These are
+  computational checks, not human scientific approval. The two WP05 reporting
+  findings remain with Prem/Rohan. Next: review the shared conventions in
+  `docs/CLASSICAL_INTEGRATION.md`, resolve those findings, then regenerate the
+  five-package export and ZIP using `docs/END_TO_END_INTEGRATION.md`. Report
+  authors work in Overleaf; no report assembly is required for this handoff.
+
 - **Owner / branch:** Devam (`devam2006`), `wp03/collapse-analysis`; [PR #4](https://github.com/devam2006/mm-allee-harvesting/pull/4) is assigned to Devam with all four other roster members requested for review; it remains unmerged. Historical early reference handoff: [PR #2](https://github.com/devam2006/mm-allee-harvesting/pull/2).
 - **Completed:** thresholds; exact/critical/zero-harvest basins; A extinction quadrature, RK45/DOP853/tolerance checks; extinction sweeps/maps; bottleneck; optional dimensional sensitivity and B realised-yield MSY/margins; clean references; report/notebook; paired figures/tables; speaking notes; WP03 environment/reproduction; submission-readiness audit.
 - **Navigation/commands:** [analysis](../WP03_ANALYSIS.md), [early reference handoff](../WP03_RK45_HANDOFF.md), [speaking notes](../../presentation/wp03.md).

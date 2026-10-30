@@ -49,6 +49,17 @@ jupyter nbconvert --to notebook --execute notebooks/project.ipynb --output proje
 
 WP05 owner checks section order, equations/algorithm Markdown before code, accessible colours, labelled axes, interpretations and a final limitations/disclosure cell. Code calls shared modules and reproducible configs. Choose a short but genuine A/B forward and inverse smoke budget for notebook execution; provide commands/manifests for longer sweeps. If loading curated final outputs, explain and supply their regeneration command—do not imply the notebook retrained them.
 
+## Current PR #5 scope (31 October 2026)
+
+At Devam's request, PR #5 now packages the executable standalone notebook,
+datasets, figures and source/provenance. Use
+`scripts/package_notebook_delivery.py`, not the report-gated submission script
+below. The final report is edited and compiled separately in Overleaf; legacy
+report/slides in this repository are historical previews. See
+[the measured E2E checks and remaining limitations](END_TO_END_INTEGRATION.md).
+The broader final-submission checklist below still applies to the group's
+eventual submission; it is not a gate for preparing this notebook handoff.
+
 ## One coherent report
 
 WP01 owner assembles `report/main.tex` and all sections with one bibliography and consistent notation. Include objective/assumption/model summary; classical derivations and signs; numerical algorithms and convergence; PINN forward/inverse math and honest evidence; conclusions/limitations; contribution/data/AI acknowledgements. Every result must trace to a curated table/figure/config. Keep EPS originals and use PDF/PNG or deliberate conversion for PDFLaTeX.

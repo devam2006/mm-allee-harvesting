@@ -79,7 +79,10 @@ def test_submission_audit_exposes_all_relevant_blockers_and_never_claims_approva
     figures = tmp_path / "artifacts/figures"
     figures.mkdir(parents=True)
     (figures / "result.png").write_bytes(b"image")
-    (tmp_path / "team.json").write_text((ROOT / "team.json").read_text())
+    roster = json.loads((ROOT / "team.json").read_text())
+    for member in roster["members"]:
+        member["name"] = None  # This fixture tests missing names, independently of the live roster.
+    (tmp_path / "team.json").write_text(json.dumps(roster))
     result = module.audit(tmp_path)
     assert not result["automated_ready"]
     kinds = {row["kind"] for row in result["blockers"]}
