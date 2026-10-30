@@ -20,3 +20,18 @@ Task choices finalised by the user on 19 October 2026: Raghav (`RaghavSinghal15`
 Review scope clarification (user, 19 October 2026): the four-other-member approval rule applies to PRs raised during project work. Owner-authorised repository configuration and task-assignment administration do not require those approvals. The current setup PR may be merged by the owner's agent after checks; scientific code, experiments, results and final deliverable integration keep the four-review rule.
 
 Validation guidance confirmed during final setup: every task maps core claims to independent executable tests or recorded experiments and includes the report/notebook/figures/disclosures/integration handoff. Meaningful coverage and justified tolerances matter more than a target test count. This guidance does not claim that scientific task implementations or their final validation are complete.
+
+## 2026-10-30 — WP02 proposed interfaces (affected-owner review pending)
+
+- `model_b.EquilibriumB` mirrors the WP01 record but uses `e` instead of `q`; effort
+  must not be mislabelled as yield. `equilibria_b(a,e)` and `critical_effort(a)` use
+  the required discriminant derivation; no absolute fold band merges distinct controls.
+- `history.run_history` reuses `solver.solve_trajectory` on constant-control segments.
+  Restocking is an explicitly recorded positive addition at a segment index; boundary
+  duplicate times preserve left/right limits. A shutdown persists until restocking;
+  B smallness never triggers a reset. `ramp_schedule` supplies declared staircase controls.
+- `comparison` and `wp02_experiment` are WP02-owned consumers, not changes to the
+  existing shared APIs. WP01 PR #3 is restored on this branch as a declared dependency.
+  Its reviewed numerical edge cases remain with WP01; comparison guards exclude the
+  unresolved regimes. WP03 threshold-helper integration remains pending its availability.
+- These are proposed additions for the WP02 PR, not a claim of affected-owner approval.

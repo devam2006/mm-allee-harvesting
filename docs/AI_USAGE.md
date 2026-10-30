@@ -19,3 +19,23 @@ At final task allocation on 19 October 2026, Devam assigned AshChan07 → WP02 a
 Each owner confirms they can explain their section's equations, stability argument, numerical method, algorithm, configuration, test evidence and limitations. All members read the final integrated report and understand the complete story before presentation. AI-assisted review does not replace this understanding or the four human PR approvals.
 
 Suggested final wording must be adapted to actual use: “We used [platforms] for [specific roles]. The authors checked the derivations, implementation and results and take responsibility for the submitted work.” Never submit the bracketed template unchanged.
+
+## 2026-10-30 — AshChan07, WP02
+
+OpenAI Codex assisted Model B derivations, equilibrium/history/comparison implementation,
+independent deterministic tests, bounded synthetic CPU experiments, PNG/EPS/PDF figures,
+report and notebook section 2, the editable three-slide WP02 contribution and speaking script.
+The implementation reuses WP01 and the shared solver; no empirical data or model API was used.
+An initial near-fold reference test failed because the double-precision polynomial oracle
+lost accuracy; a 60-digit expanded-polynomial reference replaced it without loosening the
+acceptance tolerance. Notebook sandbox/cache restrictions and a slide PDF-export font
+runtime error were recorded during validation; see WP02 handoff for final outcomes.
+The AI-assisted Task 1 review was posted on PR #3 separately; no human approval was submitted.
+Human reproduction, comprehension, rehearsal and the four scientific approvals remain pending.
+
+Final verification of the existing WP02 work added a logistic near-fold comparison
+ guard and regression case. The fresh-kernel notebook execution succeeded after
+using temporary config/cache directories and approved local kernel networking.
+The report compiled and WP02 pages 7–11 plus all three slide renders were inspected.
+The slide PDF companion was generated from the inspected renders after the native
+export limitation; the PPTX preserves editable evidence. No human review was claimed.
