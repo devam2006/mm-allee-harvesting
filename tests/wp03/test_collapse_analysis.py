@@ -56,6 +56,34 @@ def test_adjacent_controls_are_not_silently_merged_into_fold(model):
         assert abs(residual) < 2e-14
 
 
+@pytest.mark.parametrize("a,e", [(1e-12, 0.5), (1e-9, 0.5), (1e-6, 1e-3), (0.2, 0.4)])
+def test_b_lower_root_matches_high_precision_polynomial_at_small_allee_ratio(a, e):
+    # Independently bisect the expanded per-capita polynomial using the exact
+    # binary inputs at 80 digits, without reusing the production root formula.
+    with localcontext() as context:
+        context.prec = 80
+        ad, ed = map(Decimal.from_float, (a, e))
+        left, right = ad, (1 + ad) / 2
+        for _ in range(280):
+            middle = (left + right) / 2
+            value = -(middle**2) + (1 + ad) * middle - ad * (1 + ed)
+            if value < 0:
+                left = middle
+            else:
+                right = middle
+        expected = float((left + right) / 2)
+    lower, upper = positive_branches("B", a=a, harvest=e)
+    # A few ulps allow intermediate rounding; absolute tolerances would hide
+    # the loss of relative accuracy on these tiny positive lower branches.
+    assert lower == pytest.approx(expected, rel=8 * np.finfo(float).eps, abs=0)
+    assert a < lower < upper <= 1
+    # Probe either side on the root's scale, explicitly disabling the default
+    # absolute uncertainty band for this high-precision reference comparison.
+    for factor, outcome in [(1 - 1e-9, "asymptotic_extinction"), (1 + 1e-9, "persistence")]:
+        basin = classify_basin("B", a=a, harvest=e, x0=expected * factor, root_tol=0)
+        assert basin.outcome == outcome
+
+
 @pytest.mark.parametrize("model", ["A", "B"])
 @pytest.mark.parametrize("fraction", [0, 0.6, 1, 1.3])
 def test_all_basin_regimes_and_exact_initial_roots(model, fraction):

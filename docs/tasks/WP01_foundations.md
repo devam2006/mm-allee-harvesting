@@ -45,19 +45,34 @@ Implement the future reproduction command `python experiments/wp01/run.py --conf
 
 ## Required acceptance tests
 
-- [ ] Dimensional RHS equals `r*K` times dimensionless RHS across A/B/logistic, multiple parameters/populations; invalid `r,K,A,H,h` rejected.
-- [ ] Logistic roots satisfy residual tolerance below/at/above `q=1/4`; correct zero-harvest signs.
-- [ ] A has `0,a,1` at `q=0`; two positive roots for representative `0<q<q_c`; one double root at `q_c`; none above.
-- [ ] Every reported root has small RHS residual and correct physical-domain status; negative cubic root never returned as a physical population.
-- [ ] Stable/unstable labels agree with independently perturbed trajectories away from a fold; fold classified via one-sided signs, not derivative equality alone.
-- [ ] Branch output retains close roots without silently deleting one near the fold; labels/units and exported table align.
+- [x] Dimensional RHS equals `r*K` times dimensionless RHS across A/B/logistic, multiple parameters/populations; invalid `r,K,A,H,h` rejected.
+- [x] Logistic roots satisfy residual tolerance below/at/above `q=1/4`; correct zero-harvest signs.
+- [x] A has `0,a,1` at `q=0`; two positive roots for representative `0<q<q_c`; one double root at `q_c`; none above.
+- [x] Every reported root has small RHS residual and correct physical-domain status; negative cubic root never returned as a physical population.
+- [x] Stable/unstable labels agree with independently perturbed trajectories away from a fold; fold classified via one-sided signs, not derivative equality alone.
+- [x] Branch output retains close roots without silently deleting one near the fold; labels/units and exported table align.
 
 ## Handoff and done checklist
 
 - [ ] Foundation API reviewed by WP03 and communicated to WP02/WP04/WP05.
-- [ ] Code/tests/config, two paired figures, table, report and notebook section committed with manifests.
+- [x] Code/tests/config, two paired figures, table, report and notebook section committed with manifests.
 - [ ] Report assembly passes compilation; every page inspected; EPS files and bibliography complete.
 - [ ] One other member reproduced the command; all four approved the current PR; status updated honestly.
 - [ ] AI log and citations updated. Owner can explain scaling, root stability, semistability and why A has no zero equilibrium for H>0.
 
 **Presentation:** 0–5 min: problem, assumptions, logistic recap, scaling, Model A geometry. Prepare one baseline slide, one model/assumption slide and one A branch figure. Know how your section connects to the collapse proof and PINNs.
+
+## Current handoff
+
+- **Owner:** Raghav (`RaghavSinghal15`).
+- **Branch / PR:** PR #3 (`wp01/foundations-model-a`) was merged and then reverted on main with WP03 PR #2. The corrected work is restored on `wp01/foundations-restored`, [PR #8](https://github.com/devam2006/mm-allee-harvesting/pull/8), with all four other members requested as reviewers.
+- **Review fixes (30 Oct):** relative fold tolerance and cancellation-free `q_c` (Ash, Devam); tiny negative root kept negative and excluded (Ash, Devam); probes bounded by all roots and `x=0`, labels independent of `include_excluded` (Devam); WP01 solver settings validated and passed to RK45 (Ash, Devam); report sentence on shocks qualified by the basin margin (Devam). Regressions in `tests/wp01/test_review_regressions.py`.
+- **Done (with evidence):** every acceptance test above, mapped in the PR evidence table to `tests/wp01/test_scaling.py`, `test_logistic.py`, `test_model_a_equilibria.py`, `test_stability_dynamics.py`, `test_branch_output.py` and `test_review_regressions.py` (186 tests). Figures `wp01_logistic_vs_allee`, `wp01_model_a_branches` and an extra `wp01_model_a_perturbations` (PNG + EPS + PDF), `artifacts/tables/wp01_equilibria.csv`, `wp01_thresholds.json`, manifest `artifacts/manifests/wp01_run.json`. Report section 1 and notebook section 1 written; section 1 compiles inside `report/main.tex` with no warnings. Slide content and a five-minute script are in `presentation/wp01_contribution.md`.
+- **Reproduce:** `python experiments/wp01/run.py --config configs/wp01.json --output results/wp01` then `python -m pytest tests/wp01 -q`.
+- **Interface decisions:** see DECISIONS.md (24 Oct): `Equilibrium` record schema, one-sided sign classification, relative fold tolerance (revised 30 Oct after review), `fold_a` vs WP03 `critical_a`, extensionless figure includes for pdflatex.
+- **Still open:** (1) WP03 review of the foundation API and its communication to WP02/WP04/WP05; (2) **report assembly** of all five sections, unified notation/citations, compile and page-by-page inspection and the EPS audit, which can only finish once the other sections land; (3) another member's reproduction and four approvals.
+- **Key points to be able to explain:** scaling to (a, q); phase-line stability; why x=0 is not an equilibrium of A for q>0; derivation of x* and q_c from G'(x)=0; why the fold is semistable although f'=0; why bracketing + Brent rather than polynomial eigenvalues near the fold.
+
+## Integration follow-up, 31 October 2026
+
+189 WP01 tests passed, including 90-digit independent roots for both reported close-fold examples and rejection of unsupported rtol before any output. Near-fold roots are solved in offsets; simple-root signs/derivatives use the factored cubic. The existing standalone fold-band policy is unchanged pending the separate integration PR. The separate integration PR records current source heads, combined tests and notebook execution. The normal review process remains required.

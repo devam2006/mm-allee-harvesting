@@ -1,5 +1,6 @@
 """Deterministically assemble the five independently owned notebook fragments."""
 
+import argparse
 from copy import deepcopy
 from pathlib import Path
 
@@ -15,7 +16,8 @@ EXPECTED = [
 ]
 
 
-def main():
+def build_notebook(packages=None):
+    packages = list(range(1, 6)) if packages is None else list(packages)
     nb = nbformat.v4.new_notebook()
     nb.metadata["kernelspec"] = {
         "display_name": "Python 3",
@@ -49,6 +51,8 @@ def main():
     if overview.is_file():
         nb.cells[0].source = overview.read_text(encoding="utf-8")
     for index, name in enumerate(EXPECTED, 1):
+        if index not in packages:
+            continue
         fragment = nbformat.read(ROOT / "notebooks/sections" / name, as_version=4)
         nbformat.validate(fragment)
         for j, original in enumerate(fragment.cells):
@@ -59,9 +63,20 @@ def main():
                 cell.execution_count = None
             nb.cells.append(cell)
     nbformat.validate(nb)
-    target = ROOT / "notebooks/project.ipynb"
+    nb.metadata["work_packages"] = [f"WP{index:02d}" for index in packages]
+    return nb
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--packages", nargs="+", type=int, choices=range(1, 6))
+    parser.add_argument("--output", type=Path, default=ROOT / "notebooks/project.ipynb")
+    args = parser.parse_args()
+    nb = build_notebook(args.packages)
+    target = args.output
+    target.parent.mkdir(parents=True, exist_ok=True)
     nbformat.write(nb, target)
-    print(f"Assembled {len(nb.cells)} cells into {target.relative_to(ROOT)}")
+    print(f"Assembled {len(nb.cells)} cells into {target}")
 
 
 if __name__ == "__main__":

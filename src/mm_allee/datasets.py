@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 
 from .models import Parameters
-from .solver import solve_trajectory
+from .solver import MIN_RK45_RTOL, solve_trajectory
 
 DEFAULT_SOLVER = {"rtol": 1e-9, "atol": 1e-11, "max_step": 0.1}
 REFERENCE_COLUMNS = (
@@ -41,6 +41,8 @@ def solver_settings(settings=None):
         raise ValueError("Solver settings are rtol, atol and max_step (dimensionless)")
     if any(isinstance(v, bool) or not isfinite(v) or v <= 0 for v in result.values()):
         raise ValueError("Solver settings must be finite and positive")
+    if result["rtol"] < MIN_RK45_RTOL:
+        raise ValueError(f"RK45 rtol must be at least {MIN_RK45_RTOL:.17g}")
     return result
 
 

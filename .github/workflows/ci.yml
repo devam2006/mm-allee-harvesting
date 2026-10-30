@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
-      - run: python -m pip install -e ".[dev,notebook]"
+      - run: python -m pip install -e ".[dev,notebook,pinn]"
       - run: python scripts/sync_team.py --check
       - run: ruff check .
       - run: ruff format --check .
@@ -35,7 +35,6 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
-      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - run: python -m pip install -e ".[dev,pinn]"
-      - run: python -c "import torch; print(torch.__version__)"
+      - run: python -c "import jax; print(jax.__version__, jax.devices())"
       - run: python -m pytest -q -m "pinn and not slow"

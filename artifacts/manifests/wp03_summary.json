@@ -23,8 +23,8 @@
       "model": "B",
       "control_fraction": 0.9304292824926398,
       "control_margin": 0.06957071750736021,
-      "basin_boundary_N": 49.449495366961045,
-      "population_margin": 40.550504633038955,
+      "basin_boundary_N": 49.44949536696106,
+      "population_margin": 40.55050463303894,
       "outcome": "persistence"
     }
   ]
