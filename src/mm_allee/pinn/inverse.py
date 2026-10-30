@@ -224,6 +224,7 @@ class InversePINNTrainer:
         lbfgs_iters: int = 200,
         lbfgs_ftol: float = 1e-12,
         lbfgs_gtol: float = 1e-8,
+        validation_selection: bool = True,
         # Backward compatibility with positional (net, tp) constructor
         *args,
         **kwargs,
@@ -242,6 +243,10 @@ class InversePINNTrainer:
         self.lbfgs_iters = int(lbfgs_iters)
         self.lbfgs_ftol = float(lbfgs_ftol)  # 0 disables the stop, as in the forward trainer
         self.lbfgs_gtol = float(lbfgs_gtol)
+        # True (default, unchanged behaviour): early-stop on validation loss, restore the best
+        # validation checkpoint and accept L-BFGS only if validation loss does not worsen by >5%.
+        # False: train the full budget, keep the final state and always accept a finite L-BFGS result.
+        self.validation_selection = bool(validation_selection)
 
     def fit(
         self,
@@ -446,7 +451,7 @@ class InversePINNTrainer:
 
             # Evaluate validation loss periodically (strictly no gradient)
             val_loss_f = best_val_loss
-            if len(idx_val) > 0 and (epoch % eval_every == 0 or epoch == n_adam):
+            if self.validation_selection and len(idx_val) > 0 and (epoch % eval_every == 0 or epoch == n_adam):
                 pred_val = jax.vmap(lambda t: x_hat(state[0], t, ncfg))(t_val)
                 val_loss_f = float(jnp.mean((pred_val - y_val_norm) ** 2))
 
@@ -470,6 +475,9 @@ class InversePINNTrainer:
             curr_phys = tp.get_physical_parameters(state[1])
             for pname in tp.fit_params:
                 history[f"param_{pname}"].append(curr_phys[pname])
+
+        if not self.validation_selection:
+            best_state = state  # no validation-based checkpoint: continue from the last Adam state
 
         # 6. Phase 2: L-BFGS takes over from the best Adam checkpoint
         if status in ("converged", "validation_stopped") and n_lbfgs > 0 and not over_budget():
@@ -508,7 +516,7 @@ class InversePINNTrainer:
                 )
                 if np.all(np.isfinite(fit.x)):
                     lbfgs_candidate = unravel(jnp.asarray(fit.x))
-                    if len(idx_val) > 0:
+                    if self.validation_selection and len(idx_val) > 0:
                         pred_val_lbfgs = jax.vmap(lambda t: x_hat(lbfgs_candidate[0], t, ncfg))(t_val)
                         val_loss_lbfgs = float(jnp.mean((pred_val_lbfgs - y_val_norm) ** 2))
                         # Accept L-BFGS solution if it does not degrade validation loss
