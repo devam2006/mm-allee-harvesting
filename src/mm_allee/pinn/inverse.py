@@ -182,7 +182,10 @@ class InversePINNResult:
     fit_params: list[str]
     estimated_parameters: dict[str, float]
     all_parameters: dict[str, float]
-    status: str  # "converged" | "validation_stopped" | "budget_exhausted" | "nonfinite_loss"
+    # "converged" | "validation_stopped" | "budget_exhausted" | "nonfinite_loss" | "lbfgs_failed"
+    # (``status`` describes the Adam phase and whether the run finished; how the L-BFGS phase ended
+    # is in ``optimizer``: a status of ``converged`` does NOT mean L-BFGS reached a tolerance)
+    status: str
     success: bool
     final_epoch: int
     wall_seconds: float
@@ -195,6 +198,9 @@ class InversePINNResult:
     training_history: dict[str, list]
     network_params: list = field(default_factory=list)
     network_config: NetworkConfig | None = None
+    # L-BFGS exit: lbfgs_outcome is one of not_run | tolerance_reached | iteration_limit |
+    # abnormal_exit | budget_exhausted | interrupted | error (with the exception in ``error``)
+    optimizer: dict[str, Any] = field(default_factory=dict)
 
 
 class InversePINNTrainer:
@@ -439,6 +445,15 @@ class InversePINNTrainer:
         for pname in tp.fit_params:
             history[f"param_{pname}"] = []
 
+        @jax.jit
+        def _validation_loss(weights):
+            pred_val = jax.vmap(lambda t: x_hat(weights, t, ncfg))(t_val)
+            return jnp.mean((pred_val - y_val_norm) ** 2)
+
+        def validation_loss(weights):  # compiled: it is also called once per L-BFGS iteration
+            return float(_validation_loss(weights))
+
+        last_val_loss = float("nan")  # no validation measurement yet
         best_val_loss = float("inf")
         best_state = state
         patience_counter = 0
@@ -463,25 +478,24 @@ class InversePINNTrainer:
                 success = False
                 break
 
-            # Evaluate validation loss periodically (strictly no gradient)
-            val_loss_f = best_val_loss
-            if (
-                self.validation_selection
-                and len(idx_val) > 0
-                and (epoch % eval_every == 0 or epoch == n_adam)
-            ):
-                pred_val = jax.vmap(lambda t: x_hat(state[0], t, ncfg))(t_val)
-                val_loss_f = float(jnp.mean((pred_val - y_val_norm) ** 2))
+            # Measure the validation loss periodically (strictly no gradient). This happens whether
+            # or not validation is used to select a checkpoint; only the selection and the early
+            # stop depend on ``validation_selection``.
+            val_loss_f = best_val_loss if self.validation_selection else last_val_loss
+            if len(idx_val) > 0 and (epoch % eval_every == 0 or epoch == n_adam):
+                val_loss_f = validation_loss(state[0])
+                last_val_loss = val_loss_f
 
-                if val_loss_f < best_val_loss:
-                    best_val_loss = val_loss_f
-                    best_state = state
-                    patience_counter = 0
-                else:
-                    patience_counter += 1
-                    if patience_counter >= (patience // eval_every):
-                        status = "validation_stopped"
-                        break
+                if self.validation_selection:
+                    if val_loss_f < best_val_loss:
+                        best_val_loss = val_loss_f
+                        best_state = state
+                        patience_counter = 0
+                    else:
+                        patience_counter += 1
+                        if patience_counter >= (patience // eval_every):
+                            status = "validation_stopped"
+                            break
 
             history["epoch"].append(epoch)
             history["loss_train"].append(tr_loss_f)
@@ -497,6 +511,14 @@ class InversePINNTrainer:
         if not self.validation_selection:
             best_state = state  # no validation-based checkpoint: continue from the last Adam state
 
+        optimizer = {
+            "lbfgs_outcome": "not_run",
+            "lbfgs_status": None,
+            "lbfgs_message": None,
+            "lbfgs_iterations": 0,
+            "error": None,
+        }
+
         # 6. Phase 2: L-BFGS takes over from the best Adam checkpoint
         if status in ("converged", "validation_stopped") and n_lbfgs > 0 and not over_budget():
             flat0, unravel = ravel_pytree(best_state)
@@ -506,11 +528,23 @@ class InversePINNTrainer:
                 val, grad = flat_vg(jnp.asarray(flat))
                 return float(val), np.asarray(grad, dtype=np.float64)
 
+            lbfgs_iter = [0]
+            last_val_seen = [last_val_loss]
+
             def lbfgs_callback(intermediate_result):
                 l_val = float(intermediate_result.fun)
                 history["epoch"].append(len(history["epoch"]) + 1)
                 history["loss_train"].append(l_val)
-                history["loss_val"].append(best_val_loss)
+                lbfgs_iter[0] += 1
+                if self.validation_selection:
+                    val_now = best_val_loss
+                elif len(idx_val) > 0 and lbfgs_iter[0] % eval_every == 0:
+                    # measured on the same schedule as the Adam phase (every eval_every iterations)
+                    val_now = validation_loss(unravel(jnp.asarray(intermediate_result.x))[0])
+                    last_val_seen[0] = val_now
+                else:
+                    val_now = last_val_seen[0]  # carried between evaluations
+                history["loss_val"].append(val_now)
                 history["loss_data"].append(float("nan"))
                 history["loss_phys"].append(float("nan"))
                 history["phase"].append("lbfgs")
@@ -532,6 +566,18 @@ class InversePINNTrainer:
                         "gtol": self.lbfgs_gtol,
                     },
                 )
+                # SciPy L-BFGS-B exit: 0 tolerance reached, 1 iteration/evaluation limit, 2 abnormal
+                # (for example a failed line search). With ftol = gtol = 0 the limit is the usual end.
+                optimizer.update(
+                    lbfgs_status=int(fit.status),
+                    lbfgs_message=str(fit.message),
+                    lbfgs_iterations=int(fit.nit),
+                    lbfgs_outcome={
+                        0: "tolerance_reached",
+                        1: "iteration_limit",
+                        2: "abnormal_exit",
+                    }.get(int(fit.status), "abnormal_exit"),
+                )
                 if np.all(np.isfinite(fit.x)):
                     lbfgs_candidate = unravel(jnp.asarray(fit.x))
                     if self.validation_selection and len(idx_val) > 0:
@@ -550,16 +596,22 @@ class InversePINNTrainer:
                 else:
                     status = "nonfinite_loss"
             except (StopIteration, KeyboardInterrupt):
+                optimizer["lbfgs_outcome"] = "budget_exhausted" if over_budget() else "interrupted"
                 if over_budget():
                     status = "budget_exhausted"
-            except Exception:
-                pass
+            except Exception as exc:  # the Adam state is kept as a labelled fallback
+                optimizer.update(lbfgs_outcome="error", error=f"{type(exc).__name__}: {exc}")
+                status = "lbfgs_failed"
+                success = False
 
         wall_time = time.perf_counter() - start_time
 
         # Restore best checkpoint state
-        if status in ("converged", "validation_stopped", "budget_exhausted"):
+        if status in ("converged", "validation_stopped", "budget_exhausted", "lbfgs_failed"):
             state = best_state
+
+        # validation loss of the model that is actually returned
+        final_val_loss = validation_loss(state[0]) if len(idx_val) > 0 else float("nan")
 
         final_phys = tp.get_physical_parameters(state[1])
         self.params_mod.raw_params = {k: jnp.asarray(v) for k, v in state[1].items()}
@@ -592,7 +644,7 @@ class InversePINNTrainer:
             final_epoch=len(history["epoch"]),
             wall_seconds=wall_time,
             train_loss=history["loss_train"][-1] if history["loss_train"] else float("nan"),
-            val_loss=best_val_loss if math.isfinite(best_val_loss) else float("nan"),
+            val_loss=final_val_loss,
             train_metrics=train_err,
             val_metrics=val_err,
             test_metrics=test_err,
@@ -600,6 +652,7 @@ class InversePINNTrainer:
             training_history=history,
             network_params=state[0],
             network_config=ncfg,
+            optimizer=optimizer,
         )
 
 
