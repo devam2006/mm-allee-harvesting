@@ -12,6 +12,9 @@
 | 2026-10-24 | WP01 equilibrium API and record schema as in INTERFACES.md; stability from one-sided signs, roots from calculus brackets + Brent, fold tolerance 1e-12 in q (revised 2026-10-30, below) | Avoids complex near-fold artefacts of companion-matrix solvers and keeps close roots separate; WP02 reuses the conventions |
 | 2026-10-24 | `equilibria.fold_a(a)` provides the closed-form `(x_star, q_c)` for WP01 classification; WP03's planned `thresholds.critical_a` may wrap it but must keep its own independent maximisation test | WP01 needs q_c now and must not depend on an unmerged module |
 | 2026-10-30 | After PR #3 review: fold test is relative, `abs(q-q_c) <= 64*eps*q_c`; `q_c` from the rationalised form; Brent runs to relative tolerance `4*eps`; sign probes are bounded by every real root and by `x=0`; WP01 solver settings are validated (RK45 only) and passed to the integrator | The absolute 1e-12 tolerance exceeded `q_c` itself for `a` near 1; tiny negative roots rounded to 0; probes could cross 0 for tiny roots; config tolerances were recorded but not used |
+
+| 2026-10-24 | WP01 equilibrium API and record schema as in INTERFACES.md; stability from one-sided signs, roots from calculus brackets + Brent, fold tolerance 1e-12 in q | Avoids complex near-fold artefacts of companion-matrix solvers and keeps close roots separate; WP02 reuses the conventions |
+| 2026-10-24 | `equilibria.fold_a(a)` provides the closed-form `(x_star, q_c)` for WP01 classification; WP03's planned `thresholds.critical_a` may wrap it but must keep its own independent maximisation test | WP01 needs q_c now and must not depend on an unmerged module |
 | 2026-10-24 | Report figures are included without file extension; pdflatex picks the vector PDF variant written next to the PNG/EPS pair. EPS files remain the submitted originals | Restricted pdflatex cannot convert EPS stored outside `report/`; this keeps `latexmk -pdf -cd report/main.tex` working without `-shell-escape` |
 
 Add interface changes, chosen experiment budgets, fixed inverse parameters, final environment lock and presentation date here as reviewed decisions.
@@ -49,3 +52,18 @@ now reject rtol below SciPy RK45's supported floor rather than allowing requeste
 and effective tolerances to diverge. Default numerical results and exact-fold
 classification remain unchanged. Adoption by WP01/WP02 and a single cross-package
 fold policy remain owner-reviewed integration steps; no owner agreement is invented.
+
+## 2026-10-30 — WP02 proposed interfaces (affected-owner review pending)
+
+- `model_b.EquilibriumB` mirrors the WP01 record but uses `e` instead of `q`; effort
+  must not be mislabelled as yield. `equilibria_b(a,e)` and `critical_effort(a)` use
+  the required discriminant derivation; no absolute fold band merges distinct controls.
+- `history.run_history` reuses `solver.solve_trajectory` on constant-control segments.
+  Restocking is an explicitly recorded positive addition at a segment index; boundary
+  duplicate times preserve left/right limits. A shutdown persists until restocking;
+  B smallness never triggers a reset. `ramp_schedule` supplies declared staircase controls.
+- `comparison` and `wp02_experiment` are WP02-owned consumers, not changes to the
+  existing shared APIs. WP01 PR #3 is restored on this branch as a declared dependency.
+  Its reviewed numerical edge cases remain with WP01; comparison guards exclude the
+  unresolved regimes. WP03 threshold-helper integration remains pending its availability.
+- These are proposed additions for the WP02 PR, not a claim of affected-owner approval.
