@@ -1,10 +1,10 @@
 {
-  "source_commit": "9cbe492ad3f4fe05943cecf3095b1964a2d7e464",
+  "source_commit": "d651c77973b4fab312740b6aaec52f827a9840cd",
   "source_dirty": false,
   "source_dirty_excludes": [
     "deliverables/"
   ],
-  "executed_notebook_sha256": "25e6b180bc509c0911bd95408974daf33abc35d7d389f10444a5efc957242353",
+  "executed_notebook_sha256": "de23a1a2a6a389458816df8e87446a94babe5f8ff64dc9e4621447a2d17aae08",
   "executed_code_cells": 27,
   "synthetic_observation_rows": 5454,
   "figure_pairs": 17,
@@ -17,11 +17,11 @@
   ],
   "report": "Maintained separately in Overleaf",
   "known_limits": [
-    "WP05 validation-selection-off loss histories and optimizer status reporting remain under review in PR #10",
+    "Legacy WP05 status converged denotes completed training; read lbfgs_outcome for optimizer convergence",
     "Recorded final-sweep tables are not fresh reruns of all fits",
     "Human review, presentation and final Overleaf report remain separate"
   ],
-  "zip_sha256": "27f2594bc1124474d846af0d25c65276b91590e01f23e503f8f9caec13d6d554",
-  "zip_bytes": 10282082,
-  "files": 230
+  "zip_sha256": "2986c4907b21af33559d4562287091942ae64f8a86bbd64169a6cd5b111620b2",
+  "zip_bytes": 10289403,
+  "files": 231
 }
