@@ -109,6 +109,9 @@ def history_figure(runs, config):
 def run_experiment(config, output, root):
     """Write results/figures/manifest and return summary, recording failures too."""
     output, root = Path(output), Path(root)
+    requested_rtol = config.get("solver", {}).get("rtol", 1e-9)
+    if not np.isfinite(requested_rtol) or requested_rtol < 100 * np.finfo(float).eps:
+        raise ValueError("RK45 rtol is below its supported minimum or nonfinite")
     output.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
     manifest = dict(
@@ -116,10 +119,7 @@ def run_experiment(config, output, root):
         run_id=datetime.now(timezone.utc).strftime("wp02-%Y%m%dT%H%M%SZ"),
         timestamp_utc=datetime.now(timezone.utc).isoformat(),
         config=config,
-        git_sha=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
-        git_dirty=bool(
-            subprocess.check_output(["git", "status", "--porcelain"], cwd=root, text=True).strip()
-        ),
+        **source_state(root),
         hardware=platform.platform() + " / " + platform.machine(),
         python=platform.python_version(),
         versions={
@@ -281,3 +281,26 @@ def run_experiment(config, output, root):
             json.dumps(manifest, indent=2, allow_nan=False) + "\n"
         )
     return manifest
+
+
+def source_state(root):
+    """Preserve provenance when running an exported notebook without Git."""
+    snapshot = root / "SOURCE_SNAPSHOT.json"
+    if snapshot.is_file():
+        return dict(git_sha=None, git_dirty=None, source_snapshot=json.loads(snapshot.read_text()))
+    try:
+        return dict(
+            git_sha=subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True, stderr=subprocess.DEVNULL
+            ).strip(),
+            git_dirty=bool(
+                subprocess.check_output(
+                    ["git", "status", "--porcelain"],
+                    cwd=root,
+                    text=True,
+                    stderr=subprocess.DEVNULL,
+                ).strip()
+            ),
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return dict(git_sha=None, git_dirty=None, source_snapshot="Git metadata unavailable")

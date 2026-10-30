@@ -108,3 +108,7 @@ Deliver future command `python experiments/wp02/run.py --config configs/wp02.jso
 - **Explain:** proportional harvesting reduces catch as biomass falls but does not
   remove the Allee recovery barrier. Why does returning h to zero fail below A?
   Human understanding and rehearsal have not been assessed or certified.
+
+## Integration follow-up, 31 October 2026
+
+40 WP02 tests passed. Removed the deleted WP01 constant import while keeping the conservative comparison exclusion local; reject unsupported tiny rtol before output; exported notebook provenance no longer requires Git. The older restored WP01 dependency is replaced by current WP01 only in the separate integration PR. The separate integration PR records current source heads, combined tests and notebook execution. The normal review process remains required.

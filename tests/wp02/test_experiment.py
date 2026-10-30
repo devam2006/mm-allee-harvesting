@@ -36,3 +36,23 @@ def test_invalid_solver_settings_fail_instead_of_only_entering_manifest(tmp_path
     with pytest.raises(ValueError):
         run_experiment(config, tmp_path, ROOT)
     assert json.loads((tmp_path / "manifest.json").read_text())["status"] == "failed"
+
+
+def test_unsupported_rtol_is_rejected_before_creating_output(tmp_path):
+    config = json.loads((ROOT / "configs/wp02.json").read_text())
+    config["solver"]["rtol"] = 1e-16
+    output = tmp_path / "invalid"
+    with pytest.raises(ValueError, match="supported minimum"):
+        run_experiment(config, output, ROOT)
+    assert not output.exists()
+
+
+def test_exported_snapshot_provenance_does_not_require_git(tmp_path, monkeypatch):
+    from mm_allee.wp02_experiment import source_state
+
+    snapshot = {"source_pr": 9, "source_commit": "test-source"}
+    (tmp_path / "SOURCE_SNAPSHOT.json").write_text(json.dumps(snapshot))
+    monkeypatch.setattr("subprocess.check_output", lambda *a, **k: pytest.fail("Git was invoked"))
+    state = source_state(tmp_path)
+    assert state["git_sha"] is state["git_dirty"] is None
+    assert state["source_snapshot"] == snapshot

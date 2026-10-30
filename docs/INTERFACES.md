@@ -46,3 +46,7 @@ Figure names: `wpNN_short_description.png/.eps`; add a manifest mapping figure/t
 ## Team ownership metadata
 
 `team.json` is the source for the five GitHub accounts and optional `work_package` choices. `null` means unassigned; otherwise use WP01–WP05, one distinct task per person. `python scripts/sync_team.py` renders ownership into nine documentation files. Generated regions are delimited by `team-sync` comments. The script preserves the status table’s scientific state/evidence and changes only its owner column. `--check` is read-only and is required by CI. Owner-authorised assignment administration may reach `main` under the setup exception in `CONTRIBUTING.md`; the script neither commits nor grants collaborator access.
+
+### 31 October integration follow-up (WP02)
+
+40 WP02 tests passed. Removed the deleted WP01 constant import while keeping the conservative comparison exclusion local; reject unsupported tiny rtol before output; exported notebook provenance no longer requires Git. The older restored WP01 dependency is replaced by current WP01 only in the separate integration PR. No human approval or merge is supplied.

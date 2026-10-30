@@ -39,3 +39,5 @@ using temporary config/cache directories and approved local kernel networking.
 The report compiled and WP02 pages 7–11 plus all three slide renders were inspected.
 The slide PDF companion was generated from the inspected renders after the native
 export limitation; the PPTX preserves editable evidence. No human review was claimed.
+
+31 October 2026: at Devam's explicit request to fix the outstanding PRs and build a separate WP01-WP03 integration PR, OpenAI ChatGPT/Codex applied the WP02 compatibility/review corrections and ran focused tests. 40 WP02 tests passed. Removed the deleted WP01 constant import while keeping the conservative comparison exclusion local; reject unsupported tiny rtol before output; exported notebook provenance no longer requires Git. The older restored WP01 dependency is replaced by current WP01 only in the separate integration PR. These changes are authored as Devam-assisted fixes, not an approval or statement of the original owner's understanding.

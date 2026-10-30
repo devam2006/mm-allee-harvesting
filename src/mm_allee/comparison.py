@@ -8,9 +8,13 @@ from math import isfinite
 
 from scipy.integrate import trapezoid
 
-from .equilibria import FOLD_TOL, equilibria_a, equilibria_logistic, fold_a
+from .equilibria import equilibria_a, equilibria_logistic, fold_a
 from .model_b import critical_effort, equilibria_b
 from .solver import solve_trajectory
+
+# A conservative input exclusion for this experiment, independent of the
+# equilibrium provider's definition of an exact fold.
+COMPARISON_CONTROL_EXCLUSION = 1e-12
 
 
 def comparison_controls(parameters, x_ref, fraction, protocol):
@@ -27,14 +31,14 @@ def comparison_controls(parameters, x_ref, fraction, protocol):
         raise ValueError("Comparisons currently validated only for 0.05<=a<=0.95")
     qc = fold_a(a)[1]
     q = fraction * qc
-    if q != qc and abs(q - qc) <= FOLD_TOL:
+    if q != qc and abs(q - qc) <= COMPARISON_CONTROL_EXCLUSION:
         raise ValueError("A control lies in WP01's unresolved fold tolerance band")
     if protocol == "initial_catch":
-        if q != 0.25 and abs(q - 0.25) <= FOLD_TOL:
+        if q != 0.25 and abs(q - 0.25) <= COMPARISON_CONTROL_EXCLUSION:
             raise ValueError("Logistic control lies in WP01's unresolved fold tolerance band")
         return {"A": fraction * qc, "B": fraction * qc / x_ref, "logistic": fraction * qc}
     if protocol == "threshold_fraction":
-        if fraction / 4 != 0.25 and abs(fraction / 4 - 0.25) <= FOLD_TOL:
+        if fraction / 4 != 0.25 and abs(fraction / 4 - 0.25) <= COMPARISON_CONTROL_EXCLUSION:
             raise ValueError("Logistic control lies in WP01's unresolved fold tolerance band")
         return {"A": fraction * qc, "B": fraction * critical_effort(a), "logistic": fraction / 4}
     raise ValueError("Unknown comparison protocol")
