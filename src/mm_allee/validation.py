@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from .data import validate_splits, validate_time_windows
-from .metrics import errors
 from .plotting import save_figure
 
 
@@ -40,7 +39,9 @@ def compute_parameter_metrics(
         true_val = float(p_true[param])
         est_val = float(p_est.get(param, float("nan")))
 
-        abs_err = abs(est_val - true_val) if isfinite(est_val) and isfinite(true_val) else float("nan")
+        abs_err = (
+            abs(est_val - true_val) if isfinite(est_val) and isfinite(true_val) else float("nan")
+        )
         rel_err = (
             abs_err / abs(true_val)
             if isfinite(abs_err) and true_val != 0
@@ -210,7 +211,9 @@ def plot_heldout_failure(
             t_train_max = float(times[idx_train[-1]])
             ax.axvspan(0, t_train_max, color="blue", alpha=0.08, label="Train split (60%)")
         if idx_val is not None and len(idx_val) > 0:
-            t_train_max = float(times[idx_train[-1]]) if idx_train is not None and len(idx_train) > 0 else 0
+            t_train_max = (
+                float(times[idx_train[-1]]) if idx_train is not None and len(idx_train) > 0 else 0
+            )
             t_val_max = float(times[idx_val[-1]])
             ax.axvspan(t_train_max, t_val_max, color="green", alpha=0.08, label="Val split (20%)")
         if idx_test is not None and len(idx_test) > 0:
@@ -220,7 +223,9 @@ def plot_heldout_failure(
 
         if len(obs_pop) > 0:
             obs_times = np.asarray(run.get("obs_time", times))
-            ax.scatter(obs_times, obs_pop, s=15, color="black", alpha=0.6, label="Noisy Observations")
+            ax.scatter(
+                obs_times, obs_pop, s=15, color="black", alpha=0.6, label="Noisy Observations"
+            )
         if len(pred_pop) > 0:
             ax.plot(times, pred_pop, color="crimson", lw=2, label="Fitted Trajectory")
 

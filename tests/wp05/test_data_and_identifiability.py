@@ -134,8 +134,12 @@ def test_model_b_counterexample_identical_rhs_and_trajectories():
     d1 = p1.dimensionless()
     d2 = p2.dimensionless()
     t_end = 4.0
-    traj1 = solve_trajectory("B", a=d1["a"], harvest=d1["e"], x0=0.6 / p1.K, tau_end=p1.r * t_end, n_points=101)
-    traj2 = solve_trajectory("B", a=d2["a"], harvest=d2["e"], x0=0.6 / p2.K, tau_end=p2.r * t_end, n_points=101)
+    traj1 = solve_trajectory(
+        "B", a=d1["a"], harvest=d1["e"], x0=0.6 / p1.K, tau_end=p1.r * t_end, n_points=101
+    )
+    traj2 = solve_trajectory(
+        "B", a=d2["a"], harvest=d2["e"], x0=0.6 / p2.K, tau_end=p2.r * t_end, n_points=101
+    )
 
     # Convert to dimensional time and population
     time1 = traj1.tau / p1.r
@@ -157,8 +161,12 @@ def test_multiple_initial_states_do_not_resolve_model_b_ambiguity():
 
     d1, d2 = p1.dimensionless(), p2.dimensionless()
     for n0 in [0.3, 0.5, 0.8, 1.1]:
-        sol1 = solve_trajectory("B", a=d1["a"], harvest=d1["e"], x0=n0 / p1.K, tau_end=p1.r * 2.0, n_points=51)
-        sol2 = solve_trajectory("B", a=d2["a"], harvest=d2["e"], x0=n0 / p2.K, tau_end=p2.r * 2.0, n_points=51)
+        sol1 = solve_trajectory(
+            "B", a=d1["a"], harvest=d1["e"], x0=n0 / p1.K, tau_end=p1.r * 2.0, n_points=51
+        )
+        sol2 = solve_trajectory(
+            "B", a=d2["a"], harvest=d2["e"], x0=n0 / p2.K, tau_end=p2.r * 2.0, n_points=51
+        )
         np.testing.assert_allclose(sol1.x * p1.K, sol2.x * p2.K, rtol=1e-6, atol=1e-8)
 
 
@@ -172,7 +180,7 @@ def test_model_a_polynomial_identifiability():
     Given 0 < A < K, all 4 parameters are algebraically identifiable.
     """
     r_true, K_true, A_true, H_true = 0.7, 100.0, 20.0, 10.0
-    p = Parameters(r=r_true, K=K_true, A=A_true, H=H_true)
+    _p = Parameters(r=r_true, K=K_true, A=A_true, H=H_true)
 
     c0 = -H_true
     c1 = -r_true

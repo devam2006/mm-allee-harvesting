@@ -9,7 +9,6 @@ import csv
 import datetime
 import hashlib
 import json
-import math
 import sys
 import time
 from pathlib import Path
@@ -22,10 +21,10 @@ REPO_ROOT = SCRIPT_DIR.parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from mm_allee.data import generate_noisy_observations
-from mm_allee.inference import fit_ode_least_squares
-from mm_allee.metrics import errors
-from mm_allee.validation import (
+from mm_allee.data import generate_noisy_observations  # noqa: E402
+from mm_allee.inference import fit_ode_least_squares  # noqa: E402
+from mm_allee.metrics import errors  # noqa: E402
+from mm_allee.validation import (  # noqa: E402
     audit_splits_and_leakage,
     compute_parameter_metrics,
     plot_heldout_failure,
@@ -36,7 +35,8 @@ from mm_allee.validation import (
 
 # Optional JAX import
 try:
-    import jax
+    import jax  # noqa: F401  (availability check)
+
     from mm_allee.pinn.inverse import InversePINNTrainer, TrainableParameters
     from mm_allee.pinn.network import NetworkConfig
 
@@ -110,7 +110,7 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                 run_counter += 1
                 noise_seed = seed
                 fit_seed = fit_seed_offset + seed
-                run_id = f"wp05_{case_id}_s{int(sigma*100):02d}_seed{seed}"
+                run_id = f"wp05_{case_id}_s{int(sigma * 100):02d}_seed{seed}"
 
                 # Generate noisy observations with frozen 60/20/20 train/val/test splits
                 obs = generate_noisy_observations(
@@ -335,7 +335,9 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                     "noise_sigma": sigma,
                                     "time": pinn_res.predicted_trajectory["time"],
                                     "pred_population": pinn_res.predicted_trajectory["population"],
-                                    "predicted_population": pinn_res.predicted_trajectory["population"],
+                                    "predicted_population": pinn_res.predicted_trajectory[
+                                        "population"
+                                    ],
                                     "ref_population": ref_pops,
                                     "obs_time": np.asarray(obs["time"]),
                                     "obs_population": np.asarray(obs["observed_population"]),

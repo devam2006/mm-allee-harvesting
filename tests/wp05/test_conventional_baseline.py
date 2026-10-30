@@ -1,6 +1,5 @@
 """Tests for the conventional SciPy ODE least-squares baseline."""
 
-import numpy as np
 import pytest
 
 from mm_allee.data import generate_noisy_observations
@@ -15,7 +14,9 @@ def test_conventional_baseline_clean_recovery_model_a():
     p = Parameters(r=r_true, K=K_true, A=A_true, H=H_true)
     d = p.dimensionless()
 
-    sol = solve_trajectory("A", a=d["a"], harvest=d["q"], x0=45.0 / K_true, tau_end=p.r * 8.0, n_points=101)
+    sol = solve_trajectory(
+        "A", a=d["a"], harvest=d["q"], x0=45.0 / K_true, tau_end=p.r * 8.0, n_points=101
+    )
     times = sol.tau / p.r
     pops = sol.x * p.K
 
@@ -52,7 +53,9 @@ def test_conventional_baseline_noisy_data_model_b():
     p = Parameters(r=r_true, K=K_true, A=A_true, h=h_true)
     d = p.dimensionless()
 
-    sol = solve_trajectory("B", a=d["a"], harvest=d["e"], x0=45.0 / K_true, tau_end=p.r * 8.0, n_points=101)
+    sol = solve_trajectory(
+        "B", a=d["a"], harvest=d["e"], x0=45.0 / K_true, tau_end=p.r * 8.0, n_points=101
+    )
     times = sol.tau / p.r
     pops = sol.x * p.K
 

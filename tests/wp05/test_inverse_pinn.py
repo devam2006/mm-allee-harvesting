@@ -56,7 +56,7 @@ def test_inverse_pinn_leakage_audit():
     """Verify that test observations are strictly isolated from training loss gradient."""
     ncfg = NetworkConfig(layers=(1, 16, 16, 1), t_end=10.0, x0=0.5, seed=11)
     params = init_params(ncfg)
-    tp = TrainableParameters("A", fit_params=["r", "A", "H"], known_conditions={"known_K": 100.0})
+    _tp = TrainableParameters("A", fit_params=["r", "A", "H"], known_conditions={"known_K": 100.0})
 
     t_train = jnp.array([0.1, 0.5])
     y_train = jnp.array([0.45, 0.50])
@@ -107,7 +107,9 @@ def test_short_inverse_pinn_smoke_fit():
 
     assert res.success
     assert res.status in ("converged", "validation_stopped")
-    assert len(res.training_history["loss_train"]) == 15
+    # the history holds the 15 Adam epochs and then the iterations of the L-BFGS phase that follows
+    phases = res.training_history["phase"]
+    assert phases.count("adam") == 15 and set(phases) <= {"adam", "lbfgs"}
     assert np.isfinite(res.train_loss)
     assert res.wall_seconds > 0
     # Parameter update check: optimizer moved values from starting guess

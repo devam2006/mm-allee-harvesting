@@ -4,6 +4,13 @@ Shared JAX neural engine: WP04 owns forward engine; WP05 extends for inverse inf
 """
 
 from .autodiff import derivative
+from .inverse import (
+    InversePINNResult,
+    InversePINNTrainer,
+    TrainableParameters,
+    load_inverse_checkpoint,
+    save_inverse_checkpoint,
+)
 from .network import NetworkConfig, init_params, mlp, x_hat
 from .residual import collocation_residual, jax_rhs, physics_loss
 from .train_forward import (
@@ -14,13 +21,6 @@ from .train_forward import (
     predict,
     save_checkpoint,
     train_forward,
-)
-from .inverse import (
-    InversePINNResult,
-    InversePINNTrainer,
-    TrainableParameters,
-    load_inverse_checkpoint,
-    save_inverse_checkpoint,
 )
 
 __all__ = [

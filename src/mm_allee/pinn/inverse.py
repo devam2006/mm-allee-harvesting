@@ -265,7 +265,9 @@ class InversePINNTrainer:
         known = known_conditions or {}
 
         def over_budget() -> bool:
-            return bool(self.time_budget_s) and (time.perf_counter() - start_time) > self.time_budget_s
+            return (
+                bool(self.time_budget_s) and (time.perf_counter() - start_time) > self.time_budget_s
+            )
 
         # 1. Parse observation arrays and partition splits
         times_all = np.asarray(observations["time"], dtype=np.float64)
@@ -322,7 +324,9 @@ class InversePINNTrainer:
             )
 
         # Initialize physical parameters raw tensors
-        raw_p = {k: jnp.asarray(v, dtype=jnp.float64) for k, v in self.params_mod.raw_params.items()}
+        raw_p = {
+            k: jnp.asarray(v, dtype=jnp.float64) for k, v in self.params_mod.raw_params.items()
+        }
 
         # Collocation points across full physical time window [0, t_end]
         t_colloc = jnp.linspace(0.0, t_end, n_collocation, dtype=jnp.float64)
@@ -392,7 +396,10 @@ class InversePINNTrainer:
             v_n = jax.tree_util.tree_map(lambda v_, g: b2 * v_ + (1.0 - b2) * g * g, v_n, g_n)
             updated_net = jax.tree_util.tree_map(
                 lambda p, m_, v_: (
-                    p - lr_net * (m_ / (1.0 - b1**step_idx)) / (jnp.sqrt(v_ / (1.0 - b2**step_idx)) + eps)
+                    p
+                    - lr_net
+                    * (m_ / (1.0 - b1**step_idx))
+                    / (jnp.sqrt(v_ / (1.0 - b2**step_idx)) + eps)
                 ),
                 st[0],
                 m_n,
@@ -400,11 +407,18 @@ class InversePINNTrainer:
             )
 
             # Update physical parameters Adam state
-            m_param = jax.tree_util.tree_map(lambda m_, g: b1 * m_ + (1.0 - b1) * g, m_param, g_param)
-            v_param = jax.tree_util.tree_map(lambda v_, g: b2 * v_ + (1.0 - b2) * g * g, v_param, g_param)
+            m_param = jax.tree_util.tree_map(
+                lambda m_, g: b1 * m_ + (1.0 - b1) * g, m_param, g_param
+            )
+            v_param = jax.tree_util.tree_map(
+                lambda v_, g: b2 * v_ + (1.0 - b2) * g * g, v_param, g_param
+            )
             updated_p = jax.tree_util.tree_map(
                 lambda p, m_, v_: (
-                    p - lr_p * (m_ / (1.0 - b1**step_idx)) / (jnp.sqrt(v_ / (1.0 - b2**step_idx)) + eps)
+                    p
+                    - lr_p
+                    * (m_ / (1.0 - b1**step_idx))
+                    / (jnp.sqrt(v_ / (1.0 - b2**step_idx)) + eps)
                 ),
                 st[1],
                 m_param,
@@ -451,7 +465,11 @@ class InversePINNTrainer:
 
             # Evaluate validation loss periodically (strictly no gradient)
             val_loss_f = best_val_loss
-            if self.validation_selection and len(idx_val) > 0 and (epoch % eval_every == 0 or epoch == n_adam):
+            if (
+                self.validation_selection
+                and len(idx_val) > 0
+                and (epoch % eval_every == 0 or epoch == n_adam)
+            ):
                 pred_val = jax.vmap(lambda t: x_hat(state[0], t, ncfg))(t_val)
                 val_loss_f = float(jnp.mean((pred_val - y_val_norm) ** 2))
 
@@ -517,7 +535,9 @@ class InversePINNTrainer:
                 if np.all(np.isfinite(fit.x)):
                     lbfgs_candidate = unravel(jnp.asarray(fit.x))
                     if self.validation_selection and len(idx_val) > 0:
-                        pred_val_lbfgs = jax.vmap(lambda t: x_hat(lbfgs_candidate[0], t, ncfg))(t_val)
+                        pred_val_lbfgs = jax.vmap(lambda t: x_hat(lbfgs_candidate[0], t, ncfg))(
+                            t_val
+                        )
                         val_loss_lbfgs = float(jnp.mean((pred_val_lbfgs - y_val_norm) ** 2))
                         # Accept L-BFGS solution if it does not degrade validation loss
                         if val_loss_lbfgs <= best_val_loss * 1.05:
