@@ -104,10 +104,10 @@ The total objective function combines data fidelity on training points and physi
     \mathcal{R}(t_j) = \frac{\mathrm{d}x_\theta}{\mathrm{d}t}\bigg|_{t_j} - f_{\mathrm{norm}}(x_\theta(t_j); \mathbf{p}), \quad \mathcal{L}_{\mathrm{phys}} = \frac{1}{M} \sum_{j=1}^M \left(\mathcal{R}(t_j)\right)^2.
     \end{equation}
 \end{enumerate}
-Validation observations $\mathcal{D}_{\mathrm{val}}$ are used strictly without gradient for checkpoint selection and early stopping. Test observations $\mathcal{D}_{\mathrm{test}}$ remain completely frozen and unseen throughout training.
+Validation observations $\mathcal{D}_{\mathrm{val}}$ never enter the gradient. The trainer can use them for early stopping and checkpoint selection (option \texttt{validation\_selection}); the adopted setting switches this \emph{off}, for the reason given in Section~\ref{sec:inverse_convergence} (on a flat late-time window it can return an early, barely trained state), so in the final experiments the validation points are only reported. Test observations $\mathcal{D}_{\mathrm{test}}$ remain completely frozen and unseen throughout training.
 
-\subsubsection{Two-Phase Optimizer (Adam $\to$ L-BFGS)}
-Training combines Phase 1 (Adam) with separate learning rates ($\eta_{\mathrm{net}} = 0.001, \eta_{\mathrm{params}} = 0.01$) to push weights into a favorable basin, followed by Phase 2 (L-BFGS-B via \texttt{scipy.optimize.minimize}) to accelerate second-order convergence.
+\subsubsection{Two-Phase Optimizer (Adam $\to$ L-BFGS) and the shared setting}
+Training combines Phase~1 (Adam, 1000 iterations) with separate learning rates for the network weights ($\eta_{\mathrm{net}} = 10^{-3}$) and for the latent physical parameters ($\eta_{\mathrm{params}} = 10^{-3}$) to move into a favourable basin, followed by Phase~2 (L-BFGS-B via \texttt{scipy.optimize.minimize}, 2500 iterations, with the tolerance-based stop switched off so that the full iteration budget is used). The loss weights are $\lambda_{\mathrm{data}}=1$ and $\lambda_{\mathrm{phys}}=0.1$, with 300 collocation points on $[0,t_{\mathrm{end}}]$ and validation selection off. The network (two hidden layers of 32 units, $\tanh$), the network learning rate, the number of collocation points and the Adam/L-BFGS budget are \emph{identical} to those of the forward problem (Section~\ref{sec:forward_pinn}), where the choice of this shared setting is documented; $\lambda_{\mathrm{phys}}$, $\eta_{\mathrm{params}}$ and the validation option exist only in the inverse problem.
 
 \subsection{Conventional ODE Least-Squares Baseline}
 As an independent, rigorous benchmark, we implement a conventional nonlinear least-squares ODE solver using SciPy (\texttt{scipy.optimize.least\_squares} with the Trust Region Reflective algorithm). The forward trajectory is numerically integrated using adaptive Runge-Kutta Dormand-Prince (RK45) methods. The objective function minimizes normalized observation residuals on the identical training split:
@@ -117,53 +117,122 @@ As an independent, rigorous benchmark, we implement a conventional nonlinear lea
 subject to the exact same physical parameter bounds: $r \in [10^{-4}, 10]$, $A \in [10^{-4}, K]$, and $H, h \ge 0$.
 
 \subsection{Experimental Design and Results}
-Experiments are conducted on clean synthetic trajectories generated with known true parameters $r=0.7$, $K=100.0$, $A=20.0$, with Model A harvest $H \in \{10.0, 36.5, 70.0\}$ and Model B effort $h \in \{0.21, 0.5544\}$. Additive Gaussian noise is injected at three standard deviations $\sigma \in \{0.0, 0.01, 0.05\} \times N_{\mathrm{ref}}$ across seeds $\{11, 22, 33\}$. Contiguous time windows are partitioned into 60\% training, 20\% validation, and 20\% held-out test splits.
+\label{sec:inverse_design}
+Experiments use the six synthetic reference trajectories of the WP03 fixture: Model~A regular, near-fold and extinction, and Model~B regular, near-fold and decline, generated with known true parameters $r=0.7$, $K=100.0$, $A=20.0$, Model~A harvest $H \in \{10.0, 36.5, 70.0\}$ and Model~B effort $h \in \{0.21, 0.5544\}$. Each trajectory has \textbf{101 observations} on $t \in [0,8]$ (spacing $0.08$), split into contiguous windows: \textbf{61 training points} ($0 \le t \le 4.80$), \textbf{20 validation points} ($4.88 \le t \le 6.40$) and \textbf{20 held-out test points} ($6.48 \le t \le 8.00$). Additive Gaussian noise of standard deviation $\sigma N_{\mathrm{ref}}$ with $N_{\mathrm{ref}}=100$ and $\sigma \in \{0, 0.01, 0.05\}$ is added; the noise seed is the run seed and the network seed is $1000+$ the run seed, with seeds $\{11, 22, 33\}$. The carrying capacity $K$ and the initial population are known and $(r, A, H\text{ or }h)$ are fitted. All errors are relative errors per parameter, given in scientific notation. The training data enter the loss only through the 61 training points, and the physics residual is enforced at 300 collocation points over the full window $[0,8]$.
 
-\subsubsection{Parameter Recovery Under Noise}
-Table~\ref{tab:parameter_metrics_summary} summarizes parameter estimation accuracy for the identifiable main design ($K=100.0$ known, estimating $r, A, H/h$). 
+\subsubsection{Why the original settings failed}
+The settings used for the first complete sweep (two hidden layers of 64, 120 collocation points, 1500 Adam epochs with validation early stopping and 200 L-BFGS iterations that stop on tolerances) recovered \textbf{none of the 18 clean fits}, and all 54 fits ended with the status \texttt{validation\_\allowbreak{}stopped}, while the conventional ODE baseline recovered all 18. The main cause is the optimiser budget: with 2500 L-BFGS iterations and no tolerance stop the same trainer recovers the well-conditioned cases to $10^{-3}$--$10^{-5}$. We therefore kept the original runs only as provenance, in the files \texttt{artifacts/\allowbreak{}tables/\allowbreak{}wp05\_\allowbreak{}*\_\allowbreak{}original\_\allowbreak{}settings.csv} and repeated the whole sweep with the shared setting.
 
-On noise-free data ($\sigma=0$), the conventional ODE baseline recovers true parameters with near-machine precision (relative errors below $10^{-7}$). In contrast, all 54 PINN runs were terminated by validation early stopping (\texttt{validation\_stopped}). While the PINN successfully captures the general sigmoid curvature of the trajectory within the training window, early stopping freezes the network before the physical parameters reach their true values: for example, on noise-free Model A data, estimated $A$ settles near $38.7$ ($93.6\%$ error) and $H$ near $4.15$ ($58.5\%$ error).
-
-This demonstrates a foundational lesson of inverse PINNs: \textbf{trajectory fit does not guarantee parameter recovery}. Because neural networks possess immense representational capacity, internal weights can easily shift to compensate for incorrect physical parameters, producing a low data loss while leaving parameter gradients in a shallow plateau.
-
-\subsubsection{Difficult Regimes and Failure Analysis}
-Across the full 108-run sweep:
-\begin{itemize}
-    \item \textbf{ODE Convergence vs Stiff Regimes:} The conventional ODE baseline converged in 52 out of 54 runs (\texttt{converged}). In two difficult high-noise extinction/near-fold cases, it reached the maximum evaluation budget (\texttt{failed: evaluation\_limit}).
-    \item \textbf{Held-Out Extrapolation Breakdown:} In the held-out test split ($t > 6.4$) visible in Figure~\ref{fig:wp05_heldout_failure}, the conventional ODE solver correctly preserves the asymptotic equilibrium. In contrast, the PINN trajectory begins curving downward outside the training domain. This illustrates that neural surrogates act as interpolators rather than true physical laws when data coverage ends.
-\end{itemize}
-
+\subsubsection{Parameter Recovery on Clean Data}
+Table~\ref{tab:clean_recovery} gives the result on noise-free data, where the information about the parameters is unlimited in principle.
 \begin{table}[ht]
 \centering
-\caption{Parameter recovery metrics for Model A and B across noise levels (Seed 11, from the verified 108-run sweep).}
+\caption{Clean-data recovery ($\sigma=0$, 3 seeds per case; recovered means every fitted parameter within $5\times10^{-2}$ relative error). The condition number is that of the scaled Jacobian of the trajectory with respect to the fitted parameters on the training window.}
+\label{tab:clean_recovery}
+\small
+\resizebox{\textwidth}{!}{\begin{tabular}{lcccc}
+\toprule
+\textbf{Case} & \textbf{PINN recovered} & \textbf{PINN median error} & \textbf{ODE\_LS median error} & \textbf{Condition number}\\
+\midrule
+Model A regular & 3/3 & $3.7\times10^{-5}$ & $3\times10^{-8}$ & $6.2\times10^{1}$\\
+Model B regular & 3/3 & $2.7\times10^{-5}$ & $1\times10^{-8}$ & $8.1\times10^{1}$\\
+Model A extinction & 1/3 & $1.3\times10^{-1}$ & $2\times10^{-7}$ & $3.4\times10^{2}$\\
+Model B near-fold & 3/3 & $1.0\times10^{-3}$ & $5\times10^{-8}$ & $1.1\times10^{3}$\\
+Model A near-fold & 0/3 & $1.0$ & $7\times10^{-8}$ & $2.6\times10^{3}$\\
+Model B decline & 0/3 & $2.9\times10^{-1}$ & $5\times10^{-5}$ & $1.6\times10^{4}$\\
+\midrule
+\textbf{Total} & \textbf{10/18} (original settings: 0/18) & & 18/18 &\\
+\bottomrule
+\end{tabular}}
+\end{table}
+The conventional ODE baseline recovers all six cases to $5\times10^{-5}$ or better, so all of them are identifiable in principle. The PINN recovers the well-conditioned cases to $10^{-3}$--$10^{-5}$ but not the badly conditioned ones: \textbf{trajectory fit does not guarantee parameter recovery}.
+
+\subsubsection{Parameter Recovery Under Noise}
+\begin{table}[ht]
+\centering
+\caption{Parameter estimates for Model A and B (regular, seed 11), shared setting. Test RMSE is the error on the held-out window against the \emph{clean} reference trajectory, in population units.}
 \label{tab:parameter_metrics_summary}
 \small
-\begin{tabular}{lcccccc}
+\resizebox{\textwidth}{!}{\begin{tabular}{lcccccc}
 \toprule
 \textbf{Model \& Regime} & \textbf{Method} & \textbf{Noise $\sigma$} & \textbf{Est. $r$ ($r^*=0.7$)} & \textbf{Est. $A$ ($A^*=20$)} & \textbf{Est. Harvest} & \textbf{Test RMSE} \\
 \midrule
 Model A (Regular) & ODE\_LS & 0.00 & 0.7000 & 20.000 & 10.000 ($H$) & $5.1 \times 10^{-8}$ \\
-Model A (Regular) & ODE\_LS & 0.01 & 0.5834 & 18.134 & 9.178 ($H$)  & 1.091 \\
-Model A (Regular) & ODE\_LS & 0.05 & 0.2228 & 9.548  & 6.481 ($H$)  & 5.460 \\
-Model A (Regular) & PINN    & 0.00 & 0.7536 & 38.712 & 4.155 ($H$)  & 9.829 \\
-Model A (Regular) & PINN    & 0.01 & 0.7534 & 38.821 & 4.176 ($H$)  & 9.583 \\
-Model A (Regular) & PINN    & 0.05 & 0.7546 & 38.765 & 4.173 ($H$)  & 10.071 \\
+Model A (Regular) & ODE\_LS & 0.01 & 0.5834 & 18.134 & 9.178 ($H$)  & $1.1 \times 10^{-1}$ \\
+Model A (Regular) & ODE\_LS & 0.05 & 0.2228 & 9.548  & 6.481 ($H$)  & $6.1 \times 10^{-1}$ \\
+Model A (Regular) & PINN    & 0.00 & 0.7001 & 20.002 & 9.998 ($H$)  & $1.6 \times 10^{-3}$ \\
+Model A (Regular) & PINN    & 0.01 & 0.5652 & 17.721 & 9.205 ($H$)  & $8.3 \times 10^{-2}$ \\
+Model A (Regular) & PINN    & 0.05 & 0.0001 & 0.005  & 5.555 ($H$)  & $7.7 \times 10^{-1}$ \\
 \midrule
 Model B (Regular) & ODE\_LS & 0.00 & 0.7000 & 20.000 & 0.2100 ($h$) & $5.2 \times 10^{-8}$ \\
-Model B (Regular) & ODE\_LS & 0.01 & 0.5643 & 17.764 & 0.1935 ($h$) & 1.093 \\
-Model B (Regular) & ODE\_LS & 0.05 & 0.1572 & 7.156  & 0.1423 ($h$) & 5.470 \\
-Model B (Regular) & PINN    & 0.00 & 0.7823 & 37.572 & 0.0579 ($h$) & 4.928 \\
-Model B (Regular) & PINN    & 0.01 & 0.7826 & 37.555 & 0.0579 ($h$) & 4.809 \\
-Model B (Regular) & PINN    & 0.05 & 0.7831 & 37.643 & 0.0579 ($h$) & 6.656 \\
+Model B (Regular) & ODE\_LS & 0.01 & 0.5643 & 17.764 & 0.1935 ($h$) & $1.4 \times 10^{-1}$ \\
+Model B (Regular) & ODE\_LS & 0.05 & 0.1572 & 7.156  & 0.1423 ($h$) & $7.7 \times 10^{-1}$ \\
+Model B (Regular) & PINN    & 0.00 & 0.7000 & 20.000 & 0.2100 ($h$) & $4.0 \times 10^{-4}$ \\
+Model B (Regular) & PINN    & 0.01 & 0.5558 & 17.577 & 0.1936 ($h$) & $1.2 \times 10^{-1}$ \\
+Model B (Regular) & PINN    & 0.05 & 0.0006 & 0.033  & 0.1319 ($h$) & $7.7 \times 10^{-1}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
+With noise, how well \emph{any} estimator can do is limited by the data. The Cramér--Rao bound is the smallest relative standard deviation an unbiased estimator can reach; we compute it from the Fisher information of the ODE model on the 61 training points (Table~\ref{tab:crb}).
+\begin{table}[ht]
+\centering
+\caption{Cramér--Rao lower bound on the relative standard deviation of the worst-determined parameter, by case and noise level (absolute noise $\sigma N_{\mathrm{ref}}$).}
+\label{tab:crb}
+\small
+\resizebox{\textwidth}{!}{\begin{tabular}{lcccc}
+\toprule
+\textbf{Case} & $\sigma=0.001$ & $\sigma=0.005$ & $\sigma=0.01$ & $\sigma=0.05$\\
+\midrule
+Model A regular & 0.012 & 0.058 & 0.12 & 0.58\\
+Model B regular & 0.015 & 0.076 & 0.15 & 0.76\\
+Model A extinction & 0.057 & 0.28 & 0.57 & 2.8\\
+Model B near-fold & 0.051 & 0.25 & 0.51 & 2.5\\
+Model A near-fold & 0.12 & 0.61 & 1.2 & 6.1\\
+Model B decline & 65 & $3.2\times10^{2}$ & $6.5\times10^{2}$ & $3.2\times10^{3}$\\
+\bottomrule
+\end{tabular}}
+\end{table}
+At $\sigma=0.01$ the PINN estimates for the regular cases (for example $r=0.565$, $A=17.7$, $H=9.21$ for Model~A) are within about 19\% of the truth and agree with the ODE fit to within a few per cent, which is what the bound (12\% for Model~A regular) permits: the worst-parameter error is about $1.3$--$1.4$ times the bound at every noise level. At $\sigma=0.05$ the bounds exceed 50\% for every case, so no estimator can determine the parameters; the PINN estimates then drift along the degenerate direction discussed below ($r$ and $A$ collapse towards zero), and the ODE fit is not accurate either.
+We call a case \emph{informative} at a given noise level if the bound of every parameter is at most $0.25$; this threshold was chosen after seeing the results (post hoc). At $\sigma=0.01$ only Model~A and B regular are informative, and the shared setting recovers all 6 of their fits within twice the bound, against 0 of 6 for the original settings. At $\sigma=0.05$ no case is informative.
+
+\subsubsection{Convergence and the Role of Noise}
+\label{sec:inverse_convergence}
+To test whether the synthetic noise explains the fits that do not converge, we repeated the study at $\sigma \in \{0, 0.001, 0.005, 0.01\}$ with tanh and swish (144 fits, seeds 11, 22, 33), judging convergence and recovery separately. \emph{Optimiser convergence} is the ratio of the training RMSE to the noise standard deviation, which is about $0.9$ for a correct fit. \emph{Recovery} is the error relative to the Cramér--Rao bound.
+\begin{itemize}
+    \item \textbf{Noise does not stop the optimiser.} With the trainer's default validation-based checkpoint selection, 132 of 144 fits reach the noise floor and none overfits; the errors of the well-conditioned cases grow in proportion to $\sigma$ at about $1.3$--$1.4$ times the bound; and the share of collapsed fits does not depend on $\sigma$ (6 of 36 at $\sigma=0$ and 9, 9, 7 of 36 at the three noisy levels).
+    \item \textbf{The 12 fits that missed the noise floor had a common cause.} All but one ended \texttt{validation\_\allowbreak{}stopped} with their parameters still at the starting guess (worst-parameter error exactly $0.5$). The trainer restores the ``best validation'' checkpoint and rejects an L-BFGS result whose validation loss is more than 5\% worse; on a flat late-time validation window an early, barely trained state can win that comparison.
+    \item \textbf{With validation selection switched off, all 144 fits reach the noise floor}, but parameter recovery does not improve overall (for tanh, the number of the 18 fits within $5\times10^{-2}$ at the four noise levels $0$, $0.001$, $0.005$ and $0.01$ is 8, 8, 2, 1 with selection and 10, 7, 2, 1 without). The fits that used to stay at their starting guess now converge into the degenerate valley and can land further from the truth, which is the identifiability limit again, not a training failure.
+\end{itemize}
+Tanh was at least as good as swish at every noise level. The noise study used 3 seeds per cell, so small differences between the two activations are not conclusive.
+
+\subsubsection{Difficult Regimes and Failure Analysis}
+\begin{itemize}
+    \item \textbf{Practical non-identifiability.} Model~A near-fold, Model~B near-fold and Model~B decline have condition numbers of $10^{3}$ to $2\times10^{4}$ (Table~\ref{tab:clean_recovery}). The PINN fits the training data almost perfectly (relative training error $10^{-4}$ to $10^{-5}$) while the parameters are off by $40\%$ to $100\%$. A data fit of that accuracy is not tight enough for these conditioning numbers; the ODE fit reaches $10^{-7}$ to $10^{-10}$. More L-BFGS iterations, a different loss weight and a different parameter learning rate did not change this.
+    \item \textbf{The degenerate valley.} In the near-fold cases $r$ and $A$ both collapse to about $10^{-6}$ while their ratio $r/A$ stays fixed, which preserves the cubic production term, so the data can still be fitted by a reduced model. The softplus transform allows the optimiser to slide down this valley without penalty; a remedy would need parameter bounds or a different parametrisation, not a hyperparameter.
+    \item \textbf{ODE baseline limits.} The conventional baseline converged in 52 of 54 runs; in two Model~A near-fold runs at $\sigma=0.01$ (seeds 11 and 33) it reached the maximum evaluation budget (\texttt{failed: maximum number of function evaluations}).
+    \item \textbf{Held-out window.} With the shared setting the PINN predicts the held-out window ($t > 6.4$) of the regular cases accurately (Figure~\ref{fig:wp05_heldout_failure}); the median test error against the clean reference is $1.6\times10^{-4}$ at $\sigma=0$, $3.8\times10^{-3}$ at $\sigma=0.01$ and $4.9\times10^{-2}$ at $\sigma=0.05$ (original settings: $1.1\times10^{-1}$, $1.0\times10^{-1}$, $1.4\times10^{-1}$, relative $L^2$). The regular trajectories are already at equilibrium by $t=4.8$, so this window is an undemanding extrapolation test; we do not claim the PINN extrapolates dynamics beyond the data.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{wp05_recovery_noise}
+\caption{Mean relative parameter error against noise level for the conventional ODE fit and the PINN, Models~A (left) and B (right); averaged over all six cases and seeds, so the error bars are dominated by the badly conditioned cases.}
+\label{fig:wp05_recovery_noise}
+\end{figure}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{wp05_heldout_failure}
+\caption{Fitted trajectories and the train, validation and held-out test windows for Model~A regular, conventional ODE fit (left) and PINN (right); top row noise-free data, bottom row noisy data.}
+\label{fig:wp05_heldout_failure}
+\end{figure}
 
 \subsection{Summary and Methodological Lessons}
-This investigation establishes four core findings:
+This investigation establishes the following findings:
 \begin{enumerate}
-    \item Structural nonidentifiability is an intrinsic property of Model B with unknown effort that cannot be overcome by data volume or initial state diversity;
-    \item Constrained parameter transformations via softplus and sigmoid guarantee non-negative, ordered parameters while preserving autodiff gradient signals;
-    \item Classical nonlinear ODE regression is orders of magnitude faster and more parameter-accurate on scalar ODEs than PINNs, serving as an indispensable benchmark;
-    \item Rigorous data leakage prevention (training-only observations, validation-based stopping, held-out test evaluation) is essential to detect overfitting and false convergence in neural differential equation solvers.
+    \item Structural nonidentifiability is an intrinsic property of Model~B with unknown effort that cannot be overcome by data volume or initial state diversity;
+    \item Constrained parameter transformations via softplus and sigmoid guarantee non-negative, ordered parameters while preserving autodiff gradient signals, but they allow $r$ and $A$ to collapse together along a degenerate valley;
+    \item Classical nonlinear ODE regression is orders of magnitude faster and more parameter-accurate on scalar ODEs than PINNs, and recovers all six cases on clean data, so it is an indispensable benchmark;
+    \item Trajectory fit does not guarantee parameter recovery: the PINN fits every case to about $10^{-4}$ or better but recovers the parameters only where the problem is well conditioned (10 of 18 clean fits), and under noise only as well as the Cramér--Rao bound allows;
+    \item Optimiser settings can silently produce unconverged results: a short L-BFGS budget with a tolerance stop and validation-based checkpoint selection returned near-initial parameters in every run of the original sweep; comparing the training error with the noise level exposes this, and a held-out validation score alone does not;
+    \item Rigorous data leakage prevention (training-only observations in the loss, a frozen held-out test window) remains essential, and results must be judged against what any estimator could achieve (the Cramér--Rao bound), not against zero error.
 \end{enumerate}
