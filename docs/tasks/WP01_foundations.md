@@ -72,3 +72,7 @@ Implement the future reproduction command `python experiments/wp01/run.py --conf
 - **Interface decisions:** see DECISIONS.md (24 Oct): `Equilibrium` record schema, one-sided sign classification, relative fold tolerance (revised 30 Oct after review), `fold_a` vs WP03 `critical_a`, extensionless figure includes for pdflatex.
 - **Still open:** (1) WP03 review of the foundation API and its communication to WP02/WP04/WP05; (2) **report assembly** of all five sections, unified notation/citations, compile and page-by-page inspection and the EPS audit, which can only finish once the other sections land; (3) another member's reproduction and four approvals.
 - **Key points to be able to explain:** scaling to (a, q); phase-line stability; why x=0 is not an equilibrium of A for q>0; derivation of x* and q_c from G'(x)=0; why the fold is semistable although f'=0; why bracketing + Brent rather than polynomial eigenvalues near the fold.
+
+## Integration follow-up, 31 October 2026
+
+189 WP01 tests passed, including 90-digit independent roots for both reported close-fold examples and rejection of unsupported rtol before any output. Near-fold roots are solved in offsets; simple-root signs/derivatives use the factored cubic. The existing standalone fold-band policy is unchanged pending the separate integration PR. The separate integration PR records current source heads, combined tests and notebook execution. The normal review process remains required.

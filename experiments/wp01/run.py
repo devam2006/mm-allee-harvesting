@@ -104,6 +104,9 @@ def solver_settings(config):
     }
     if not all(np.isfinite(v) and v > 0 for v in settings.values()):
         raise ValueError("Solver tolerances and max_step must be positive and finite")
+    minimum_rtol = 100 * np.finfo(float).eps
+    if settings["rtol"] < minimum_rtol:
+        raise ValueError(f"RK45 rtol must be at least {minimum_rtol:.17g}")
     return settings
 
 

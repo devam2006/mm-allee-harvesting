@@ -153,7 +153,7 @@ def fold_a(a):
     _validate_a(a)
     s = sqrt(1 - a + a * a)
     d = 2 - a + s
-    x_star = (1 + a + s) / 3
+    x_star = 1 - (1 - a) / d
     q_c = x_star * (1 - a) ** 2 * (1 - a + s) / (a * d * d)
     return x_star, q_c
 
@@ -216,9 +216,20 @@ def _records(
     out = []
     for x_eq in physical_roots:
         deriv = float(rhs_derivative(x_eq, model, a=a, q=q))
-        stability, attracts, left, right = _classify(
-            f, deriv, x_eq, all_roots, boundary=x_eq in boundary_roots
-        )
+        if model == "A" and q > 0 and len(physical_roots) == 2:
+            # The factored cubic gives exact branch signs even when a floating
+            # sign probe rounds onto an almost-coincident root near a=1.
+            lower, upper = physical_roots
+            negative = excluded_roots[0]
+            direction = 1 if x_eq == lower else -1
+            deriv = direction * (x_eq - negative) * (upper - lower) / a
+            left, right = -direction, direction
+            stability = UNSTABLE if direction > 0 else STABLE
+            attracts = "neither" if direction > 0 else "both"
+        else:
+            stability, attracts, left, right = _classify(
+                f, deriv, x_eq, all_roots, boundary=x_eq in boundary_roots
+            )
         out.append(
             Equilibrium(
                 model=model,
@@ -377,8 +388,21 @@ def equilibria_a(a, q, *, include_excluded=False):
         mult = {x_star: 2}
         notes = {x_star: "fold: double root, one-sided signs decide stability"}
     elif q < q_c:
-        lower = _brent(f, a, x_star)
-        upper = _brent(f, x_star, 1.0)
+        if q < 0.9 * q_c:
+            lower = _brent(f, a, x_star)
+            upper = _brent(f, x_star, 1.0)
+        else:
+            # Resolve the small distance from the maximum instead of asking
+            # Brent to distinguish two x values whose absolute scale is one.
+            d = sqrt(1 - a + a * a)
+
+            def offset_equation(y):
+                return y * y * (d + y) / a - (q_c - q)
+
+            lower = x_star + _brent(offset_equation, a - x_star, 0.0)
+            upper = x_star + _brent(offset_equation, 0.0, 1.0 - x_star)
+        if lower >= upper:
+            raise ArithmeticError("Distinct A roots cannot be resolved at float precision")
         physical = [lower, upper]
         mult = {}
         notes = {lower: "harvest-shifted Allee threshold", upper: "persistent state"}
