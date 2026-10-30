@@ -46,3 +46,5 @@ reference configuration, added eight independent rejection/effective-tolerance
 checks, and recorded actual tests/reproduction evidence. Temporary WP02 code is
 a proposal, not a change to Ashwath's branch. No change to the mathematical fold
 convention, human approval, merge or human understanding is claimed.
+
+31 October 2026: at Devam's explicit request to fix the outstanding PRs and build a separate WP01-WP03 integration PR, OpenAI ChatGPT/Codex applied the WP01 compatibility/review corrections and ran focused tests. 189 WP01 tests passed, including 90-digit independent roots for both reported close-fold examples and rejection of unsupported rtol before any output. Near-fold roots are solved in offsets; simple-root signs/derivatives use the factored cubic. The existing standalone fold-band policy is unchanged pending the separate integration PR. These changes are authored as Devam-assisted fixes, not an approval or statement of the original owner's understanding.
