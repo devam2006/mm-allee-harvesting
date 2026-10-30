@@ -1,0 +1,27 @@
+{
+  "source_commit": "9cbe492ad3f4fe05943cecf3095b1964a2d7e464",
+  "source_dirty": false,
+  "source_dirty_excludes": [
+    "deliverables/"
+  ],
+  "executed_notebook_sha256": "25e6b180bc509c0911bd95408974daf33abc35d7d389f10444a5efc957242353",
+  "executed_code_cells": 27,
+  "synthetic_observation_rows": 5454,
+  "figure_pairs": 17,
+  "work_packages": [
+    "WP01",
+    "WP02",
+    "WP03",
+    "WP04",
+    "WP05"
+  ],
+  "report": "Maintained separately in Overleaf",
+  "known_limits": [
+    "WP05 validation-selection-off loss histories and optimizer status reporting remain under review in PR #10",
+    "Recorded final-sweep tables are not fresh reruns of all fits",
+    "Human review, presentation and final Overleaf report remain separate"
+  ],
+  "zip_sha256": "27f2594bc1124474d846af0d25c65276b91590e01f23e503f8f9caec13d6d554",
+  "zip_bytes": 10282082,
+  "files": 230
+}
