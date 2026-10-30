@@ -31,7 +31,8 @@ FORWARD_COLUMNS = [
 ]  # fmt: skip
 INVERSE_COLUMNS = [
     "candidate", "case", "seed", "sigma", "max_rel_error", "recovered", "param_errors",
-    "min_r_A_estimate", "train_relative_l2", "crb_rel", "status", "wall_seconds",
+    "min_r_A_estimate", "train_relative_l2", "train_rmse", "train_loss", "noise_floor_ratio",
+    "err_over_crb", "crb_rel", "status", "wall_seconds",
 ]  # fmt: skip
 SUMMARY_COLUMNS = [
     "candidate", "forward_accurate", "forward_runs", "inverse_recovered", "inverse_fits", "score",
@@ -218,6 +219,7 @@ def run_inverse(cand, cfg, sigmas=None):
                     lr_params=cand["lr_params"], lambda_data=1.0, lambda_phys=cand["lambda_phys"],
                     lbfgs_iters=cand.get("lbfgs_iters", fixed["lbfgs_iters"]), lbfgs_ftol=cand.get("lbfgs_ftol", 0.0),
                     lbfgs_gtol=cand.get("lbfgs_gtol", 0.0), time_budget_s=300,
+                    validation_selection=cand.get("validation_selection", True),
                 )  # fmt: skip
                 crb = None
                 if sigma > 0:
@@ -259,6 +261,14 @@ def run_inverse(cand, cfg, sigmas=None):
                         min_r_A_estimate=min(est["r"], est["A"]) if "r" in est and "A" in est else None,
                         collapsed=bool("r" in est and "A" in est and min(est["r"], est["A"]) < 1e-3 * min(p_true["r"], p_true["A"])),
                         train_relative_l2=res.train_metrics.get("relative_l2"),
+                        train_rmse=res.train_metrics.get("rmse"),
+                        train_loss=res.train_loss,
+                        noise_floor_ratio=(
+                            res.train_metrics["rmse"] / (sigma * n_ref)
+                            if sigma > 0 and res.train_metrics.get("rmse") is not None
+                            else None
+                        ),
+                        err_over_crb=max(errs[k] / crb[k] for k in errs) if crb else None,
                         status=res.status,
                     )  # fmt: skip
                 except Exception as exc:  # noqa: BLE001  (a failed fit is recorded, not fatal)
