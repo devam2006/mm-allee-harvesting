@@ -51,3 +51,15 @@ Setup chosen by the owner: 300 uniform collocation points, activations tanh / sw
 
 **Selection rule, fixed before running:** the activation with the largest number of accurate runs (relative L2 <= 5e-2) out of 18; ties are broken by the smaller geometric mean of the relative L2 over all 18 runs. Per-case counts, median errors, runtime and boundary violations are reported but do not enter the rule. **Caveat:** the winner is chosen on the same seeds that are then reported as the final sweep, so the reported accuracy of the winner is optimistic; a confirmation on other seeds is advisable. The previous n=100 / tanh / seeds 11, 22, 33 sweep is kept as `artifacts/tables/wp04_forward_metrics_n100_tanh_seeds11-22-33.csv` and its manifest; the diagnostic experiment above refers to that sweep.
 
+## Reproducing with exact versions, held-out confirmation, statuses
+
+Per-seed results depend on platform and library versions even with fixed seeds (reviewers' reruns on Linux failed a different A near-fold seed; counts were stable). To repeat a reported table, install the versions recorded next to it (`artifacts/manifests/wp04_forward_requirements.txt` for the final sweep, `wp04_confirmation_requirements.txt` for the confirmation; the manifests also list Python and the operating system), then run the same command and compare:
+
+```bash
+python -m pip install -r artifacts/manifests/wp04_forward_requirements.txt   # the leading line is a comment
+python experiments/wp04/run.py --config configs/wp04_final.json --output results/wp04 --artifacts artifacts
+python experiments/wp04/run.py --config configs/wp04_confirm.json --output results/wp04_confirm   # seeds 11/22/33, not used for the activation choice
+```
+
+Per-run `status` is one of `ok`, `inaccurate` (relative L2 above the threshold, or max absolute error if the relative error is undefined), `budget_exhausted`, `nonfinite_loss`, `invalid_prediction` (output contains NaN/inf: no error score, never accurate) or `failed` (an exception, message in `note`; the sweep continues). `lbfgs_status`/`lbfgs_message` record how L-BFGS-B stopped (all reported runs hit the 2500-iteration limit). Figures are written as PNG, EPS and PDF (LaTeX includes the extensionless name).
+

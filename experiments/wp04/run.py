@@ -40,11 +40,16 @@ METRIC_COLUMNS = [
     "mae",
     "relative_l2",
     "max_abs",
+    "max_abs_near_zero",
     "boundary_violations",
     "wall_seconds",
     "status",
     "final_loss",
     "iterations",
+    "lbfgs_status",
+    "lbfgs_message",
+    "lbfgs_iterations",
+    "note",
     "t_end",
     "extinction_tau",
 ]
@@ -108,8 +113,52 @@ def run_pinn(case, seed, cfg, extinction_tau):
     return train_forward(config)
 
 
+def label_status(train_status, ev, threshold):
+    """Outcome label of one scored run.
+
+    A training status other than ``ok`` is kept. A prediction with NaN/inf is
+    ``invalid_prediction`` (it has no error score and never counts as accurate). Otherwise the
+    run is ``ok`` or ``inaccurate`` against ``threshold`` on the relative L2 error, falling
+    back to the maximum absolute error when the relative error is undefined (tiny reference).
+    """
+    if train_status != "ok":
+        return train_status
+    if not ev["valid"]:
+        return "invalid_prediction"
+    score = ev["max_abs"] if ev["relative_l2"] is None else ev["relative_l2"]
+    return "ok" if score <= threshold else "inaccurate"
+
+
+def failed_eval():
+    """Scores of a run that produced no prediction (it raised an exception)."""
+    return {
+        "valid": False, "n_invalid": 0, "rmse": None, "mae": None, "relative_l2": None,
+        "max_abs": None, "max_abs_near_zero": None, "boundary_violations": None,
+    }  # fmt: skip
+
+
+def fit_and_score(case, seed, cfg, ref, hit):
+    """Train one PINN and score it against the reference; never lets one run end the sweep.
+
+    Returns ``(result, pred, ev, status, note)``. An exception during training or scoring gives
+    ``result=None``, ``status="failed"`` and the exception text in ``note``.
+    """
+    from mm_allee.pinn.train_forward import evaluate_prediction, predict
+
+    tau, ref_x = ref
+    try:
+        result = run_pinn(case, seed, cfg, hit)
+        pred = predict(result.params, result.config, tau)
+        ev = evaluate_prediction(pred, ref_x)
+    except Exception as exc:  # noqa: BLE001  (a failed run is recorded, not fatal)
+        return None, None, failed_eval(), "failed", f"{type(exc).__name__}: {exc}"
+    status = label_status(result.status, ev, cfg["inaccuracy_threshold_relative_l2"])
+    note = f"{ev['n_invalid']} non-finite predicted samples" if not ev["valid"] else None
+    return result, pred, ev, status, note
+
+
 def run(config_path, output, artifacts=None):
-    from mm_allee.pinn.train_forward import evaluate_prediction, predict, save_checkpoint
+    from mm_allee.pinn.train_forward import evaluate_prediction, save_checkpoint
 
     config_path = Path(config_path)
     cfg = json.loads(config_path.read_text())
@@ -135,16 +184,11 @@ def run(config_path, output, artifacts=None):
             metric_row(case, "rk45", None, evaluate_prediction(rk_x, ref_x), rk_seconds, "ok", hit)
         )
         for seed in cfg["seeds"]:
-            result = run_pinn(case, seed, cfg, hit)
-            pred = predict(result.params, result.config, tau)
-            ev = evaluate_prediction(pred, ref_x)
-            status = result.status
-            limit = cfg["inaccuracy_threshold_relative_l2"]
-            if status == "ok" and (ev["relative_l2"] is None or ev["relative_l2"] > limit):
-                status = "inaccurate" if ev["relative_l2"] is not None else "ok"
-            rows.append(
-                metric_row(case, "pinn", seed, ev, result.wall_seconds, status, hit, result)
-            )
+            result, pred, ev, status, note = fit_and_score(case, seed, cfg, (tau, ref_x), hit)
+            seconds = 0.0 if result is None else result.wall_seconds
+            rows.append(metric_row(case, "pinn", seed, ev, seconds, status, hit, result, note))
+            if result is None:
+                continue
             curves.append(
                 {
                     "case": case["id"],
@@ -168,8 +212,11 @@ def run(config_path, output, artifacts=None):
     return rows, manifest
 
 
-def metric_row(case, method, seed, ev, seconds, status, hit, result=None):
-    last = lambda key: None if result is None else result.history[key][-1]  # noqa: E731
+def metric_row(case, method, seed, ev, seconds, status, hit, result=None, note=None):
+    def last(key):
+        return result.history[key][-1] if result is not None and result.history[key] else None
+
+    lbfgs = (result.lbfgs if result is not None else None) or {}
     return {
         "run_id": f"{case['id']}-{method}-{seed}",
         "case": case["id"],
@@ -183,11 +230,16 @@ def metric_row(case, method, seed, ev, seconds, status, hit, result=None):
         "mae": ev["mae"],
         "relative_l2": ev["relative_l2"],
         "max_abs": ev["max_abs"],
+        "max_abs_near_zero": ev["max_abs_near_zero"],
         "boundary_violations": ev["boundary_violations"],
         "wall_seconds": round(seconds, 4),
         "status": status,
         "final_loss": last("loss"),
         "iterations": None if result is None else len(result.history["loss"]),
+        "lbfgs_status": lbfgs.get("status"),
+        "lbfgs_message": lbfgs.get("message"),
+        "lbfgs_iterations": lbfgs.get("iterations"),
+        "note": note,
         "t_end": hit if hit is not None else case["tau_end"],
         "extinction_tau": hit,
     }
@@ -210,13 +262,22 @@ def write_metrics(path, rows):
             writer.writerow({k: format_cell(v) for k, v in row.items()})
 
 
+def save_figure_with_pdf(fig, stem):
+    """PNG + EPS from the shared helper, plus a PDF so plain ``latexmk -pdf`` can include it."""
+    from mm_allee.plotting import save_figure
+
+    stem = Path(stem)
+    stem.parent.mkdir(parents=True, exist_ok=True)  # the PDF is written before save_figure runs
+    pdf = stem.with_suffix(".pdf")
+    fig.savefig(pdf, bbox_inches="tight", facecolor="white", transparent=False)
+    return [*save_figure(fig, stem), pdf]
+
+
 def make_figures(cfg, curves, directory):
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-
-    from mm_allee.plotting import save_figure
 
     cases = cfg["cases"]
     colours = {seed: c for seed, c in zip(cfg["seeds"], ["#0072B2", "#D55E00", "#009E73"])}
@@ -226,6 +287,8 @@ def make_figures(cfg, curves, directory):
     for index, case in enumerate(cases):
         ax = axes1[index // 3][index % 3]
         mine = [c for c in curves if c["case"] == case["id"]]
+        if not mine:
+            continue  # every seed of this case failed: nothing to draw
         ax.plot(mine[0]["tau"], mine[0]["ref"], "k-", lw=2.4, label="DOP853 reference")
         err_ax, loss_ax = axes2[0][index], axes2[1][index]
         for c in mine:
@@ -269,7 +332,7 @@ def make_figures(cfg, curves, directory):
     fig2.suptitle("WP04: absolute error (top) and optimisation history (bottom)")
     fig1.tight_layout()
     fig2.tight_layout()
-    paths = save_figure(fig1, directory / "wp04_forward") + save_figure(
+    paths = save_figure_with_pdf(fig1, directory / "wp04_forward") + save_figure_with_pdf(
         fig2, directory / "wp04_error_loss"
     )
     plt.close(fig1)
@@ -296,15 +359,25 @@ def git_state():
         return {"sha": None, "dirty": None}
 
 
+def environment_pins():
+    """Exact versions of the packages that determine the numbers (for reproduction)."""
+    from importlib import metadata
+
+    pins = {}
+    for name in ("jax", "jaxlib", "numpy", "scipy", "matplotlib"):
+        pins[name] = metadata.version(name)
+    return pins
+
+
 def build_manifest(config_path, cfg, rows, elapsed, output, figures):
-    import jax
-    import matplotlib
-    import scipy
+    pins = environment_pins()
 
     pinn_rows = [r for r in rows if r["method"] == "pinn"]
-    counts = {}
+    counts, lbfgs_exits = {}, {}
     for row in pinn_rows:
         counts[row["status"]] = counts.get(row["status"], 0) + 1
+        if row["lbfgs_message"]:
+            lbfgs_exits[row["lbfgs_message"]] = lbfgs_exits.get(row["lbfgs_message"], 0) + 1
     return {
         "schema_version": 1,
         "run_id": f"wp04-{datetime.now(UTC):%Y%m%dT%H%M%SZ}",
@@ -324,13 +397,11 @@ def build_manifest(config_path, cfg, rows, elapsed, output, figures):
         "runtime_budget_s_per_run": cfg["training"].get("time_budget_s"),
         "supervised_labels_used": False,
         "pinn_status_counts": counts,
+        "lbfgs_exit_counts": lbfgs_exits,
         "elapsed_seconds": round(elapsed, 2),
         "dependencies": {
             "python": platform.python_version(),
-            "numpy": np.__version__,
-            "scipy": scipy.__version__,
-            "matplotlib": matplotlib.__version__,
-            "jax": jax.__version__,
+            **pins,
         },
         "hardware": {
             "platform": platform.platform(),
@@ -343,7 +414,9 @@ def build_manifest(config_path, cfg, rows, elapsed, output, figures):
             "wp04_forward_metrics.csv": sha256(Path(output) / "wp04_forward_metrics.csv"),
             **{p.name: sha256(p) for p in figures},
         },
-        "status": "failed_runs_present" if counts.get("nonfinite_loss") else "completed",
+        "status": "failed_runs_present"
+        if any(counts.get(k) for k in ("nonfinite_loss", "failed", "invalid_prediction"))
+        else "completed",
     }
 
 
@@ -361,6 +434,12 @@ def publish(artifacts, output, figures, manifest, cfg):
     )
     name = cfg.get("manifest_name", "wp04_forward.json")
     (artifacts / "manifests" / name).write_text(json.dumps(manifest, indent=2))
+    pins = manifest["dependencies"]
+    lines = [f"{k}=={pins[k]}" for k in ("jax", "jaxlib", "numpy", "scipy", "matplotlib")]
+    header = f"# exact versions used for {name}; Python {pins['python']}, {manifest['hardware']['platform']}\n"
+    (artifacts / "manifests" / f"{Path(name).stem}_requirements.txt").write_text(
+        header + "\n".join(lines) + "\n"
+    )
 
 
 def main(argv=None):

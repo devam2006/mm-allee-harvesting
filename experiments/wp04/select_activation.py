@@ -15,7 +15,7 @@ from pathlib import Path
 
 THRESHOLD = 5e-2
 COLUMNS = [
-    "activation", "n_runs", "n_accurate", "geomean_relative_l2", "median_relative_l2",
+    "activation", "n_runs", "n_accurate", "n_invalid", "geomean_relative_l2", "median_relative_l2",
     "boundary_violations_total", "median_wall_seconds", "selected",
 ]  # fmt: skip
 
@@ -26,30 +26,56 @@ def load_pinn_rows(directory):
         return [r for r in csv.DictReader(handle) if r["method"] == "pinn"]
 
 
+def _errors(rows):
+    """Relative L2 per run; None for a run with no valid score (failed / invalid prediction)."""
+    return [float(r["relative_l2"]) if r["relative_l2"] not in ("", None) else None for r in rows]
+
+
 def summarise(name, rows, threshold=THRESHOLD):
-    errs = [float(r["relative_l2"]) for r in rows]
+    """A run without a valid error counts as *not accurate* and is excluded from the error
+    averages (``n_invalid`` reports how many there were)."""
+    errs = _errors(rows)
+    valid = [e for e in errs if e is not None]
     return {
         "activation": name,
         "n_runs": len(rows),
-        "n_accurate": sum(e <= threshold for e in errs),
-        "geomean_relative_l2": math.exp(sum(math.log(e) for e in errs) / len(errs)),
-        "median_relative_l2": statistics.median(errs),
-        "boundary_violations_total": sum(int(r["boundary_violations"]) for r in rows),
+        "n_accurate": sum(e <= threshold for e in valid),
+        "n_invalid": len(errs) - len(valid),
+        "geomean_relative_l2": math.exp(sum(math.log(e) for e in valid) / len(valid))
+        if valid
+        else None,
+        "median_relative_l2": statistics.median(valid) if valid else None,
+        "boundary_violations_total": sum(int(r["boundary_violations"] or 0) for r in rows),
         "median_wall_seconds": statistics.median(float(r["wall_seconds"]) for r in rows),
     }
 
 
 def select(summaries):
-    """Most accurate runs wins; ties go to the smaller geometric-mean error."""
-    return min(summaries, key=lambda s: (-s["n_accurate"], s["geomean_relative_l2"]))["activation"]
+    """Most accurate runs wins; ties go to the smaller geometric-mean error (None counts as worst)."""
+    return min(
+        summaries,
+        key=lambda s: (
+            -s["n_accurate"],
+            math.inf if s["geomean_relative_l2"] is None else s["geomean_relative_l2"],
+        ),
+    )["activation"]
 
 
 def per_case(rows, threshold=THRESHOLD):
     out = {}
     for case in dict.fromkeys(r["case"] for r in rows):
-        mine = [float(r["relative_l2"]) for r in rows if r["case"] == case]
-        out[case] = (sum(e <= threshold for e in mine), len(mine), statistics.median(mine))
+        mine = _errors([r for r in rows if r["case"] == case])
+        valid = [e for e in mine if e is not None]
+        out[case] = (
+            sum(e <= threshold for e in valid),
+            len(mine),
+            statistics.median(valid) if valid else None,
+        )
     return out
+
+
+def _fmt(value):
+    return "n/a" if value is None else f"{value:.2e}"
 
 
 def main(argv=None):
@@ -72,16 +98,16 @@ def main(argv=None):
         for s in summaries:
             row = {**s, "selected": s["activation"] == winner}
             for key in ("geomean_relative_l2", "median_relative_l2"):
-                row[key] = f"{row[key]:.6e}"
+                row[key] = "" if row[key] is None else f"{row[key]:.6e}"
             writer.writerow(row)
     for s in summaries:
         print(
-            f"{s['activation']:8s} accurate {s['n_accurate']:>2d}/{s['n_runs']}  "
-            f"geomean relL2 {s['geomean_relative_l2']:.2e}  median {s['median_relative_l2']:.2e}  "
+            f"{s['activation']:8s} accurate {s['n_accurate']:>2d}/{s['n_runs']} (invalid {s['n_invalid']})  "
+            f"geomean relL2 {_fmt(s['geomean_relative_l2'])}  median {_fmt(s['median_relative_l2'])}  "
             f"neg-samples {s['boundary_violations_total']}  median {s['median_wall_seconds']:.1f}s"
         )
         for case, (ok, n, med) in cases[s["activation"]].items():
-            print(f"    {case:13s} {ok}/{n} accurate, median relL2 {med:.2e}")
+            print(f"    {case:13s} {ok}/{n} accurate, median relL2 {_fmt(med)}")
     print(f"SELECTED: {winner}")
 
 

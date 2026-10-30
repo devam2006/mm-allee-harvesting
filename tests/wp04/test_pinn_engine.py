@@ -250,12 +250,12 @@ def test_checkpoint_round_trip_predictions_agree(tmp_path):
     result = train_forward(ForwardConfig(**{**SMOKE, "adam_iters": 20, "lbfgs_iters": 0}))
     path = tmp_path / "ck.npz"
     save_checkpoint(path, result)
-    params, config = load_checkpoint(path)
+    loaded = load_checkpoint(path)
     tau = np.linspace(0, 10, 33)
     np.testing.assert_array_equal(
-        predict(params, config, tau), predict(result.params, result.config, tau)
+        predict(loaded.params, loaded.config, tau), predict(result.params, result.config, tau)
     )
-    assert config == result.config
+    assert loaded.config == result.config
 
 
 # ---- 8. Reference data are independent of training; no post-event tail -----------------
