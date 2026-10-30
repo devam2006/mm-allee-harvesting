@@ -53,7 +53,7 @@ swish, lr $10^{-2}$ & 17 & 7 & 24\\
 tanh, lr $10^{-2}$ & 11 & 9 & 20\\
 \end{tabular}
 \end{center}
-The network learning rate is the dominant factor: $10^{-3}$ beats $10^{-2}$ for both activations (tanh forward 18/18 against 11/18). The two best candidates tie on the score; the tie-break fixed beforehand (lower median parameter error over the recovered inverse fits) selects tanh. On fresh seeds the two are statistically indistinguishable (both 18/18 forward); tanh is more precise when it recovers and faster, so tanh with learning rate $10^{-3}$ is the single setting used throughout. The selection used the same seeds as the final sweep, so the final-sweep accuracy is optimistic; the fresh-seed confirmation below is the unbiased evidence.
+The network learning rate is the dominant factor: $10^{-3}$ beats $10^{-2}$ for both activations (tanh forward 18/18 against 11/18). The two best candidates tie on the score; the tie-break fixed beforehand (lower median parameter error over the recovered inverse fits) selects tanh. On fresh seeds the two cannot be told apart with three seeds per set (both 18/18 forward), which does not establish equivalence; tanh is more precise when it recovers and faster, so tanh with learning rate $10^{-3}$ is the single setting used throughout. The selection used the same seeds as the final sweep, so the final-sweep accuracy is optimistic; the fresh-seed confirmation below is the unbiased evidence.
 
 \subsection{Results (tanh, $(1,32,32,1)$, lr $10^{-3}$, 300 points)}
 \paragraph{Final sweep, seeds 0, 1, 42 (18 PINN runs).} All 18 runs are accurate. Relative $L^2$ errors by case:
