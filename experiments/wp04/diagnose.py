@@ -33,10 +33,12 @@ RUN_COLUMNS = [
 SUMMARY_COLUMNS = [
     "case", "variant", "n_runs", "n_accurate", "n_unstable_root", "n_zero", "n_negative_state",
     "n_not_converged",
-    "n_other", "median_relative_l2", "median_max_R_dense_accurate", "median_max_R_dense_failed",
+    "n_other", "n_invalid", "median_relative_l2", "median_max_R_dense_accurate", "median_max_R_dense_failed",
     "median_wall_seconds",
 ]  # fmt: skip
-CLASSES = ["accurate", "unstable_root", "zero", "negative_state", "not_converged", "other"]
+CLASSES = [
+    "accurate", "unstable_root", "zero", "negative_state", "not_converged", "other", "invalid",
+]  # fmt: skip
 
 
 def make_grid(kind, n, t_end):
@@ -65,6 +67,8 @@ def equilibrium_roots(case):
 
 
 def classify(rel_l2, final_loss, x_mid, x_unstable, cfg):
+    if rel_l2 is None:  # NaN/inf prediction (or undefined error): never scored as accurate
+        return "invalid"
     if rel_l2 <= cfg["inaccuracy_threshold_relative_l2"]:
         return "accurate"
     if final_loss > cfg["not_converged_loss"]:
@@ -137,7 +141,12 @@ def summarise(rows):
                 "n_zero": count("zero"), "n_negative_state": count("negative_state"),
                 "n_not_converged": count("not_converged"),
                 "n_other": count("other"),
-                "median_relative_l2": statistics.median(r["relative_l2"] for r in mine),
+                "n_invalid": count("invalid"),
+                "median_relative_l2": (
+                    statistics.median(r["relative_l2"] for r in mine if r["relative_l2"] is not None)
+                    if any(r["relative_l2"] is not None for r in mine)
+                    else None
+                ),
                 "median_max_R_dense_accurate": statistics.median(ok) if ok else None,
                 "median_max_R_dense_failed": statistics.median(bad) if bad else None,
                 "median_wall_seconds": statistics.median(r["wall_seconds"] for r in mine),
@@ -162,7 +171,7 @@ def make_figure(cfg, summary, directory):
     from mm_allee.plotting import save_figure
 
     colours = {"accurate": "#009E73", "unstable_root": "#D55E00", "zero": "#0072B2",
-               "negative_state": "#E69F00", "not_converged": "#CC79A7", "other": "#999999"}  # fmt: skip
+               "negative_state": "#E69F00", "not_converged": "#CC79A7", "other": "#999999", "invalid": "#000000"}  # fmt: skip
     cases = [c["id"] for c in cfg["cases"]]
     variants = [v["id"] for v in cfg["variants"]]
     fig, axes = plt.subplots(1, len(cases), figsize=(5.2 * len(cases), 4.2), squeeze=False)

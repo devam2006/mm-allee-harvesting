@@ -6,6 +6,8 @@ WP03 owns clean reference generation, stable IDs and manifests; WP05 owns observ
 
 Record generating parameters, solver/tolerances, initial conditions, interval, sampling grid, units/scales, seed, noise level, split IDs, code commit and file SHA256. Keep generator truth in evaluation metadata separate from the data passed to the optimiser. Test data must not enter parameter fitting, hyperparameter selection, loss weighting or early stopping.
 
+WP04 (forward PINNs) uses no observation files: `experiments/wp04/run.py` generates its noise-free reference trajectories on the fly with SciPy DOP853 (rtol 1e-12, atol 1e-14) from the parameters in the `configs/wp04_*.json` files, only to *score* predictions (never as training labels). It has no noise, no train/validation/test split and no dataset files; this stands in for WP03's reference fixtures, which are not yet on `main`, and should be replaced by them when they merge. Its curated outputs are `artifacts/tables/wp04_*.csv` with manifests in `artifacts/manifests/wp04_*.json`; all are synthetic.
+
 Any later external dataset requires original URL, author/provider, download date, license/usage terms, units, preprocessing decisions, train/val/test design and a bibliography entry. Every external/adapted figure or published formula needs a verified citation. No claim that synthetic benchmark success establishes reliable real-world prediction.
 
 

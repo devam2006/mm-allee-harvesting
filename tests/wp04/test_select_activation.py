@@ -18,7 +18,12 @@ def load():
 
 def rows(errors):
     return [
-        {"case": "c", "relative_l2": str(e), "boundary_violations": "0", "wall_seconds": "1.0"}
+        {
+            "case": "c",
+            "relative_l2": "" if e is None else str(e),
+            "boundary_violations": "0",
+            "wall_seconds": "1.0",
+        }
         for e in errors
     ]
 
@@ -42,3 +47,18 @@ def test_tie_goes_to_smaller_geometric_mean():
     a = sel.summarise("a", rows([1e-3, 1e-3]))
     b = sel.summarise("b", rows([1e-4, 4e-2]))  # also 2 accurate; geomean 6.3e-3 vs 1e-3
     assert sel.select([a, b]) == "a"
+
+
+def test_undefined_errors_count_as_not_accurate_and_are_reported():
+    sel = load()
+    s = sel.summarise("a", rows([1e-3, None, 1e-2, None]))  # two runs without a valid score
+    assert s["n_accurate"] == 2 and s["n_invalid"] == 2
+    assert math.isclose(s["geomean_relative_l2"], 10 ** ((-3 - 2) / 2))  # valid runs only
+    assert sel.summarise("x", rows([None, None]))["geomean_relative_l2"] is None
+
+
+def test_an_activation_with_only_invalid_runs_never_wins():
+    sel = load()
+    broken = sel.summarise("broken", rows([None, None]))
+    weak = sel.summarise("weak", rows([0.5, 0.6]))  # no accurate run either: tie on accuracy
+    assert sel.select([broken, weak]) == "weak"  # undefined geomean counts as worst

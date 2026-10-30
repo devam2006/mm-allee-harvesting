@@ -1,8 +1,15 @@
 """Forward PINN trainer (JAX): physics loss only, hard initial condition, Adam -> L-BFGS.
 
 The shared engine for WP04 and WP05. No solver solution is ever used as a label. WP05
-extends it through ``physical`` (initial values of ``a``/``harvest`` that are then trained
-jointly with the weights, e.g. after the caller's own fixed-scale reparametrisation).
+extends it through ``physical`` (starting values of ``a``/``harvest`` that are then trained
+jointly with the weights, always inside their allowed ranges, see ``train_forward``).
+
+Run statuses (``ForwardResult.status``):
+    ok                 training ran to the end of its iteration budget (finite loss)
+    budget_exhausted   the wall-clock cap stopped training early
+    nonfinite_loss     the loss or the weights became NaN/inf
+The experiment runners add two more when scoring: ``invalid_prediction`` (the network output
+contains NaN/inf, so no error score exists) and ``failed`` (training raised an exception).
 """
 
 import json
@@ -19,9 +26,11 @@ from scipy.optimize import minimize
 
 from ..metrics import errors
 from .network import NetworkConfig, init_params, x_hat
-from .residual import MODELS, physics_loss
+from .residual import MODELS, collocation_residual, physics_loss
 
-CHECKPOINT_SCHEMA = 2  # 1 was the retired PyTorch format
+CHECKPOINT_SCHEMA = 2  # 1 was the retired PyTorch format; extra optional keys do not change it
+PHYSICAL_KEYS = ("a", "harvest")
+HARVEST_FLOOR = 1e-6  # a harvest start below this is lifted to it (raw = 0 has zero gradient)
 
 
 @dataclass(frozen=True)
@@ -67,17 +76,46 @@ class ForwardConfig:
 class ForwardResult:
     params: list
     config: ForwardConfig
-    physical: dict = field(default_factory=dict)  # trained a/harvest when a hook was used
+    physical: dict = field(default_factory=dict)  # trained a/harvest (valid values) if hooked
     history: dict = field(default_factory=lambda: {"loss": [], "phase": []})
     wall_seconds: float = 0.0
-    status: str = "ok"  # ok | nonfinite_loss | budget_exhausted
+    status: str = "ok"  # see the module docstring
+    lbfgs: dict | None = None  # {"status", "message", "iterations"} of the L-BFGS-B exit
+
+
+# ---- physical parameters: unconstrained internal value <-> valid physical value ---------
+
+
+def _to_raw(name, value):
+    """Valid physical value -> unconstrained internal value that the optimiser updates."""
+    value = float(value)
+    if name == "harvest":
+        if not math.isfinite(value) or value < 0:
+            raise ValueError("physical harvest must be finite and >= 0")
+        return math.sqrt(max(value, HARVEST_FLOOR))  # harvest = raw**2 >= 0
+    if name == "a":
+        if not 0 < value < 1:
+            raise ValueError("physical a must satisfy 0 < a < 1")
+        return math.log(value / (1.0 - value))  # a = sigmoid(raw) in (0, 1)
+    raise ValueError(f"unknown physical parameter {name!r}; allowed: {PHYSICAL_KEYS}")
+
+
+def _to_physical(name, raw):
+    """Unconstrained internal value -> valid physical value, recomputed in every loss call so
+    the range holds after every Adam step and every L-BFGS iteration (gradients flow through)."""
+    return raw**2 if name == "harvest" else jax.nn.sigmoid(raw)
 
 
 def train_forward(config: ForwardConfig, *, physical=None, tau=None):
     """Train ``x_hat`` on the ODE residual alone (initial condition is hard-coded).
 
-    ``physical`` may map ``"a"``/``"harvest"`` to starting values that are optimised
-    together with the weights; otherwise the config values are fixed constants.
+    ``physical`` may map ``"a"``/``"harvest"`` to starting values that are optimised together
+    with the weights; otherwise the config values are fixed constants. A trained ``harvest``
+    is always >= 0 and a trained ``a`` always in (0, 1): the optimisers update internal values
+    (harvest = raw**2, a = sigmoid(raw)) and the loss converts them on every evaluation, in both
+    Adam and L-BFGS. Starting values must already be valid (``ValueError`` otherwise); a harvest
+    start below 1e-6 (including exactly 0) is lifted to 1e-6. ``result.physical`` holds the
+    trained physical values.
     ``tau`` optionally replaces the default uniform collocation grid (1-D, within
     ``[0, t_end]``); used by diagnostics, the frozen sweeps use the default.
     """
@@ -89,13 +127,15 @@ def train_forward(config: ForwardConfig, *, physical=None, tau=None):
         tau = jnp.asarray(tau, dtype=jnp.float64)
         if tau.ndim != 1 or tau.size < 2 or float(tau.min()) < 0 or float(tau.max()) > config.t_end:
             raise ValueError("tau must be a 1-D array of >=2 times inside [0, t_end]")
-    theta = (
-        init_params(ncfg),
-        {k: jnp.asarray(v, dtype=jnp.float64) for k, v in (physical or {}).items()},
-    )
+    raw = {k: jnp.asarray(_to_raw(k, v), dtype=jnp.float64) for k, v in (physical or {}).items()}
+    theta = (init_params(ncfg), raw)
+
+    def physical_values(raw_values):
+        return {k: _to_physical(k, v) for k, v in raw_values.items()}
 
     def loss(theta):
-        params, phys = theta
+        params, raw_values = theta
+        phys = physical_values(raw_values)
         a = phys.get("a", config.a)
         harvest = phys.get("harvest", config.harvest)
         return physics_loss(
@@ -169,12 +209,20 @@ def train_forward(config: ForwardConfig, *, physical=None, tau=None):
                 "gtol": 0.0,
             },
         )
+        # Recorded, not interpreted: with ftol=gtol=0 an "ABNORMAL" exit (status 2) is the usual
+        # benign stop once the loss cannot decrease further at floating-point precision.
+        result.lbfgs = {
+            "status": int(fit.status),
+            "message": str(fit.message),
+            "iterations": int(fit.nit),
+        }
         if np.all(np.isfinite(fit.x)):
             theta = unravel(jnp.asarray(fit.x))
         else:
             result.status = "nonfinite_loss"
 
-    result.params, result.physical = theta[0], {k: float(val) for k, val in theta[1].items()}
+    result.params = theta[0]
+    result.physical = {k: float(val) for k, val in physical_values(theta[1]).items()}
     if result.status == "ok" and not math.isfinite(float(loss(theta))):
         result.status = "nonfinite_loss"
     result.wall_seconds = time.perf_counter() - start
@@ -188,24 +236,66 @@ def predict(params, config: ForwardConfig, tau):
     return np.asarray(fn(jnp.asarray(np.asarray(tau, dtype=float))))
 
 
-def evaluate_prediction(prediction, reference, *, norm_floor=1e-8):
+def physics_residual(params, config: ForwardConfig, tau, physical=None):
+    """ODE residual ``dx/dtau - f(x)`` of a trained (or loaded) network at the times ``tau``.
+
+    Uses the trained ``physical`` values where given (for example ``result.physical``) and the
+    config constants otherwise, so the result is the same before and after save/load.
+    """
+    ncfg = config.network_config()
+    physical = physical or {}
+    _, residual = collocation_residual(
+        lambda t: x_hat(params, t, ncfg),
+        tau,
+        config.model,
+        a=physical.get("a", config.a),
+        harvest=physical.get("harvest", config.harvest),
+    )
+    return np.asarray(residual)
+
+
+def evaluate_prediction(prediction, reference, *, norm_floor=1e-8, near_zero=0.05):
     """Trajectory errors against a reference on the same grid.
 
-    ``relative_l2`` is None (not a fake number) when the reference norm is below
-    ``norm_floor``. ``boundary_violations`` counts negative or non-finite predictions.
+    A prediction containing NaN or +-inf is *invalid*: it is never repaired or replaced, every
+    error score is None and ``valid`` is False (the runners label it ``invalid_prediction``).
+    For a valid prediction ``relative_l2`` is None only when the reference norm is below
+    ``norm_floor``. ``max_abs_near_zero`` is the largest absolute error at reference values
+    below ``near_zero`` (None if there are none), the scientific contract's near-zero error.
+    ``boundary_violations`` counts negative or non-finite predictions.
     """
     pred = np.asarray(prediction, dtype=float)
     ref = np.asarray(reference, dtype=float)
-    out = errors(np.nan_to_num(pred, nan=0.0, posinf=0.0, neginf=0.0), ref)
-    out["max_abs"] = float(np.max(np.abs(np.nan_to_num(pred) - ref)))
+    if pred.shape != ref.shape or pred.size == 0:
+        raise ValueError("Metric inputs must have identical nonempty shapes")
+    finite = np.isfinite(pred)
+    out = {
+        "boundary_violations": int(np.sum(~finite | (pred < 0))),
+        "n_invalid": int(np.sum(~finite)),
+    }
+    if not finite.all():
+        return {
+            **out,
+            "valid": False,
+            "rmse": None,
+            "mae": None,
+            "relative_l2": None,
+            "max_abs": None,
+            "max_abs_near_zero": None,
+        }
+    out.update(errors(pred, ref))
+    out["valid"] = True
+    delta = np.abs(pred - ref)
+    out["max_abs"] = float(np.max(delta))
+    near = ref < near_zero
+    out["max_abs_near_zero"] = float(np.max(delta[near])) if near.any() else None
     if np.linalg.norm(ref) < norm_floor:
         out["relative_l2"] = None
-    out["boundary_violations"] = int(np.sum(~np.isfinite(pred) | (pred < 0)))
     return out
 
 
 def save_checkpoint(path, result):
-    """Write config + weights to a pickle-free ``.npz`` file."""
+    """Write config, weights, trained physical parameters, status and L-BFGS exit to ``.npz``."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     arrays = {}
@@ -215,16 +305,27 @@ def save_checkpoint(path, result):
         "schema": CHECKPOINT_SCHEMA,
         "config": asdict(result.config),
         "physical": result.physical,
+        "status": result.status,
+        "lbfgs": result.lbfgs,
     }
     np.savez(path, meta=np.array(json.dumps(meta)), **arrays)
 
 
 def load_checkpoint(path):
-    """Return ``(params, config)`` from a checkpoint written by ``save_checkpoint``."""
+    """Return the saved model as a ``ForwardResult``: weights, config, the learned physical
+    parameters (``.physical``), the training status and the L-BFGS exit (``.lbfgs``). The loss
+    history and runtime are not saved, so they come back empty / zero."""
     with np.load(Path(path), allow_pickle=False) as data:
         meta = json.loads(str(data["meta"]))
         if meta["schema"] != CHECKPOINT_SCHEMA:
             raise ValueError(f"Unsupported checkpoint schema {meta['schema']}")
         n_layers = len([k for k in data.files if k.startswith("W")])
         params = [(jnp.asarray(data[f"W{i}"]), jnp.asarray(data[f"b{i}"])) for i in range(n_layers)]
-    return params, ForwardConfig(**{**meta["config"], "layers": tuple(meta["config"]["layers"])})
+    config = ForwardConfig(**{**meta["config"], "layers": tuple(meta["config"]["layers"])})
+    return ForwardResult(
+        params=params,
+        config=config,
+        physical={k: float(v) for k, v in meta.get("physical", {}).items()},
+        status=meta.get("status", "ok"),
+        lbfgs=meta.get("lbfgs"),
+    )
