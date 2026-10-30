@@ -54,3 +54,27 @@ convention, human approval, merge or human understanding is claimed.
 Rohan's supplied `Rohan_RK45_Completed_Code.zip` reports **Antigravity AI Assistant** use for the PyTorch inverse engine, SciPy baseline, observation/noise/split utilities, tests, experiment runner/configs, report section and notebook. This is a submitted disclosure, not independent verification of the ZIP's completion or human-check claims. The upload preserves its WP05 code and curated outputs; final scientific evidence and owner understanding remain under review.
 
 At Devam's request, OpenAI ChatGPT/Codex imported the WP05 contribution on `wp05/rohan-inverse-validation`, inspected it against the task and existing PRs, prepared an evidence review and opened a PR from Devam's connected account on behalf of Rohan. Existing WP03 records were retained. The assembled notebook was regenerated from the current five fragments rather than replacing WP03's section with the older portable scaffold. Actual checks and limitations are in `docs/WP05_SUBMISSION_REVIEW.md`; no teammate approval or completed group integration is claimed.
+
+31 October 2026: at Devam's explicit request to fix the outstanding PRs and build a separate WP01-WP03 integration PR, OpenAI ChatGPT/Codex applied the WP01 compatibility/review corrections and ran focused tests. 189 WP01 tests passed, including 90-digit independent roots for both reported close-fold examples and rejection of unsupported rtol before any output. Near-fold roots are solved in offsets; simple-root signs/derivatives use the factored cubic. The existing standalone fold-band policy is unchanged pending the separate integration PR. These changes are authored as Devam-assisted fixes, not an approval or statement of the original owner's understanding.
+
+## 2026-10-30 — AshChan07, WP02
+
+OpenAI Codex assisted Model B derivations, equilibrium/history/comparison implementation,
+independent deterministic tests, bounded synthetic CPU experiments, PNG/EPS/PDF figures,
+report and notebook section 2, the editable three-slide WP02 contribution and speaking script.
+The implementation reuses WP01 and the shared solver; no empirical data or model API was used.
+An initial near-fold reference test failed because the double-precision polynomial oracle
+lost accuracy; a 60-digit expanded-polynomial reference replaced it without loosening the
+acceptance tolerance. Notebook sandbox/cache restrictions and a slide PDF-export font
+runtime error were recorded during validation; see WP02 handoff for final outcomes.
+The AI-assisted Task 1 review was posted on PR #3 separately; no human approval was submitted.
+Human reproduction, comprehension, rehearsal and the four scientific approvals remain pending.
+
+Final verification of the existing WP02 work added a logistic near-fold comparison
+ guard and regression case. The fresh-kernel notebook execution succeeded after
+using temporary config/cache directories and approved local kernel networking.
+The report compiled and WP02 pages 7–11 plus all three slide renders were inspected.
+The slide PDF companion was generated from the inspected renders after the native
+export limitation; the PPTX preserves editable evidence. No human review was claimed.
+
+31 October 2026: at Devam's explicit request to fix the outstanding PRs and build a separate WP01-WP03 integration PR, OpenAI ChatGPT/Codex applied the WP02 compatibility/review corrections and ran focused tests. 40 WP02 tests passed. Removed the deleted WP01 constant import while keeping the conservative comparison exclusion local; reject unsupported tiny rtol before output; exported notebook provenance no longer requires Git. The older restored WP01 dependency is replaced by current WP01 only in the separate integration PR. These changes are authored as Devam-assisted fixes, not an approval or statement of the original owner's understanding.
