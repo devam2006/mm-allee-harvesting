@@ -183,14 +183,20 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                         {
                             "case_id": case_id,
                             "model": model,
+                            "regime": regime,
                             "method": "ODE_LS",
                             "noise_sigma": sigma,
                             "time": ode_res.predicted_trajectory["time"],
                             "pred_population": ode_res.predicted_trajectory["population"],
+                            "predicted_population": ode_res.predicted_trajectory["population"],
                             "ref_population": ref_pops,
-                            "obs_time": obs["time"].to_numpy(),
-                            "obs_population": obs["observed_population"].to_numpy(),
-                            "obs_split": obs["split"].to_numpy(),
+                            "obs_time": np.asarray(obs["time"]),
+                            "obs_population": np.asarray(obs["observed_population"]),
+                            "observed_population": np.asarray(obs["observed_population"]),
+                            "obs_split": np.asarray(obs["split"]),
+                            "train_indices": obs["train_indices"],
+                            "val_indices": obs["val_indices"],
+                            "test_indices": obs["test_indices"],
                         }
                     )
 
@@ -287,14 +293,20 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                 {
                                     "case_id": case_id,
                                     "model": model,
+                                    "regime": regime,
                                     "method": "PINN",
                                     "noise_sigma": sigma,
                                     "time": pinn_res.predicted_trajectory["time"],
                                     "pred_population": pinn_res.predicted_trajectory["population"],
+                                    "predicted_population": pinn_res.predicted_trajectory["population"],
                                     "ref_population": ref_pops,
-                                    "obs_time": obs["time"].to_numpy(),
-                                    "obs_population": obs["observed_population"].to_numpy(),
-                                    "obs_split": obs["split"].to_numpy(),
+                                    "obs_time": np.asarray(obs["time"]),
+                                    "obs_population": np.asarray(obs["observed_population"]),
+                                    "observed_population": np.asarray(obs["observed_population"]),
+                                    "obs_split": np.asarray(obs["split"]),
+                                    "train_indices": obs["train_indices"],
+                                    "val_indices": obs["val_indices"],
+                                    "test_indices": obs["test_indices"],
                                 }
                             )
                     else:

@@ -182,25 +182,40 @@ def plot_heldout_failure(
     fig, axes = plt.subplots(2, 2, figsize=(13, 9))
 
     for ax, run in zip(axes.flat, trajectory_runs[:4], strict=False):
-        times = run["time"]
-        obs_pop = run["observed_population"]
-        pred_pop = run["predicted_population"]
-        idx_train = run["train_indices"]
-        idx_val = run["val_indices"]
-        idx_test = run["test_indices"]
-        title = f"{run['model']} - {run['regime']} ({run['method']})"
+        times = np.asarray(run["time"])
+        obs_pop = np.asarray(run.get("observed_population", run.get("obs_population", [])))
+        pred_pop = np.asarray(run.get("predicted_population", run.get("pred_population", [])))
+
+        idx_train = run.get("train_indices")
+        idx_val = run.get("val_indices")
+        idx_test = run.get("test_indices")
+        if idx_train is None and "obs_split" in run:
+            splits = np.asarray(run["obs_split"])
+            idx_train = np.where(splits == "train")[0]
+            idx_val = np.where(splits == "val")[0]
+            idx_test = np.where(splits == "test")[0]
+
+        regime = run.get("regime", run.get("case_id", ""))
+        title = f"{run['model']} - {regime} ({run['method']})"
 
         # Background color for train/val/test splits
-        t_train_max = times[idx_train[-1]]
-        t_val_max = times[idx_val[-1]]
-        t_max = times[-1]
+        if idx_train is not None and len(idx_train) > 0:
+            t_train_max = float(times[idx_train[-1]])
+            ax.axvspan(0, t_train_max, color="blue", alpha=0.08, label="Train split (60%)")
+        if idx_val is not None and len(idx_val) > 0:
+            t_train_max = float(times[idx_train[-1]]) if idx_train is not None and len(idx_train) > 0 else 0
+            t_val_max = float(times[idx_val[-1]])
+            ax.axvspan(t_train_max, t_val_max, color="green", alpha=0.08, label="Val split (20%)")
+        if idx_test is not None and len(idx_test) > 0:
+            t_val_max = float(times[idx_val[-1]]) if idx_val is not None and len(idx_val) > 0 else 0
+            t_max = float(times[-1])
+            ax.axvspan(t_val_max, t_max, color="red", alpha=0.08, label="Held-out Test (20%)")
 
-        ax.axvspan(0, t_train_max, color="blue", alpha=0.08, label="Train split (60%)")
-        ax.axvspan(t_train_max, t_val_max, color="green", alpha=0.08, label="Val split (20%)")
-        ax.axvspan(t_val_max, t_max, color="red", alpha=0.08, label="Held-out Test (20%)")
-
-        ax.scatter(times, obs_pop, s=15, color="black", alpha=0.6, label="Noisy Observations")
-        ax.plot(times, pred_pop, color="crimson", lw=2, label="Fitted Trajectory")
+        if len(obs_pop) > 0:
+            obs_times = np.asarray(run.get("obs_time", times))
+            ax.scatter(obs_times, obs_pop, s=15, color="black", alpha=0.6, label="Noisy Observations")
+        if len(pred_pop) > 0:
+            ax.plot(times, pred_pop, color="crimson", lw=2, label="Fitted Trajectory")
 
         ax.set_title(title, fontsize=10)
         ax.set_xlabel("Time")
