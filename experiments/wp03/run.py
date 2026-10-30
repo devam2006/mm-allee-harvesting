@@ -29,6 +29,51 @@ from mm_allee.thresholds import critical_a, critical_b
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def plot_basin_grid(axis, controls, initials, grid, colours):
+    """Draw sampled basins with an exact cell edge at the critical control.
+
+    Fold samples belong to the boundary line, never a finite-width cell.
+    Draw each side separately so persistence colours cannot spill above 1,
+    including when the control grid does not sample the fold.
+    """
+
+    def edges(values):
+        return np.r_[
+            values[0] - (values[1] - values[0]) / 2,
+            (values[:-1] + values[1:]) / 2,
+            values[-1] + (values[-1] - values[-2]) / 2,
+        ]
+
+    control_edges, initial_edges = edges(controls), edges(initials)
+    meshes = []
+    for mask in (controls < 1, controls > 1):
+        indices = np.flatnonzero(mask)
+        if not len(indices):
+            continue
+        left, right = indices[0], indices[-1] + 1
+        region_edges = control_edges[left : right + 1].copy()
+        if controls[left] > 1 and controls[0] <= 1:
+            region_edges[0] = 1
+        if controls[right - 1] < 1 and controls[-1] >= 1:
+            region_edges[-1] = 1
+        meshes.append(
+            axis.pcolormesh(
+                region_edges,
+                initial_edges,
+                grid[:, left:right],
+                shading="flat",
+                cmap=ListedColormap(colours),
+                vmin=0,
+                vmax=4,
+                # Matching strokes hide PDF viewers' antialiasing seams
+                # between adjacent filled vector polygons.
+                edgecolors="face",
+                linewidth=0.5,
+            )
+        )
+    return meshes
+
+
 def plot_results(study, config, output):
     p = study["parameters"]
     a = p.A / p.K
@@ -40,6 +85,11 @@ def plot_results(study, config, output):
         fig.suptitle(subtitle, fontsize=10)
         fig.tight_layout(rect=(0, 0.14 if legend_space else 0, 1, 0.94))
         paths.extend(save_figure(fig, output / name))
+        # Keep the shared PNG/EPS helper's API; WP03 also supplies vector
+        # PDFs for plain pdflatex/latexmk without EPS shell conversion.
+        pdf = output / f"{name}.pdf"
+        fig.savefig(pdf, bbox_inches="tight", facecolor="white", transparent=False)
+        paths.append(pdf)
         plt.close(fig)
 
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 4))
@@ -84,22 +134,8 @@ def plot_results(study, config, output):
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.5))
     colours = ["#D55E00", "#E6AB02", "#0072B2", "#FFFFFF", "#999999"]
     for model, axis in zip(("A", "B"), axes, strict=True):
-        dc = study["controls"][1] - study["controls"][0]
-        dx = study["initials"][1] - study["initials"][0]
-        axis.imshow(
-            study["basin_grids"][model],
-            origin="lower",
-            interpolation="none",
-            aspect="auto",
-            extent=(
-                -dc / 2,
-                study["controls"][-1] + dc / 2,
-                -dx / 2,
-                study["initials"][-1] + dx / 2,
-            ),
-            cmap=ListedColormap(colours),
-            vmin=0,
-            vmax=4,
+        plot_basin_grid(
+            axis, study["controls"], study["initials"], study["basin_grids"][model], colours
         )
         fractions = np.linspace(0, 1, 101)
         critical = qc if model == "A" else critical_b(a)
@@ -261,7 +297,7 @@ def run(config, output):
         "configuration_sha256": hashlib.sha256(
             json.dumps(config, sort_keys=True, allow_nan=False).encode()
         ).hexdigest(),
-        "source_files_sha256": {str(p.relative_to(ROOT)): sha256(p) for p in source},
+        "source_files_sha256": {p.relative_to(ROOT).as_posix(): sha256(p) for p in source},
         "versions": {
             "python": platform.python_version(),
             "numpy": np.__version__,
@@ -299,7 +335,7 @@ def curate(output):
     for name in manifest["files_sha256"]:
         folder = (
             "figures"
-            if name.endswith((".png", ".eps"))
+            if name.endswith((".png", ".eps", ".pdf"))
             else "manifests"
             if name.endswith(".json")
             else "tables"
@@ -308,7 +344,10 @@ def curate(output):
         destination.parent.mkdir(parents=True, exist_ok=True)
         if (output / name).resolve() != destination.resolve():
             shutil.copyfile(output / name, destination)
-        hashes[str(destination.relative_to(ROOT))] = sha256(destination)
+        if destination.suffix in {".json", ".csv", ".eps"}:
+            # Hash the canonical LF bytes that Git stores on every platform.
+            destination.write_bytes(destination.read_bytes().replace(b"\r\n", b"\n"))
+        hashes[destination.relative_to(ROOT).as_posix()] = sha256(destination)
     manifest["files_sha256"], manifest["paths_relative_to"] = hashes, "repository_root"
     write_json(ROOT / "artifacts/manifests/wp03_analysis.json", manifest)
 

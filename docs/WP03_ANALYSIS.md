@@ -18,7 +18,7 @@ python experiments/wp03/generate_reference.py --config configs/wp03_reference.js
 python -m pytest tests/wp03 -q
 ```
 
-The first experiment writes seven CSV tables, four paired PNG/EPS figures, a summary and a manifest.
+The first experiment writes seven CSV tables, four PNG/EPS/vector-PDF figure sets, a summary and a manifest.
 The second retains the early six-case reference handoff. Add `--curate` only to intentionally refresh
 their small versioned outputs. Both fail rather than publish unchecked numerical results.
 The study config declares a 60-second analysis budget and caps grid sizes; the observed default
@@ -44,7 +44,7 @@ then install this checkout with `pip install -e .`. Actual reproduction checks a
 | Where are source/config/file hashes? | [analysis manifest](../artifacts/manifests/wp03_analysis.json), [config](../configs/wp03.json) |
 | What is left for the final submission? | [readiness audit](../artifacts/manifests/wp03_submission_audit.json), [integration guide](INTEGRATION.md) |
 
-Every new PNG has an EPS partner with the same stem. All data are synthetic in declared model
+Every new PNG has EPS and vector PDF partners with the same stem. All data are synthetic in declared model
 units; there is no real-world species dataset here. Four new figures are supported by tables;
 full basin colour grids are generated analytically in memory, with exact boundary curves overlaid.
 
@@ -126,3 +126,31 @@ change his noise/split/inverse ownership.
 
 Learning later: [five-minute presentation notes and defence questions](../presentation/wp03.md).
 Those notes are a study aid, not certification that the human owner has learned the material.
+
+## Raghav's PR #4 review follow-up, 30 October 2026
+
+[Review addressed](https://github.com/devam2006/mm-allee-harvesting/pull/4#pullrequestreview-5705535562).
+
+| Point | Change and evidence |
+|---|---|
+| B small lower root loses relative precision | Compute `upper` first and `lower=a*(1+e)/upper`; retain an explicit repeated fold. `test_b_lower_root_matches_high_precision_polynomial_at_small_allee_ratio` checks 80-digit independent polynomial bisection, relative error within 8 eps, and basin outcomes on both sides, including both reported examples. |
+| Persistence strip above critical harvest | Plot the two control regions separately with an exact edge at 1; the fold is a line. `test_basin_mesh_cannot_draw_persistence_above_the_fold` inspects actual coloured-cell coordinates for A/B with and without a sampled fold. PNG and vector PDF inspected. |
+| WP01/WP03 fold convention | Preserve WP03's exact computed-control equality. Document WP01 #8's current 64*eps relative band and possible API disagreement in INTERFACES/DECISIONS; unification is a reviewed integration item. |
+| Raster report figures | Export/curate/hash all four vector PDFs alongside PNG/EPS. Report references omit extensions. All four PDFs contain zero embedded raster images; revised six-page report compiled with Tectonic and WP03 pages visually inspected. One underfull table-cell warning remains; no overfull boxes or undefined citations. |
+| Merge order | Preserve both PRs' interface/decision entries and notebook fragments; reassemble and execute the combined notebook when the second PR merges. Not attempted ahead of human reviews. |
+| Extinction conditioning | Report/notebook state `d tau_ext/d x0 ~ 1/[f'_A(x_-)*(x_--x0)]`: rounding is amplified near the barrier, separately from integration error. |
+
+Observed on Windows / Python 3.14.3 with the existing ignored review environment:
+**150 WP03 tests; 194 full-suite tests passed**, including the optional Torch test.
+Ruff lint/format, ownership sync, smoke and whitespace checks passed. The default
+experiment retained all seven table row counts (6/427/34/7/6/61/6). The six clean
+reference CSVs remain unchanged. Historical 28 October environment/reproduction
+records above describe that earlier run; the current run's versions, source and
+output hashes are in `wp03_analysis.json`, with follow-up checks/limitations in
+[wp03_review_followup.json](../artifacts/manifests/wp03_review_followup.json).
+Curated text outputs are normalised to LF before hashing so Git's line-ending conversion
+does not invalidate its checksum on another platform.
+The assembled notebook's nine code cells passed in order in a fresh Python
+process (10.68 s), including analysis and six-case reference regeneration.
+Local Jupyter/nbconvert launch attempts stalled and were stopped; a full local
+kernel run is unverified. GitHub CI checks the real kernel on the updated PR.

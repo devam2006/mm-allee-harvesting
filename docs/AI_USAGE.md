@@ -25,3 +25,13 @@ Suggested final wording must be adapted to actual use: “We used [platforms] fo
 On 28 October 2026, Devam requested direct completion of the remaining WP03 work while deferring learning. OpenAI ChatGPT/Codex restored only WP03's earlier dependency after main's revert, implemented thresholds/basins/extinction/bottleneck and optional sensitivity/MSY, added independent checks/figures, completed the owned report/notebook and speaking notes, and added a readiness audit. Venv/clean-environment reproduction and actual outcomes are recorded in WP03's handoff/manifest. Official SciPy docs were checked. The PDF skill supported report review; Resolve Recipients used exact roster handles and verified collaborator access. No PINN/noise/split work, human understanding, non-author reproduction or human approval is claimed; final group packaging awaits integrated work and metadata.
 
 On 28 October 2026, Devam requested another WP03 correctness review, a simple comprehensive learning guide kept on the WP03 branch, and preparation for partial group assembly on a separate branch. OpenAI ChatGPT/Codex reproduced the existing results, probed additional parameter limits, fixed small-catch bracketing and near-boundary extinction evaluation, and added independent regression checks. It wrote `docs/WP03_EXPLAINED.md` from the governing equations through numerical methods, outputs and presentation questions. The guide and machine checks do not certify Devam's understanding or replace teammate review. Updated reproduction evidence records the actual post-fix checks.
+
+On 30 October 2026, Devam requested review and fixes for Raghav's comment on
+PR #4. OpenAI ChatGPT/Codex read the actual GitHub review, fixed B lower-root
+cancellation and basin-cell geometry, added independent Decimal/root and
+rendered-cell regression checks, exported vector PDFs, and aligned the owned
+report/notebook and interface/merge handoff. The PDF skill supported visual
+checks. Actual commands/outcomes and environment limits are recorded in
+`docs/WP03_ANALYSIS.md` and `artifacts/manifests/wp03_review_followup.json`.
+This is agent-assisted validation, not human understanding, a new human
+approval or permission to merge.

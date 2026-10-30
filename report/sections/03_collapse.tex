@@ -46,6 +46,9 @@ is excluded from the population domain. For B the positive roots are
 x_\pm=\frac{1+a\pm\sqrt{(1-a)^2-4ae}}{2},
 \qquad f_B'(0)=-(1+e)<0 .
 \]
+For numerical evaluation as $a\to0$, compute $x_+$ first and use the
+quadratic root product $x_-=a(1+e)/x_+$ to avoid cancellation in the minus
+formula. At the computed fold, return the repeated root $(1+a)/2$ explicitly.
 At either positive fold the roots coalesce. Although the derivative is zero,
 the vector field is negative on both sides locally: the double root is
 semistable, attracting from above and departing from below.
@@ -79,12 +82,13 @@ distinct. These are finite-precision conventions, not measurement uncertainty.
 WP01/WP02 retain ownership of their full equilibrium/stability presentations.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_basins.png}
+\includegraphics[width=\linewidth]{wp03_basins}
 \caption{Synthetic analytical basin grids. Solid black curves are basin
 boundaries, dashed curves upper positive equilibria, dotted vertical lines folds.
 A decline under positive yield reaches zero in finite time; B decline is
 asymptotic. The exact equilibrium lines and thin zero-harvest column also
-require the classification table; the colour grid has finite resolution.}
+require the classification table; the colour grid has finite resolution.
+The colour regions meet exactly at the fold, which is drawn as a line.}
 \end{figure}
 
 \subsection{Extinction quadrature and numerical checks}
@@ -115,7 +119,10 @@ Partial fractions give an elementary evaluation of the same integral:
 This avoids missed endpoint contributions for starts extremely close below
 the fold. Its method is recorded as \texttt{fold\_closed\_form}, with no
 invented quadrature-error estimate. Root rounding remains a separate source
-of uncertainty near a basin boundary.
+of uncertainty near a basin boundary. For a subcritical start approaching
+$x_-$ from below, $d\tau_{\rm ext}/dx_0=1/[q-G(x_0)]
+\sim1/[f'_A(x_-)(x_--x_0)]$: input/root rounding is amplified as the gap
+shrinks, so extra reported digits do not imply extra physical accuracy.
 
 SciPy RK45 uses the Dormand--Prince 5(4) pair: shared stage slopes produce
 two estimates, their difference controls local error, and the fifth-order
@@ -139,7 +146,7 @@ Tests additionally cover several $a$ values, physical units, exact logistic
 solutions and deliberate corruption of the production RHS.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_extinction.png}
+\includegraphics[width=\linewidth]{wp03_extinction}
 \caption{A extinction time versus initial state and catch in declared model
 units; vertical axes are logarithmic. Gaps mean no finite extinction,
 equilibrium or unresolved boundary; initial zero has time zero and is omitted.
@@ -175,7 +182,7 @@ $\tau_{\rm ext}\sqrt{\delta}$ rises from $1.36535$ at $\delta/q_c=0.1$
 to $1.46542$ at $10^{-4}$, approaching the predicted $1.46756$.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_bottleneck.png}
+\includegraphics[width=\linewidth]{wp03_bottleneck}
 \caption{Synthetic supercritical A trajectories and bottleneck divergence.
 Both axes on the right are dimensionless and logarithmic. The dashed
 small-$\delta$ expression is a leading asymptotic, not an exact finite-$\delta$
@@ -219,7 +226,7 @@ margins $20\%$ and $6.957\%$. Their initial realised catches differ;
 these separate examples do not establish a universal risk ranking.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_sensitivity_yield.png}
+\includegraphics[width=\linewidth]{wp03_sensitivity_yield}
 \caption{Optional dimensional elasticities and B upper-branch yield.
 The interior MSY is distinct from the semistable effort cliff.
 Yield uses declared population/time units. Each elasticity holds the other

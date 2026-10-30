@@ -54,9 +54,29 @@ Figure names: `wpNN_short_description.png/.eps`; add a manifest mapping figure/t
 
 - `thresholds.critical_a(a) -> (x_star,q_c)` and `critical_b(a) -> e_c`; dimensional thresholds and optional sensitivity/MSY use validated Parameters.
 - `collapse.positive_branches(model,*,a,harvest) -> (lower,upper) | None`: positive basin/upper branches, repeated pair at the exact computed fold, or None above it. WP01/WP02 retain full equilibrium-record/stability APIs.
+  For B, the lower branch is evaluated via the root product `a*(1+e)/upper` to preserve relative accuracy at small a; the exact fold returns `(centre,centre)` explicitly.
 - `collapse.classify_basin(model,*,a,harvest,x0,root_tol=2e-12) -> Basin`: regime, physical outcome, limiting state and boundary. Exact returned roots are equilibria; non-exact starts within root_tol of the unstable/semistable boundary are unresolved. Controls have no fold-merging tolerance.
 - `collapse.extinction_time_a(*,a,q,x0,...) -> ExtinctionTime`: finite dimensionless time or None with basin status. Initial extinction has time 0. Zero-harvest/non-reaching paths are not integrated through poles. An above-fold tangent substitution resolves the bottleneck; a logarithmic substitution resolves close subcritical endpoints. At the computed fold, an elementary antiderivative has `method="fold_closed_form"` and `quadrature_error=None`. Other finite integrations carry QUADPACK's error estimate, which excludes root/input rounding. Physical time is tau/r.
 - `collapse.safety_margins(model,Parameters,N0)`: control fraction, dimensional barrier/population margin and outcome. A stable-branch yield supremum and B interior realised-yield maximum are distinct from maximum effort.
 - `collapse_study.build_study(config)` returns analysis data and enforces its budget before publication. `experiments/wp03/run.py` writes tables, paired figures, summary and a hash manifest.
 
 Precision, evidence mapping and commands: [WP03_ANALYSIS.md](WP03_ANALYSIS.md). This PR restores the prior clean CSV contract after main's revert; WP05 still owns noise/splits.
+
+### WP01/WP03 fold and merge handoff (30 October 2026)
+
+WP03's exact computed-control equality convention remains unchanged. WP01 PR #8
+currently uses `abs(q-q_c) <= 64*eps*q_c`, so its equilibrium records and WP03's
+basin classification can differ for controls within that band. The population
+uncertainty `root_tol` in WP03 is separate and never changes the control regime.
+Do not assume the two APIs agree in this band until the affected owners reconcile
+the convention in a reviewed integration change. This documents the difference;
+it does not change WP01 or claim an agreed unified convention.
+
+WP03 exports vector PDF alongside each PNG/EPS, tracks all three in the analysis
+manifest, and uses extensionless report figure references. The shared
+`plotting.save_figure` PNG/EPS return contract is unchanged.
+
+PRs #4 and #8 both change `docs/INTERFACES.md`, `docs/DECISIONS.md` and the assembled
+notebook. Whichever merges second must preserve both sets of documentation and
+notebook fragments, rerun `python scripts/assemble_notebook.py`, and execute the
+combined notebook/tests. These steps remain pending until the branches integrate.

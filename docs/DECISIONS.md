@@ -23,3 +23,16 @@ RK45 milestone scope (Devam, 19 October 2026): implement only the numerical-refe
 28 October 2026, full WP03: no control tolerance merges the fold. Exact returned roots are classified explicitly; non-exact initial states within 2e-12 dimensionless units of an unstable/semistable barrier are unresolved. Quadrature follows analytical basin classification, with a tangent substitution for the above-fold peak. Sensitivities hold other dimensional parameters fixed. B MSY is realised yield on the upper branch. The final audit exposes missing group artifacts/human checks. This branch restores only WP03's prior dependency removed by main's revert.
 
 28 October 2026, WP03 recheck: use product-form A root brackets away from the fold to preserve tiny-catch endpoint signs. Use a logarithmic variable for near-boundary subcritical extinction integrals and an elementary antiderivative at the computed fold. The latter returns no quadrature-error estimate. Positive-catch roots rounded to endpoints are not exact A equilibria. Independent high-precision polynomial and rational-fold integral checks cover the fixes. Devam requested a basics-first WP03 learning guide on this branch and a separate branch for evolving partial group deliverables; neither action supplies human scientific approvals or understanding certification.
+
+30 October 2026, Raghav's PR #4 review follow-up: evaluate B's small lower branch
+using the quadratic root product, retaining the explicit repeated fold root.
+Draw basin colour cells separately on either side of control/critical=1, with
+the fold as a line, so no persistence cell extends into the supercritical
+region. Export vector PDF with WP03's PNG/EPS and use extensionless report
+references without changing the shared plotting helper. Explain input/root
+rounding amplification near the subcritical extinction boundary in report and
+notebook. WP03 retains exact computed-control equality; document that WP01 #8
+currently uses a 64*eps relative fold band. A unified convention requires owner
+review at integration. Preserve both PRs' interface/decision notes and rebuild
+the assembled notebook when the second PR merges. No merge or human approval
+is supplied by these fixes.

@@ -15,3 +15,10 @@ WP03's mathematical/computational analysis, early references and optional sensit
 States: not started -> in progress -> PR review -> integrated -> reproduced. Only use **reproduced** after another member runs the documented commands from a clean environment.
 
 Bootstrap already provides dimensional/dimensionless RHS functions, a zero-event RK45 wrapper, metric helpers, split validation, notebook assembly, five test groups and collaboration tooling. The assigned members must derive, extend, test and interpret these components rather than present them as completed analysis.
+
+30 October 2026: Raghav's [PR #4 review](https://github.com/devam2006/mm-allee-harvesting/pull/4#pullrequestreview-5705535562)
+follow-up fixes small-a B root cancellation and basin colour spill above the
+fold, adds vector report figures, and documents fold-convention differences,
+near-boundary conditioning and merge-order steps. Current validation and limits
+are recorded in [WP03 analysis](docs/WP03_ANALYSIS.md). The PR remains unmerged;
+remaining human reviews and cross-package integration are pending.
