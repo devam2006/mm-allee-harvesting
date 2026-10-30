@@ -1,3 +1,7 @@
+# WP01–WP03 integration preview
+
+This branch combines the reviewed classical packages, their follow-up fixes and a shared threshold/basin contract. Run `notebooks/wp01_wp03_standalone.ipynb` without a repository checkout, or use the readable source notebook `notebooks/wp01_wp03.ipynb` here. The integrated five-package notebook/data/figure handoff belongs to PR #5; the LaTeX report is maintained separately in Overleaf.
+
 # MM project: harvesting under a strong Allee effect
 
 **Approved title:** Harvesting under a Strong Allee Effect: Collapse Thresholds, Hysteresis and Comparison of Constant-Yield vs Proportional-Effort Harvesting, with Physics-Informed Neural Network (PINN) Forward and Inverse Analysis

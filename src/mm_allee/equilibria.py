@@ -23,11 +23,8 @@ Numerical conventions (dimensionless, documented in the report):
   (Sterbenz), so ``G`` keeps full relative accuracy even when ``q_c`` is tiny (``a``
   near 1). It equals ``models.rhs`` algebraically; tests check the parity.
 * ``q_c`` uses a rationalised closed form without cancellation (see :func:`fold_a`).
-* Critical case: ``|q - q_c| <= FOLD_RTOL * q_c`` with ``FOLD_RTOL = 64 * eps``
-  (about ``1.4e-14``). This is a rounding-error allowance *relative to the scale of
-  q_c*, so it is meaningful for every ``a`` in ``(0, 1)``. Just outside it the two
-  roots are about ``2*sqrt(2*FOLD_RTOL*q_c/|G''(x_star)|)`` apart and are returned
-  separately, never merged or dropped.
+* The integrated topology uses exact equality to the shared computed critical
+  control. FOLD_RTOL remains an uncertainty scale, not a root-merging rule.
 * Sign probes sit at ``x_eq +/- delta`` with ``delta = min(1e-4, d/4)``, where ``d`` is
   the distance to the nearest other real root of the polynomial (excluded negative
   roots included) and, for positive roots, to the boundary ``x = 0``. A probe can
@@ -45,6 +42,9 @@ from math import isfinite, sqrt
 
 import numpy as np
 from scipy.optimize import brentq
+
+from .collapse import positive_branches
+from .thresholds import critical_a
 
 EPS = float(np.finfo(float).eps)
 FOLD_RTOL = 64 * EPS
@@ -150,12 +150,7 @@ def fold_a(a):
     ``[2s^3 + (1+a)(2a-1)(a-2)]/(27a)`` loses all digits to cancellation).
     This agrees with WP03's ``thresholds.critical_a``.
     """
-    _validate_a(a)
-    s = sqrt(1 - a + a * a)
-    d = 2 - a + s
-    x_star = 1 - (1 - a) / d
-    q_c = x_star * (1 - a) ** 2 * (1 - a + s) / (a * d * d)
-    return x_star, q_c
+    return critical_a(a)
 
 
 def _sign(value):
@@ -272,7 +267,7 @@ def _records(
 
 
 def _is_critical(q, q_c):
-    return abs(q - q_c) <= FOLD_RTOL * q_c
+    return q == q_c
 
 
 def equilibria_logistic(q, *, include_excluded=False):
@@ -352,7 +347,7 @@ def equilibria_a(a, q, *, include_excluded=False):
     * ``q = 0``: roots ``0, a, 1`` (stable, unstable, stable).
     * ``0 < q < q_c``: one root in ``(a, x_star)`` (unstable) and one in
       ``(x_star, 1)`` (stable).
-    * ``|q - q_c| <= FOLD_RTOL*q_c``: one double root at ``x_star`` (semistable,
+    * ``q == q_c``: one double root at ``x_star`` (semistable,
       attracts from above).
     * ``q > q_c``: no physical equilibrium.
 
@@ -388,21 +383,7 @@ def equilibria_a(a, q, *, include_excluded=False):
         mult = {x_star: 2}
         notes = {x_star: "fold: double root, one-sided signs decide stability"}
     elif q < q_c:
-        if q < 0.9 * q_c:
-            lower = _brent(f, a, x_star)
-            upper = _brent(f, x_star, 1.0)
-        else:
-            # Resolve the small distance from the maximum instead of asking
-            # Brent to distinguish two x values whose absolute scale is one.
-            d = sqrt(1 - a + a * a)
-
-            def offset_equation(y):
-                return y * y * (d + y) / a - (q_c - q)
-
-            lower = x_star + _brent(offset_equation, a - x_star, 0.0)
-            upper = x_star + _brent(offset_equation, 0.0, 1.0 - x_star)
-        if lower >= upper:
-            raise ArithmeticError("Distinct A roots cannot be resolved at float precision")
+        lower, upper = positive_branches("A", a=a, harvest=q)
         physical = [lower, upper]
         mult = {}
         notes = {lower: "harvest-shifted Allee threshold", upper: "persistent state"}

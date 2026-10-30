@@ -133,9 +133,10 @@ def test_close_roots_near_fold_are_both_retained():
         expected = 2 * np.sqrt(2 * gap / g2)
         assert upper.x - lower.x == pytest.approx(expected, rel=1e-2)
         assert (lower.stability, upper.stability) == ("unstable", "stable")
-    # Inside the documented tolerance the fold is reported once, as a double root.
-    (rec,) = equilibria_a(a, q_c * (1 - 0.5 * FOLD_RTOL))
-    assert rec.multiplicity == 2
+    # The integrated topology preserves distinct controls inside the old band.
+    lower, upper = equilibria_a(a, q_c * (1 - 0.5 * FOLD_RTOL))
+    assert lower.x < upper.x
+    assert lower.multiplicity == upper.multiplicity == 1
 
 
 def test_zero_boundary_description():

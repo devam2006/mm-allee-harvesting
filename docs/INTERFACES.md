@@ -1,3 +1,7 @@
+# Current integrated classical contract
+
+WP01–WP03 in this integration branch share `thresholds.critical_a/critical_b` and `collapse.positive_branches`. Only exact equality to the common computed critical control denotes the fold; a nearby uncertainty scale never creates a root. WP02 comparisons propagate `boundary_unresolved` for initial-state uncertainty. Historical source-branch notes below are retained as provenance and do not override this contract.
+
 # Shared interfaces and file contracts
 
 Freeze names before independent implementations. Existing scaffold APIs below are implemented; the **planned** analysis/PINN APIs are package deliverables and are not falsely exported yet.

@@ -6,7 +6,7 @@ WP03's mathematical/computational analysis, early references and optional sensit
 | Package | Owner | State | PR/evidence |
 |---|---|---|---|
 | WP01 | @RaghavSinghal15 | PR review | [PR #8](https://github.com/devam2006/mm-allee-harvesting/pull/8): restores reverted PR #3 with all review fixes; report assembly pending other sections |
-| WP02 | @AshChan07 | Not started | Fill after assignment |
+| WP02 | @AshChan07 | PR review | PR #9 contains Model B/comparison/history; current consumer fixes integrated in this branch; human reviews pending |
 | WP03 | @devam2006 | PR review | Core analysis, references and optional sensitivity/MSY implemented; [PR #4](https://github.com/devam2006/mm-allee-harvesting/pull/4); [results/commands](docs/WP03_ANALYSIS.md), wp03/collapse-analysis; human learning/review and final integration pending |
 | WP04 | @Prem-Mehta03 | Not started | Fill after assignment |
 | WP05 | @rohanagrawal28 | Not started | Fill after assignment |

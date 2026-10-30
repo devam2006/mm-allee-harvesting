@@ -67,3 +67,9 @@ fold policy remain owner-reviewed integration steps; no owner agreement is inven
   Its reviewed numerical edge cases remain with WP01; comparison guards exclude the
   unresolved regimes. WP03 threshold-helper integration remains pending its availability.
 - These are proposed additions for the WP02 PR, not a claim of affected-owner approval.
+
+## Integrated classical convention, 31 October 2026
+
+At Devam's explicit request, this separate integration PR implements one shared WP03 threshold and positive-branch provider, with exact computed-control equality for root topology. WP01 root records and WP02 comparisons consume it; population uncertainty remains separate. Source PRs retain their independently reviewed scope, and this integration change remains subject to the affected owners' PR review. No human agreement or approval is fabricated.
+
+The report is maintained in Overleaf. Repository integration focuses on portable notebooks, synthetic data, figures (including EPS), source and reproducibility evidence. No repository LaTeX report assembly is part of this task.

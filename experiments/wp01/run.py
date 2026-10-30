@@ -113,7 +113,7 @@ def solver_settings(config):
 def regime(q, q_c):
     if q == 0:
         return "zero_harvest"
-    if abs(q - q_c) <= FOLD_RTOL * q_c:
+    if q == q_c:
         return "critical"
     return "subcritical" if q < q_c else "supercritical"
 
@@ -279,7 +279,9 @@ def main(argv=None):
         "root_finding": {
             "method": "scipy.optimize.brentq on calculus-derived brackets",
             "brent_relative_tolerance": BRENT_RTOL,
-            "fold_relative_tolerance_q": FOLD_RTOL,
+            "fold_relative_tolerance_q": 0.0,
+            "uncertainty_scale_relative_q": FOLD_RTOL,
+            "fold_policy": "exact equality to shared computed critical control",
             "sign_probe_max_offset": PROBE_MAX,
         },
         "solver_effective": {

@@ -10,6 +10,7 @@ from dataclasses import asdict, dataclass
 from math import isfinite, sqrt
 
 from .models import rhs
+from .thresholds import critical_b
 
 
 @dataclass(frozen=True)
@@ -34,9 +35,7 @@ class EquilibriumB:
 
 def critical_effort(a):
     """Discriminant threshold (1-a)^2/(4a), in h/r units."""
-    if not isfinite(a) or not 0 < a < 1:
-        raise ValueError("Require finite 0<a<1")
-    return (1 - a) ** 2 / (4 * a)
+    return critical_b(a)
 
 
 def equilibria_b(a, e):

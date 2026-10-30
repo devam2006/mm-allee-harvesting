@@ -8,6 +8,7 @@ from math import isfinite
 
 from scipy.integrate import trapezoid
 
+from .collapse import classify_basin
 from .equilibria import equilibria_a, equilibria_logistic, fold_a
 from .model_b import critical_effort, equilibria_b
 from .solver import solve_trajectory
@@ -76,7 +77,13 @@ def compare_policies(
         )
         positive = [v for v in records if v.x > 0]
         boundary = positive[0].x if positive else None
-        if any(x0 == v.x for v in positive):
+        if model in {"A", "B"}:
+            basin = classify_basin(model, a=a, harvest=control, x0=x0)
+            boundary = basin.boundary_x
+            outcome = (
+                "asymptotic_decline" if basin.outcome == "asymptotic_extinction" else basin.outcome
+            )
+        elif any(x0 == v.x for v in positive):
             outcome = "equilibrium"
         elif boundary is None or x0 < boundary:
             outcome = "asymptotic_decline" if model == "B" else "finite_extinction"
