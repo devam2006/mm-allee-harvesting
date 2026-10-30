@@ -70,6 +70,15 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
 
 ## Current handoff
 
+- **Latest reporting-fix update:** PR #5 now incorporates Prem's PR #10
+  `00393cd` with verified validation-loss and L-BFGS reporting fixes. All ten
+  source regression tests and 301 source tests passed; the integrated suite
+  passed 521 tests, plus four newly added direct forward/inverse parity cases.
+  The previous statement below that two reporting defects remain open is
+  historical and superseded. Next steps are owner review of shared conventions,
+  settings and status vocabulary, followed by human approvals and final
+  Overleaf/presentation work. See `docs/PREM_PR10_FINAL_REVIEW.md` and the E2E log.
+
 - **31 October integration update:** source WP03 remains PR #4 `16a05ce`.
   Classical integration PR #11 `649e0c1` combines current WP01/WP02 fixes,
   shared thresholds/branches and basin conventions; 421 tests and a real

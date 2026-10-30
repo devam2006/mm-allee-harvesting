@@ -2,10 +2,35 @@
 
 The integration combines classical PR #11 (`649e0c1`, including current WP01
 `b83bba8`, WP02 `879b110`, WP03 `16a05ce`) with Prem's WP04/WP05 PR #10
-`c84a0bf`. Source PRs remain open for human review. No PR was merged or approved
+`00393cd78057e8b16c50698521f0a91ed341fb12`. Source PRs remain open for human review. No PR was merged or approved
 by the agent. The report is maintained in Overleaf, not assembled here.
 
-## Observed verification
+## Reporting-fix review, 31 October 2026
+
+Prem added `7b502cc` (runtime fixes and ten regression tests), followed by
+`00393cd` (refreshed 54-fit evidence and scientific wording). All ten reporting
+regressions and the full 301-test source suite passed independently; both
+GitHub CI jobs passed on `00393cd`. The refreshed integrated source passed
+521 tests before adding four further direct forward/inverse parity cases;
+all four parity cases also passed. They compare the inverse trainer's actual
+logged physics loss with the forward residual API under `tau = r*t` for both
+models and nonunit growth rates/population scales, with learning frozen.
+
+Validation loss now measures the returned model when selection is disabled;
+changing validation observations leaves the trained state unchanged. Exceptions
+return `lbfgs_failed`, `success=False`, a message and the Adam fallback. Separate
+L-BFGS outcomes distinguish tolerance, iteration-limit and abnormal exits.
+The legacy `status=converged` means training completed, **not** optimizer
+convergence; read `optimizer.lbfgs_outcome` and the exported table columns.
+
+The refreshed table has 54 PINN iteration-limit exits, no reported optimizer
+errors, and no abnormal exits. All 324 parameter rows and 108 prediction rows
+retain their previous numerical results (only runtime and exit columns change).
+These are independent audits of Prem's regenerated evidence, not a second
+independent execution of his full sweep. Clean recovery remains 10/18.
+See [the focused final review](PREM_PR10_FINAL_REVIEW.md).
+
+## Previous handoff verification (before Prem's fixes)
 
 - Full source suite: **511 passed**, including JAX tests.
 - The portable notebook ran in a real fresh Jupyter kernel from an isolated
@@ -25,7 +50,7 @@ by the agent. The report is maintained in Overleaf, not assembled here.
 
 ## Deliverables and reproduction
 
-The final PR #5 handoff rerun passed all **511 tests in 40.80 seconds**. Its
+The previous PR #5 handoff rerun passed all **511 tests in 40.80 seconds**. Its
 portable notebook ran **27 code cells with no errors in 26.83 seconds**. The
 same notebook was then extracted from the actual delivery ZIP and rerun in a
 second isolated fresh kernel: **27 executed cells, no errors** (24.48 seconds
@@ -59,14 +84,14 @@ explicit seeds and fixed scales. Reconstructed inputs are labelled accordingly;
 they are not claimed byte-identical to an author's unsaved historical arrays.
 The clean population column is evaluation truth and must not enter fitting.
 
-## Scientific limitations still requiring the owners
+## Scientific limitations and owner review
 
-Prem's latest reviewed Python engine still has the two PR #10 reporting
-findings: selection-off validation-loss histories can be undefined, and an
-L-BFGS exception/iteration exit can be labelled converged. This work does not
-silently rewrite the trainer or relabel its historical fits. The notebook now
-discloses those limitations. Passing execution and finite prediction metrics
-do not establish that optimizer convergence labels are trustworthy.
+The two reproduced reporting defects have fixes verified above; the previous
+open-finding warning is superseded. The notebook shows the separate L-BFGS exit
+and returned-model validation loss. It does not interpret the legacy training
+status as convergence. A unified status vocabulary and owner review of the
+adopted settings/parameter contracts remain group decisions; four direct parity
+tests now cover the previously missing computational integration check.
 
 Poor conditioning/failed PINN recovery with tested settings is distinct from
 the proven four-unknown Model B structural nonidentifiability. The clean ODE
@@ -75,5 +100,5 @@ are not supported. Small seed samples do not prove statistical equivalence.
 
 The full 54-fit inverse sweep and hundreds of shared-settings fits were not
 repeated here. Curated tables retain their source provenance. Human scientific
-review, resolution of the reporting findings, presentation/rehearsal, and the
+review of the integrated contracts, presentation/rehearsal, and the
 final Overleaf report remain separate requirements before final submission.

@@ -1,6 +1,6 @@
 # Five-package notebook, data and figure handoff
 
-This PR #5 branch combines classical PR #11 with Prem's current WP04/WP05 integration. Use `notebooks/project_standalone.ipynb` or download the notebook/data/figures archive under `deliverables/`. The notebook is self-contained with its source and synthetic evidence; standard scientific Python dependencies are required. Read `docs/END_TO_END_INTEGRATION.md` for measured checks and the two open WP05 reporting limitations. The report is maintained separately in Overleaf; no repository LaTeX assembly is requested.
+This PR #5 branch combines classical PR #11 with Prem's current WP04/WP05 integration. Use `notebooks/project_standalone.ipynb` or download the notebook/data/figures archive under `deliverables/`. The notebook is self-contained with its source and synthetic evidence; standard scientific Python dependencies are required. Read `docs/END_TO_END_INTEGRATION.md` for measured checks and the verified reporting fixes and remaining human review requirements. The report is maintained separately in Overleaf; no repository LaTeX assembly is requested.
 
 # MM project: harvesting under a strong Allee effect
 

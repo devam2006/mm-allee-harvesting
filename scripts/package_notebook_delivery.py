@@ -140,6 +140,7 @@ def package_delivery(executed_notebook, target):
         "docs/INTERFACES.md",
         "docs/CLASSICAL_INTEGRATION.md",
         "docs/END_TO_END_INTEGRATION.md",
+        "docs/PREM_PR10_FINAL_REVIEW.md",
         "docs/DRAFT_SOURCES.md",
         "docs/DATA_PROVENANCE.md",
         "team.json",
@@ -174,7 +175,7 @@ def package_delivery(executed_notebook, target):
         work_packages=[f"WP{i:02d}" for i in range(1, 6)],
         report="Maintained separately in Overleaf",
         known_limits=[
-            "WP05 validation-selection-off loss histories and optimizer status reporting remain under review in PR #10",
+            "Legacy WP05 status converged denotes completed training; read lbfgs_outcome for optimizer convergence",
             "Recorded final-sweep tables are not fresh reruns of all fits",
             "Human review, presentation and final Overleaf report remain separate",
         ],
@@ -187,7 +188,7 @@ def package_delivery(executed_notebook, target):
         "figures/ includes PNG/EPS pairs and available PDFs; use EPS files in the separately maintained Overleaf report. Historical alternatives are labelled in INVENTORY.json. "
         "datasets/ includes clean synthetic fixtures and reconstructed noisy training/validation/test inputs. tables/ and provenance/ preserve recorded evidence and its limitations. "
         "source/ contains readable implementation, authoring/experiment scripts and disclosures. Run the notebook directly; source/ is a readable companion, not a second copy of the complete repository layout.\n\n"
-        "This is a technically verified integration candidate, not certification of the unresolved WP05 reporting labels, human approvals, presentation readiness or final Overleaf report.\n"
+        "This is a technically verified integration candidate, not certification of optimizer convergence, human approvals, presentation readiness or final Overleaf report.\n"
     ).encode()
     files["SHA256SUMS.json"] = json.dumps(
         {name: hashlib.sha256(data).hexdigest() for name, data in files.items()}, indent=2

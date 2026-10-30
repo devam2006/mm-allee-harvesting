@@ -12,8 +12,8 @@ checksums. Historical figures and reconstructed inputs are labelled explicitly.
 The report is maintained separately in Overleaf.
 
 [Verification and limits](../docs/END_TO_END_INTEGRATION.md) distinguish successful
-execution from the two unresolved inverse reporting findings and recorded
-research sweeps that were not rerun. This is an integration candidate awaiting
+execution from the verified inverse reporting fixes, legacy status semantics and recorded
+research sweeps that were not independently rerun. This is an integration candidate awaiting
 human reviews, not the group's completed final submission.
 
 Rebuild after executing the portable notebook:

@@ -10,4 +10,4 @@
 
 Equations and algorithms precede code; plots are followed by interpretation and limitations. The shared classical APIs use one threshold/branch provider. A small population in B is not finite extinction; A's zero continuation is a declared shutdown policy. Good prediction does not guarantee accurate parameter recovery.
 
-The standalone export includes readable source/config/data/evidence. Restart the kernel and Run All. Recorded final experiments are distinguished from live demonstrations. The two inverse reporting findings from PR #10 remain disclosed in section 5. The Overleaf report, presentation/rehearsal and human approvals are maintained separately.
+The standalone export includes readable source/config/data/evidence. Restart the kernel and Run All. Recorded final experiments are distinguished from live demonstrations. The inverse reporting fixes from PR #10 commit `00393cd` are integrated. Section 5 explains the legacy training-status label and the separate L-BFGS outcome. The Overleaf report, presentation/rehearsal and human approvals are maintained separately.

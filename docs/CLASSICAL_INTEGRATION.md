@@ -72,6 +72,12 @@ NumPy, SciPy, Matplotlib and the usual Jupyter/IPython environment.
 
 ## Remaining group work
 
+Update on 31 October: PR #5 integrates Prem's latest PR #10 `00393cd`.
+Both reproduced inverse reporting defects have verified fixes. Four direct
+forward/inverse physics-loss parity tests now pass in the integration branch.
+The older open-finding note below is history; see
+`docs/PREM_PR10_FINAL_REVIEW.md` for the current status.
+
 Test this branch with Prem's current WP04/WP05 integration PR #10, then assemble
 the five-package portable notebook, datasets and figure handoff in PR #5. Keep
 the known inverse validation-loss/optimizer-status review findings visible until

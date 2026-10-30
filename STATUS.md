@@ -1,6 +1,6 @@
 # Project status
 
-PR #11 integrates reviewed WP01–WP03 source fixes and shared numerical conventions. PR #5 combines this with Prem's current WP04–WP05 PR #10 into a portable notebook/data/figure candidate: 511 tests and two isolated 27-cell kernel executions passed. The two WP05 validation-loss/optimizer-status reporting findings remain open; recorded statuses do not certify convergence. Human understanding, reviews, the final Overleaf report and presentation remain separate requirements.
+PR #11 integrates reviewed WP01–WP03 source fixes and shared numerical conventions. PR #5 combines this with Prem's current WP04–WP05 PR #10 into a portable notebook/data/figure candidate: The previous 511-test handoff and two isolated kernel runs passed; the refreshed source includes Prem PR #10 `00393cd` with verified reporting fixes (301 source tests; 521 integrated tests plus four new direct residual parity cases). Legacy status denotes training completion; optimizer convergence is reported separately. Human understanding, reviews, the final Overleaf report and presentation remain separate requirements.
 
 <!-- team-sync:status:start -->
 | Package | Owner | State | PR/evidence |
@@ -9,7 +9,7 @@ PR #11 integrates reviewed WP01–WP03 source fixes and shared numerical convent
 | WP02 | @AshChan07 | PR review | PR #9 contains Model B/comparison/history; current consumer fixes integrated in this branch; human reviews pending |
 | WP03 | @devam2006 | PR review | Core analysis, references and optional sensitivity/MSY implemented; [PR #4](https://github.com/devam2006/mm-allee-harvesting/pull/4); [results/commands](docs/WP03_ANALYSIS.md), wp03/collapse-analysis; human learning/review and final integration pending |
 | WP04 | @Prem-Mehta03 | PR review | [PR #6](https://github.com/devam2006/mm-allee-harvesting/pull/6) (do not merge yet) and the integration [PR #10](https://github.com/devam2006/mm-allee-harvesting/pull/10) (draft): JAX engine, review fixes, one shared forward+inverse setting (tanh, 2x32, lr 1e-3); forward 18/18 on two seed sets; report, notebook and evidence updated; four approvals, another member's reproduction and the PR #4 merge pending |
-| WP05 | @rohanagrawal28 | PR review (draft) | [Draft PR #7](https://github.com/devam2006/mm-allee-harvesting/pull/7) and the integration [PR #10](https://github.com/devam2006/mm-allee-harvesting/pull/10): inverse sweep regenerated with the shared setting (clean recovery 10/18, originally 0/18; recorded convergence labels under review); report and notebook updated; Rohan to review; findings in `docs/WP05_SUBMISSION_REVIEW.md` and `experiments/integration/README.md` |
+| WP05 | @rohanagrawal28 | PR review (draft) | [Draft PR #7](https://github.com/devam2006/mm-allee-harvesting/pull/7) and the integration [PR #10](https://github.com/devam2006/mm-allee-harvesting/pull/10): inverse sweep regenerated with the shared setting (clean recovery 10/18, originally 0/18; legacy completed-training label; explicit L-BFGS exits audited in PR #5); report and notebook updated; Rohan to review; findings in `docs/WP05_SUBMISSION_REVIEW.md` and `experiments/integration/README.md` |
 <!-- team-sync:status:end -->
 
 States: not started -> in progress -> PR review -> integrated -> reproduced. Only use **reproduced** after another member runs the documented commands from a clean environment.
