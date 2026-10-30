@@ -28,8 +28,8 @@ Observed independent checks:
   the corresponding SciPy message, no error or abnormal exit. Clean recovery
   remains 10/18. This audits the author's rerun; the full sweep was not repeated
   independently here.
-- The five-package source passed 521 tests after the merge. Four additional
-  integration tests passed against the inverse trainer's actual physics loss
+- The full five-package source passed **525 tests** after the merge, including
+  four new integration tests against the inverse trainer's actual physics loss
   and the forward residual API, for both models at two nonunit growth/population
   scales. They freeze learning and check the time/harvest conversion rather
   than copy the inverse formula into an oracle. No engine change was required.

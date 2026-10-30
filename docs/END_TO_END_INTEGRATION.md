@@ -11,8 +11,7 @@ Prem added `7b502cc` (runtime fixes and ten regression tests), followed by
 `00393cd` (refreshed 54-fit evidence and scientific wording). All ten reporting
 regressions and the full 301-test source suite passed independently; both
 GitHub CI jobs passed on `00393cd`. The refreshed integrated source passed
-521 tests before adding four further direct forward/inverse parity cases;
-all four parity cases also passed. They compare the inverse trainer's actual
+**525 tests in 53.52 seconds**, including the four new direct forward/inverse parity cases. They compare the inverse trainer's actual
 logged physics loss with the forward residual API under `tau = r*t` for both
 models and nonunit growth rates/population scales, with learning frozen.
 
@@ -28,6 +27,12 @@ errors, and no abnormal exits. All 324 parameter rows and 108 prediction rows
 retain their previous numerical results (only runtime and exit columns change).
 These are independent audits of Prem's regenerated evidence, not a second
 independent execution of his full sweep. Clean recovery remains 10/18.
+The refreshed standalone notebook ran all **27 code cells without errors in
+29.53 seconds**, including the forward/inverse demonstrations. Its inverse
+demo reports an explicit iteration-limit exit and finite returned-model
+validation loss (`6.72144e-05`). The identical notebook extracted from the rebuilt ZIP also passed a second
+isolated kernel run: **27 code cells, zero errors, 28.56 seconds**. The final
+artifact hash is in the delivery manifest.
 See [the focused final review](PREM_PR10_FINAL_REVIEW.md).
 
 ## Previous handoff verification (before Prem's fixes)

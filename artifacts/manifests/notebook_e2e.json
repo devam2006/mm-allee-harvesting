@@ -5,11 +5,11 @@
     "WP02_PR9": "879b110b0b5bfac52840b6e2db5b6cf00cbec050",
     "WP03_PR4": "16a05ce2f2c8eabfca7a95bcecf78dd7b5e190c8",
     "classical_PR11": "649e0c1bd545d73f2ea153e09a4a214c6fd2324e",
-    "WP04_WP05_PR10": "c84a0bf7c52c29661018d9bfa0df8b0fa69c93fa"
+    "WP04_WP05_PR10": "00393cd78057e8b16c50698521f0a91ed341fb12"
   },
   "full_suite": {
-    "passed": 511,
-    "seconds": 40.8,
+    "passed": 525,
+    "seconds": 53.52,
     "environment": "existing Python 3.14.3 scientific/JAX environment; no fresh dependency install"
   },
   "classical_notebook": {
@@ -20,13 +20,13 @@
   "final_notebook": {
     "executed_code_cells": 27,
     "errors": 0,
-    "wall_seconds": 26.83,
-    "sha256": "25e6b180bc509c0911bd95408974daf33abc35d7d389f10444a5efc957242353"
+    "wall_seconds": 29.53,
+    "sha256": "de23a1a2a6a389458816df8e87446a94babe5f8ff64dc9e4621447a2d17aae08"
   },
   "extracted_zip_notebook": {
     "executed_code_cells": 27,
     "errors": 0,
-    "first_to_last_cell_seconds": 24.48,
+    "wall_seconds": 28.56,
     "no_repository_checkout_required": true
   },
   "figures": {
@@ -53,9 +53,25 @@
     "url": "https://github.com/devam2006/mm-allee-harvesting/actions/runs/41132098743"
   },
   "limitations": [
-    "WP05 validation-selection-off loss histories undefined",
-    "WP05 optimizer status can misreport nonconvergence or exceptions",
-    "Full historical PINN sweeps not rerun",
-    "Human approvals/understanding and final Overleaf/presentation remain pending"
-  ]
+    "Legacy status converged denotes training completion; read optimizer.lbfgs_outcome separately",
+    "Full historical PINN sweeps audited but not independently rerun",
+    "Human approvals/understanding, interface decisions and final Overleaf/presentation remain pending"
+  ],
+  "previous_delivery": {
+    "head": "cfd734769c4c94307552652da62f1f490f0fad29",
+    "prem_source": "c84a0bf7c52c29661018d9bfa0df8b0fa69c93fa",
+    "full_suite_passed": 511,
+    "superseded_by": "Prem reporting fixes and refreshed notebook archive"
+  },
+  "reporting_review": {
+    "prem_source_tests_passed": 301,
+    "reporting_regressions_passed": 10,
+    "direct_forward_inverse_parity_cases": 4,
+    "parameter_rows_unchanged": 324,
+    "prediction_rows_error_values_unchanged": 108,
+    "recorded_pinn_iteration_limit_exits": 54,
+    "recorded_pinn_errors_or_abnormal_exits": 0,
+    "independent_full_sweep_rerun": false,
+    "prem_ci": "https://github.com/devam2006/mm-allee-harvesting/actions/runs/41137292297"
+  }
 }

@@ -1,6 +1,6 @@
 # Project status
 
-PR #11 integrates reviewed WP01–WP03 source fixes and shared numerical conventions. PR #5 combines this with Prem's current WP04–WP05 PR #10 into a portable notebook/data/figure candidate: The previous 511-test handoff and two isolated kernel runs passed; the refreshed source includes Prem PR #10 `00393cd` with verified reporting fixes (301 source tests; 521 integrated tests plus four new direct residual parity cases). Legacy status denotes training completion; optimizer convergence is reported separately. Human understanding, reviews, the final Overleaf report and presentation remain separate requirements.
+PR #11 integrates reviewed WP01–WP03 source fixes and shared numerical conventions. PR #5 combines this with Prem's current WP04–WP05 PR #10 into a portable notebook/data/figure candidate: The previous 511-test handoff and two isolated kernel runs passed; the refreshed source includes Prem PR #10 `00393cd` with verified reporting fixes (301 source tests; 525 integrated tests including four direct residual parity cases). Legacy status denotes training completion; optimizer convergence is reported separately. Human understanding, reviews, the final Overleaf report and presentation remain separate requirements.
 
 <!-- team-sync:status:start -->
 | Package | Owner | State | PR/evidence |
