@@ -1,6 +1,6 @@
-# WP01–WP03 integration preview
+# Five-package notebook, data and figure handoff
 
-This branch combines the reviewed classical packages, their follow-up fixes and a shared threshold/basin contract. Run `notebooks/wp01_wp03_standalone.ipynb` without a repository checkout, or use the readable source notebook `notebooks/wp01_wp03.ipynb` here. The integrated five-package notebook/data/figure handoff belongs to PR #5; the LaTeX report is maintained separately in Overleaf.
+This PR #5 branch combines classical PR #11 with Prem's current WP04/WP05 integration. Use `notebooks/project_standalone.ipynb` or download the notebook/data/figures archive under `deliverables/`. The notebook is self-contained with its source and synthetic evidence; standard scientific Python dependencies are required. Read `docs/END_TO_END_INTEGRATION.md` for measured checks and the two open WP05 reporting limitations. The report is maintained separately in Overleaf; no repository LaTeX assembly is requested.
 
 # MM project: harvesting under a strong Allee effect
 

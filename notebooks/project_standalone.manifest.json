@@ -1,5 +1,5 @@
 {
-  "source_commit": "b8a927d005eb58c000c3e9f819e8fbe6219c3ce3",
+  "source_commit": "22c637135f865db2e84227e6b63c53ea77582707",
   "source_dirty": true,
   "work_packages": [
     1,
@@ -158,7 +158,7 @@
     "data/fixtures/wp03_reference/README.md": "6aae8d2a7cbc3c5dc459b2cdaa084d0cf979b1e5486b45db050b2003780908de",
     "data/fixtures/wp03_reference/truth.json": "a96aee0d43a16803f0db7737f2b3325d0bba4af6e39d940ba99017af9b7d9d42",
     "data/fixtures/wp03_reference/validation.csv": "a7923a459cf55d14e048e93e7872f3e8797f9de92ec2a3bf9b5874a51b22c3ae",
-    "docs/AI_USAGE.md": "1971f33087402e7710faa71f66413bf7d06c6e98b0ce2124a8096c7f669e1ec1",
+    "docs/AI_USAGE.md": "b47ec4aa51c82f73b3abc6ee638c26e1414b552cce923115071dc56bf472fd12",
     "experiments/integration/noise_convergence.py": "5ffff961ad700aad1467f16900ed4dfff32a8139f212fb0fc5c510218d15d88a",
     "experiments/integration/shared_settings.py": "7ed51dbc68d379af689e4d7d8052d95329056da317d629f6fdde1e163f20d7bf",
     "experiments/wp01/run.py": "d4e715eea189e4050c9a6f05515de3dae48e88de73e098662e7878015e50dbca",
@@ -197,6 +197,6 @@
     "src/mm_allee/validation.py": "4eaf320b3c6d1db3e2e9fafa608bc14dfab3030c0a8cc75143df6d3e6816fb8c",
     "src/mm_allee/wp02_experiment.py": "fa40695547ad2814ea65103afc8731e5db4512e942f925981f25fbe9d73cea51"
   },
-  "payload_sha256": "1139fe94d16968edc1c7316eb58aed431e44e1c557fb3cc392a49c749e25d11b",
-  "notebook_sha256": "14a272e9c72dd77d138455dffe55b8dee8ebc14e1980826678fe8441bbdc337e"
+  "payload_sha256": "5d5355a6467a5483d444a52e358957154195004a1792ac28e2c3a27de24f903b",
+  "notebook_sha256": "fd60acbc39ecda01b03424168186aba097ffacc4ed8263b9884c74997d755447"
 }

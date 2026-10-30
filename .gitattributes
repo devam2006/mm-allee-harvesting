@@ -8,3 +8,5 @@
 *.pdf binary
 *.png binary
 *.eps -diff
+
+*.csv text eol=lf

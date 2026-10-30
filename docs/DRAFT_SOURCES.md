@@ -1,17 +1,13 @@
-# Sources and gaps in the working draft
+# Source ledger for the notebook/data/figure handoff
 
-| Package | Source used here | Status and next action |
+| Package | Exact source | Scope |
 |---|---|---|
-| WP01, Raghav | Main's labelled scaffold | PR #3 was merged then reverted. Its default numerical results reproduce, but review comment [6470288214](https://github.com/devam2006/mm-allee-harvesting/pull/3#issuecomment-6470288214) records open correctness issues. Import the corrected/restored version after review. |
-| WP02, Ash | Main's labelled scaffold | Model B branches, fair comparisons, harvest history/restocking and report/notebook contribution still await an implementation handoff. |
-| WP03, Devam | PR #4 source at `20fbd5b21844a94e81e021d1571fbed0f7b47379` | Implemented numerical/classical analysis, including recheck fixes; teammate approvals and human learning remain pending. |
-| WP04, Prem | Main's labelled scaffold | Need actual forward-PINN engine/runs, error/runtime tables, difficult cases, report and notebook fragment. |
-| WP05, Rohan | Main's labelled scaffold | Clean WP03 references exist. Need actual inverse design, noisy observations/splits, PINN and ODE-fit evidence, held-out/noise studies, report/notebook and disclosures. |
+| WP01 | PR #8 b83bba8c7f3c7d094d4439cf9b6d281a325ae4d0 | Original fixes plus both close-root/tolerance follow-up corrections |
+| WP02 | PR #9 879b110b0b5bfac52840b6e2db5b6cf00cbec050 | Comparison/history plus consumer/provenance fixes |
+| WP03 | PR #4 16a05ce2f2c8eabfca7a95bcecf78dd7b5e190c8 | Reviewed collapse/reference analysis plus effective-tolerance fix |
+| WP01–WP03 integration | PR #11 649e0c1bd545d73f2ea153e09a4a214c6fd2324e | Shared thresholds/branches/exact fold, notebook structure and standalone export |
+| WP04–WP05 | Prem PR #10 c84a0bf7c52c29661018d9bfa0df8b0fa69c93fa | Current JAX shared setting and updated report/notebook prose; two reporting findings remain open |
 
-This records what has been imported, not what teammates may have completed locally. Do not infer that absent pushed work means no work has been done.
+The combined source candidate passed 511 tests. Its portable notebook ran in a real fresh Jupyter kernel (27 code cells, no errors). Notebook-only integration changes embed missing helpers/static figures and qualify current review limitations. They do not change Prem's trainer or relabel its historical statuses. All source PRs remain reviewable and unmerged.
 
-The shared introduction and draft slide text summarise the approved equations and implemented WP03 results. Every numerical slide cites its source table in speaker notes. No PINN score, empirical dataset result, successful recovery claim, personal review or rehearsal is invented.
-
-The WP03 guide is deliberately not copied here. Read it on [the WP03 branch](https://github.com/devam2006/mm-allee-harvesting/blob/wp03/collapse-analysis/docs/WP03_EXPLAINED.md).
-
-When refreshing this draft, record the exact incoming commit, imported files, actual validation commands/outcomes and any remaining conflicts. Keep the task owner's source fragment as the place to make scientific changes.
+Overleaf source ZIP and the supplied course PDF were inspected. Only existing EPS figures were present in the report snapshot, and other sections there were still scaffolds; collaborators maintain the report directly. This branch does not claim to refresh Overleaf or assemble a new report. Roster names were filled from that supplied report's acknowledgements; the existing more complete Devam name was preserved.

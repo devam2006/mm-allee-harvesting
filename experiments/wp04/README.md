@@ -62,4 +62,3 @@ python experiments/wp04/run.py --config configs/wp04_confirm.json --output resul
 ```
 
 Per-run `status` is one of `ok`, `inaccurate` (relative L2 above the threshold, or max absolute error if the relative error is undefined), `budget_exhausted`, `nonfinite_loss`, `invalid_prediction` (output contains NaN/inf: no error score, never accurate) or `failed` (an exception, message in `note`; the sweep continues). `lbfgs_status`/`lbfgs_message` record how L-BFGS-B stopped (all reported runs hit the 2500-iteration limit). Figures are written as PNG, EPS and PDF (LaTeX includes the extensionless name).
-
