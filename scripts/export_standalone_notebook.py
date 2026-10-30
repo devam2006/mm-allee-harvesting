@@ -5,6 +5,8 @@ import base64
 import hashlib
 import io
 import json
+import mimetypes
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -36,7 +38,11 @@ def export_notebook(packages, target):
         ]:
             selected.update(p for p in ROOT.glob(pattern) if p.is_file())
     if 4 in packages or 5 in packages:
-        for pattern in ["artifacts/tables/shared_*.csv", "configs/shared_*.json"]:
+        for pattern in [
+            "artifacts/tables/shared_*.csv",
+            "configs/shared_*.json",
+            "experiments/integration/*.py",
+        ]:
             selected.update(p for p in ROOT.glob(pattern) if p.is_file())
     snapshot = {
         "source_commit": sha,
@@ -112,6 +118,23 @@ print("Restored bundled source and synthetic data:", ROOT)
     setup["id"] = "portable-source-bootstrap"
     setup.metadata["jupyter"] = {"source_hidden": True}
     nb.cells = [intro, setup, *nb.cells[1:]]
+    for cell in nb.cells:
+        if cell.cell_type != "markdown":
+            continue
+        for match in list(re.finditer(r"!\[([^]]*)\]\(([^)]+)\)", cell.source)):
+            source = (ROOT / "notebooks" / match.group(2)).resolve()
+            if not source.is_relative_to(ROOT.resolve()) or not source.is_file():
+                continue
+            mime = mimetypes.guess_type(source.name)[0]
+            if mime not in {"image/png", "image/jpeg", "image/svg+xml"}:
+                continue
+            key = source.name
+            cell.setdefault("attachments", {})[key] = {
+                mime: base64.b64encode(source.read_bytes()).decode()
+            }
+            cell.source = cell.source.replace(
+                match.group(0), f"![{match.group(1)}](attachment:{key})"
+            )
     nb.metadata["source_snapshot"] = {k: v for k, v in snapshot.items() if k != "file_sha256"}
     nb.metadata["payload_sha256"] = digest
     nbformat.validate(nb)
