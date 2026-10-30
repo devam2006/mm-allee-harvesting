@@ -5,6 +5,7 @@ from numpy.polynomial import Polynomial
 from scipy.integrate import quad, solve_ivp
 
 from .datasets import generate_reference, solver_settings
+from .solver import MIN_RK45_RTOL
 
 
 def expanded_field(parameters, model):
@@ -45,7 +46,11 @@ def extinction_quadrature(parameters, initial_population):
 
 
 def validate_reference(case, reference, solver=None, population_fraction_K=5e-8, event_atol=1e-7):
-    """Compare sampled RK45 with tighter RK45 and independent dimensional DOP853."""
+    """Compare with refined RK45 and independent dimensional DOP853.
+
+    Refine atol/max_step and reduce rtol only to the supported floor; record
+    that effective value so an already accurate baseline remains valid.
+    """
     if not (
         np.isfinite(population_fraction_K)
         and population_fraction_K > 0
@@ -89,10 +94,11 @@ def validate_reference(case, reference, solver=None, population_fraction_K=5e-8,
         np.max(np.abs(reference.population[mask] - alternate.sol(reference.time[mask])[0]))
     )
     fine_case = dict(case, time_points=reference.time.tolist())
+    refinement_rtol = max(MIN_RK45_RTOL, settings["rtol"] / 100)
     fine = generate_reference(
         fine_case,
         {
-            "rtol": settings["rtol"] / 100,
+            "rtol": refinement_rtol,
             "atol": settings["atol"] / 100,
             "max_step": settings["max_step"] / 2,
         },
@@ -139,5 +145,7 @@ def validate_reference(case, reference, solver=None, population_fraction_K=5e-8,
         "extinction_quadrature_time": integral,
         "event_difference_quadrature": integral_error,
         "event_tolerance": event_atol,
+        "refinement_rtol": refinement_rtol,
+        "refinement_rtol_at_floor": bool(refinement_rtol == MIN_RK45_RTOL),
         "status": "passed" if accepted else "failed",
     }

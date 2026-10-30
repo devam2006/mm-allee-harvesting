@@ -8,6 +8,10 @@ from scipy.integrate import solve_ivp
 
 from .models import rhs
 
+# SciPy RK45 raises smaller requests to this floor. Reject them so requested
+# tolerances remain the effective settings recorded by experiment manifests.
+MIN_RK45_RTOL = 100 * np.finfo(float).eps
+
 
 @dataclass(frozen=True)
 class Trajectory:
@@ -49,6 +53,8 @@ def solve_trajectory(
         raise ValueError("n_points must be an integer >=2")
     if min(rtol, atol, max_step) <= 0:
         raise ValueError("Solver tolerances and max_step must be positive")
+    if rtol < MIN_RK45_RTOL:
+        raise ValueError(f"RK45 rtol must be at least {MIN_RK45_RTOL:.17g}")
     rhs(x0, model, a=a, harvest=harvest)  # validate model and harvest
     requested = None if tau_eval is None else np.asarray(tau_eval, dtype=float)
     if requested is not None and (

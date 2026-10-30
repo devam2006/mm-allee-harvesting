@@ -3,6 +3,7 @@ import json
 from copy import deepcopy
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from mm_allee.collapse_study import build_study
@@ -43,6 +44,31 @@ def test_curated_analysis_files_have_matching_hashes_and_configuration():
     for relative, expected in manifest["files_sha256"].items():
         assert sha256(ROOT / relative) == expected, relative
     assert all(v == "passed" for v in manifest["validation"].values())
+
+
+@pytest.mark.parametrize("points", [60, 61])
+@pytest.mark.parametrize("extinction_code", [0, 1])
+def test_basin_mesh_cannot_draw_persistence_above_the_fold(points, extinction_code):
+    # Exercise both a sampled fold and a fold between samples, for A and B.
+    # Inspect actual coloured-cell coordinates, not just the input basin labels.
+    module = load_script("wp03_basin_plot", "experiments/wp03/run.py")
+    controls = np.linspace(0, 1.25, points)
+    initials = np.array([0.1, 0.6, 1.1])
+    grid = np.tile(np.where(controls <= 1, 2, extinction_code), (len(initials), 1))
+    fig, axis = module.plt.subplots()
+    try:
+        meshes = module.plot_basin_grid(axis, controls, initials, grid, ["red"] * 5)
+        assert len(meshes) == 2
+        for mesh in meshes:
+            coordinates = mesh.get_coordinates()
+            values = np.asarray(mesh.get_array()).reshape(len(initials), -1)
+            left, right = coordinates[:-1, :-1, 0], coordinates[:-1, 1:, 0]
+            assert np.all(right[values == 2] <= 1)
+            assert np.all(left[values == extinction_code] >= 1)
+        assert np.all(meshes[0].get_coordinates()[:, -1, 0] == 1)
+        assert np.all(meshes[1].get_coordinates()[:, 0, 0] == 1)
+    finally:
+        module.plt.close(fig)
 
 
 def test_submission_audit_exposes_all_relevant_blockers_and_never_claims_approval(tmp_path):

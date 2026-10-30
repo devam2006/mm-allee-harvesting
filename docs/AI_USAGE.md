@@ -28,6 +28,26 @@ On 28 October 2026, Devam requested direct completion of the remaining WP03 work
 
 On 28 October 2026, Devam requested another WP03 correctness review, a simple comprehensive learning guide kept on the WP03 branch, and preparation for partial group assembly on a separate branch. OpenAI ChatGPT/Codex reproduced the existing results, probed additional parameter limits, fixed small-catch bracketing and near-boundary extinction evaluation, and added independent regression checks. It wrote `docs/WP03_EXPLAINED.md` from the governing equations through numerical methods, outputs and presentation questions. The guide and machine checks do not certify Devam's understanding or replace teammate review. Updated reproduction evidence records the actual post-fix checks.
 
+On 30 October 2026, Devam requested review and fixes for Raghav's comment on
+PR #4. OpenAI ChatGPT/Codex read the actual GitHub review, fixed B lower-root
+cancellation and basin-cell geometry, added independent Decimal/root and
+rendered-cell regression checks, exported vector PDFs, and aligned the owned
+report/notebook and interface/merge handoff. The PDF skill supported visual
+checks. Actual commands/outcomes and environment limits are recorded in
+`docs/WP03_ANALYSIS.md` and `artifacts/manifests/wp03_review_followup.json`.
+This is agent-assisted validation, not human understanding, a new human
+approval or permission to merge.
+
+On 31 October 2026, Devam requested a latest-commit recheck of Raghav's two WP01
+PRs, WP03 and Ashwath's WP02, correction of our own issues, and a new ownership-
+specific review comment. OpenAI ChatGPT/Codex verified remote heads and original
+fixes, tested a temporary combined source tree with a proposed WP02-only import
+repair, and found that WP03's configurable reference generator also accepted
+rtol below SciPy's floor. It fixed that validation in WP03's shared solver and
+reference configuration, added eight independent rejection/effective-tolerance
+checks, and recorded actual tests/reproduction evidence. Temporary WP02 code is
+a proposal, not a change to Ashwath's branch. No change to the mathematical fold
+convention, human approval, merge or human understanding is claimed.
 
 ## WP05 ZIP submission, 30 October 2026
 

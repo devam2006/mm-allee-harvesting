@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from mm_allee.solver import solve_trajectory
+from mm_allee.solver import MIN_RK45_RTOL, solve_trajectory
 
 
 @pytest.mark.parametrize("initial", [0.2, 1.5])
@@ -55,3 +55,35 @@ def test_unharvested_exact_equilibria_remain_constant(model, initial):
     actual = solve_trajectory(model, a=0.2, harvest=0, x0=initial, tau_end=5)
     np.testing.assert_allclose(actual.x, initial, rtol=0, atol=1e-12)
     assert actual.extinction_tau is None
+
+
+@pytest.mark.parametrize("rtol", [1e-16, np.nextafter(MIN_RK45_RTOL, 0)])
+@pytest.mark.parametrize("initial", [0, 0.8])
+def test_unsupported_rtol_is_rejected_before_integration(monkeypatch, rtol, initial):
+    import mm_allee.solver as solver
+
+    def unexpected_integration(*args, **kwargs):
+        pytest.fail("An unsupported tolerance reached the integrator")
+
+    monkeypatch.setattr(solver, "solve_ivp", unexpected_integration)
+    with pytest.raises(ValueError, match="RK45 rtol must be at least"):
+        solve_trajectory("A", a=0.2, harvest=0.3, x0=initial, tau_end=1, rtol=rtol)
+
+
+def test_minimum_supported_rtol_matches_initialized_integrator(monkeypatch):
+    from scipy.integrate import RK45
+
+    initialized = []
+    original = RK45.__init__
+
+    def record(self, *args, **kwargs):
+        original(self, *args, **kwargs)
+        initialized.append(self.rtol)
+
+    monkeypatch.setattr(RK45, "__init__", record)
+    actual = solve_trajectory(
+        "logistic", a=0.2, harvest=0, x0=0.5, tau_end=1, rtol=MIN_RK45_RTOL, atol=1e-15
+    )
+    assert initialized == [MIN_RK45_RTOL]
+    exact = 1 / (1 + np.exp(-actual.tau))
+    np.testing.assert_allclose(actual.x, exact, rtol=1e-12, atol=1e-14)

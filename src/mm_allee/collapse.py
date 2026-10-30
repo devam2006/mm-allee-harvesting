@@ -35,8 +35,13 @@ def positive_branches(model, *, a, harvest):
         if control > ec:
             return None
         centre = (1 + a) / 2
+        if control == ec:
+            return centre, centre
         offset = sqrt(a * (ec - control))
-        return centre - offset, centre + offset
+        upper = centre + offset
+        # The quadratic has root product a*(1+e). Subtraction at the
+        # lower branch loses relative accuracy when a is small.
+        return a * (1 + control) / upper, upper
     star, qc = critical_a(a)
     if control > qc:
         return None
