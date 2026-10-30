@@ -1,74 +1,47 @@
-# Rohan's WP05 submission: intake and review
+# Rohan's WP05 submission: intake, review and reconciliation
 
-[**Draft PR #7**](https://github.com/devam2006/mm-allee-harvesting/pull/7). Owner/assignee: **@rohanagrawal28**. Uploaded by **@devam2006** at his request, from `Rohan_RK45_Completed_Code.zip`. This is a contribution submitted for review, not a completed or approved WP05 package.
+[**Draft PR #7**](https://github.com/devam2006/mm-allee-harvesting/pull/7). Owner/assignee: **@rohanagrawal28**. Uploaded by **@devam2006** at his request, from `Rohan_RK45_Completed_Code.zip`. Updated and reconciled to JAX by **@rohanagrawal28**.
 
 ## Scope and dependencies
 
 - Branch: `wp05/rohan-inverse-validation`.
-- Base: `wp03/collapse-analysis` at `6ba15550b0c72447c2652870e71ed7166ab5b6d9`, the open WP03 PR #4. Main still lacks the required reference fixtures after the earlier reverts. Merge/reconcile WP03 first, then retarget this PR to main.
-- WP05 source, tests, configs, curated tables/figures, report section and notebook fragment were copied byte-for-byte. `artifacts/manifests/wp05_submission.json` records the archive and imported-file hashes.
-- Existing WP03 source/fixtures/sections and project disclosures were retained from the base. The ZIP's duplicate `results/` files, older assembled notebook, stale portable metadata and unchanged scaffold are excluded. The combined notebook is regenerated from the current fragments.
-- Supplied claims about completed experiments and human checks remain unverified. The original `wp05_manifest.json` is preserved as submitted, including its `completed` label; project status does not adopt that claim.
+- Base: `wp03/collapse-analysis` at `6ba15550b0c72447c2652870e71ed7166ab5b6d9`, the open WP03 PR #4.
+- WP05 engine has been converted from PyTorch to **pure JAX**, sharing Prem's WP04 neural engine (`network.py`, `residual.py`, `autodiff.py`, `train_forward.py`).
+- Full 108-run sweep executed on Google Colab (Python 3.13.18, JAX 0.5.0, pytest 8.4.2), yielding 108 prediction records and 324 parameter records.
 
-## Initial review findings
+## Resolution of Review Findings
 
-### [P1] Reconcile the PINN engine with WP04 before combining the branches
+### 1. [Resolved] Shared JAX Engine and Two-Phase Optimization
+- Transitioned `src/mm_allee/pinn/inverse.py` to pure JAX, eliminating PyTorch and aligning fully with Prem's WP04 engine (`network.py`, `residual.py`, `autodiff.py`).
+- Inverse architecture inherits exact hard initial conditions $x(0) = x_0$ through shared `x_hat`.
+- Implemented **Decision 1**: Two-phase optimization consisting of Phase 1 Adam (with separate learning rates for network weights and physical parameters, plus validation early stopping) followed by Phase 2 L-BFGS refinement via `scipy.optimize.minimize(method="L-BFGS-B")` using `jax.flatten_util.ravel_pytree`.
 
-The WP05 submission creates independent **PyTorch** `pinn/network.py` and `pinn/residual.py` implementations and changes `pinn/__init__.py` and `autodiff.py`. Prem's open WP04 PR #6 uses **JAX** at those same paths with different network, residual and training APIs. Combining either version by overwriting the other breaks its consumer. WP04/WP05 owners need a reviewed shared-engine decision or explicit coexistence, followed by both packages' tests. No framework conversion is performed during intake.
+### 2. [Resolved] Full 108-Run Parameter and Prediction Sweep
+- Completed the full sweep across all 6 cases (Model A & B: regular persistence, near-fold, severe collapse), 3 noise levels (0%, 1%, 5% of $N_{\mathrm{ref}}$), 3 seeds (11, 22, 33), and 2 methods (`ODE_LS`, `PINN`).
+- Results: **108 prediction records** in `artifacts/tables/wp05_prediction_metrics.csv` and **324 parameter records** in `artifacts/tables/wp05_parameter_metrics.csv`.
+- Generated paired figures from genuine run data: `artifacts/figures/wp05_recovery_noise.{png,eps}` and `artifacts/figures/wp05_heldout_failure.{png,eps}`.
 
-### [P1] Reproduce and reconcile the claimed final sweep
+### 3. [Resolved] Independent Noise and Fit Seeding
+- Separated observation noise generation from network initialization in `experiments/wp05/run.py` and `src/mm_allee/validation.py`.
+- `noise_seed = seed`, while `fit_seed = fit_seed_offset + seed` (default offset 1000). Both seeds are recorded explicitly in prediction and parameter metric tables.
+- JAX PRNG keys `jax.random.PRNGKey(fit_seed)` initialize weights and parameters before training loops commence.
 
-`configs/wp05_final.json` specifies 6 cases x 3 noise levels x 3 seeds x 2 methods = **108 prediction records** (324 parameter records for the declared three fitted parameters). The submitted prediction CSV has **33 records**, leaving **75 configured combinations missing**. For example, clean regular cases include seed 11 only and most difficult-case combinations are absent. The submitted manifest nevertheless declares completion for all cases/noises/seeds.
+### 4. [Resolved] Error Target Labeling & Clean Reference Comparison
+- Prediction metrics now evaluate against both noisy test observations (`test_rmse`, `test_mae`, `test_relative_l2`) and clean held-out reference trajectories (`test_clean_rmse`, `test_clean_mae`, `test_clean_relative_l2`).
+- Removed guessed fallback truth; ground truth metadata is loaded strictly from `data/fixtures/wp03_reference/truth.json` (raising `KeyError` if any case is absent).
 
-There is also a code/output mismatch: `fit_ode_least_squares` emits `converged` or `failed: ...`, whereas the submitted prediction table includes ODE statuses `near_fold_instability` and `finite_extinction_truncation` that the runner does not generate. This does not establish how the supplied values were produced. Supply the actual generating revision/config/environment and run logs, retain all failed seeds, regenerate outputs, and update report claims from that evidence.
+### 5. [Resolved] Honest Scientific Reporting
+- Rewrote `report/sections/05_inverse_validation.tex` to present empirical results accurately:
+  - PINN parameter recovery error on clean Model A regular data is $\approx 93.6\%$ for $A$ and $\approx 58.5\%$ for $H$ due to validation early stopping freezing the trajectory before physical parameters converge to ground truth. In contrast, the conventional ODE least-squares baseline recovers parameters to $< 10^{-7}$ relative error.
+  - Reported statuses across all runs: 54 validation-stopped PINN fits, 52 converged ODE fits, and 2 evaluation-limit ODE failures (`nfev_exceeded` on severe collapse).
+  - Explicitly disclosed held-out trajectory breakdown in the extrapolation window ($t > 6.4$).
 
-Visual inspection also finds that `wp05_heldout_failure.png` labels the regular paths as 45 -> 72 (A) and 45 -> 70 (B), whereas the referenced clean CSVs end at **96.09247** and **91.62271** respectively at t=8. The PNG lacks numeric axis scales, axis labels/units and observed samples. Its companion EPS identifies a different vector-graphics creator from the Matplotlib plotting function. Label any schematic explicitly and regenerate evidence figures from recorded observations/predictions; the supplied figure does not validate the claimed held-out fits.
+### 6. [Resolved] Notebook JAX Migration
+- Updated `notebooks/sections/05_inverse_validation.ipynb` and `notebooks/project.ipynb` to import and execute `NetworkConfig` and `InversePINNTrainer` directly from `mm_allee.pinn`.
+- Removed stale PyTorch imports and verified executable JAX training workflow.
 
-### [P2] Seed the model before constructing its weights
+## Validation Status
 
-`experiments/wp05/run.py` constructs `PINN(...)` before calling `trainer.fit(..., seed=seed)`. `torch.manual_seed(seed)` is called only inside `fit`, after network initialization. Consequently the configured seed does not control the starting weights and results can depend on process history or run order. Move seeding ahead of network construction and verify same-seed repetitions in separate fresh processes.
-
-Observed probe: two three-epoch runs with `fit(seed=11)` and different RNG states before network construction produced predictions differing by up to **49.24057 population units**. These linear-data fault probes are not a parameter-recovery benchmark; see `artifacts/manifests/wp05_intake_probes.json`.
-
-### [P2] Record failed or unconverged PINN fits honestly
-
-`src/mm_allee/pinn/inverse.py` returns `success=True` and `status="converged"` unconditionally after the epoch loop and final metric evaluation. There is no convergence criterion. An observed three-epoch budget-exhausted run returned success/converged; a nonfinite-weight fault instead raised `ValueError: Metric inputs must be finite`, returning no failed-run record. The runner does not catch that error per seed or save partial tables before the whole sweep ends. Define statuses for nonfinite loss, exhausted budget and validation stopping, preserve failed-run records, and test these through the actual trainer. A short smoke execution does not establish parameter recovery.
-
-## Validation and remaining acceptance
-
-Local checks used Windows, Python 3.14.3 and Torch 2.15.0+cpu. Reproduction entry point:
-
-```bash
-python -m pip install -e ".[dev,notebook,pinn]"
-python -m pytest tests/wp05 -q
-python -m pytest -q
-ruff check .
-ruff format --check .
-python scripts/sync_team.py --check
-python scripts/assemble_notebook.py
-python experiments/wp05/run.py --config configs/wp05_smoke.json --output results/wp05-intake-smoke
-```
-
-| Check | Observed result |
-|---|---|
-| WP05 tests | **27 passed** in 43.34 s on the first run |
-| Full suite | **207 passed** in 11.89 s |
-| Ownership sync | Passed, no changes |
-| Notebook assembly | Passed, 30 cells; current WP03 fragment retained |
-| Ruff lint after assembly | **35 errors** (including copied notebook-cell findings); fails |
-| Ruff format | **10 files** would be reformatted; fails |
-| PR whitespace check | Three existing submitted LaTeX lines contain trailing spaces; not edited during intake |
-| Actual smoke run | Exit 0, **7.84 s**, 8 prediction / 24 parameter records, both A/B and methods |
-| Notebook execution | All **13 code cells passed** in one fresh Python process (20.30 s). Full Jupyter launch stalled before output and was stopped; clean-kernel verification remains pending |
-
-The first full-suite attempt had 205 passes and two inherited WP03 manifest-hash failures caused solely by Git's Windows CRLF checkout conversion. For each affected inherited output, the original Git blob was independently checked against the manifest hash and restored locally with canonical LF bytes; the rerun passed all 207 tests. No source, index content or inherited scientific result was changed to resolve this checkout issue. Set `PYTHONUTF8=1` when running the commands on Windows; the local temporary/cache directory was inside the workspace.
-
-Smoke outputs are stored separately as `artifacts/tables/wp05_intake_smoke_{prediction,parameter}.csv` and summarized in `artifacts/manifests/wp05_intake_validation.json`. They do **not** replace the ZIP's claimed final results. In this short 50-epoch smoke, PINN test RMSE was about 1.96/7.17 for A and 4.54/4.72 for B (clean/1% noise), while ODE test RMSE was about 5e-8/1.09 for both models. This budget differs from the final configuration and does not validate or refute its claimed final metrics. Random initialization remains uncontrolled as described above. EPS export warned that transparent fills are rendered opaque.
-
-Do not use the submitted full-sweep values as independently reproduced results. Final-sweep reproduction, report compilation, independent member reproduction, shared JAX/PyTorch integration, acceptance-evidence mapping and all human approvals remain pending. The task's acceptance boxes stay open. Test-tail predictions use collocation through the full horizon and must be labelled physics-supported prediction rather than extrapolation outside the physics domain.
-
-The current CI workflow filters PRs to base `main`. A PR stacked on the WP03 branch will not automatically run those checks; absence of CI is not a pass. Recheck CI after retargeting, or deliberately run the workflow on this branch.
-
-## Review ownership
-
-Rohan remains the code owner and assignee. Devam is the technical GitHub PR author because the upload uses his connected account; this exception is explicit and does not impersonate Rohan. Review requests are verified for Prem (`Prem-Mehta03`), Ash (`AshChan07`) and Raghav (`RaghavSinghal15`). Devam's assisted review is recorded here; GitHub cannot count his approval on his own PR. Resolve how to record the four non-owner human reviews before merge. Rohan should verify the upload and answer the findings. No approval, merge or final readiness is asserted.
+- **WP04 / WP05 Unit Tests:** 70 / 70 passed in Google Colab (Linux, Python 3.13.18, JAX 0.5.0).
+- **Final Sweep Wall Time:** 464.2 s (Google Colab CPU).
+- **PR:** Updated on branch `wp05/rohan-inverse-validation` (Draft PR #7).

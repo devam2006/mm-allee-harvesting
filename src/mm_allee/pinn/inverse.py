@@ -10,6 +10,8 @@ Extends the shared WP04 JAX neural engine for inverse parameter estimation:
   - Strict data-leakage guards: training loss uses training observations only;
     validation observations are evaluated strictly without gradient for checkpoint
     selection and early stopping; test observations are held out until inference.
+  - Two-phase joint optimization: Phase 1 (Adam) for rapid basin discovery,
+    followed by Phase 2 (L-BFGS) for fine second-order parameter convergence.
   - Seeded network and parameter initialization via jax.random.PRNGKey(seed).
   - Explicit convergence and failure status tracking.
 """
@@ -24,6 +26,8 @@ from typing import Any, Literal, Sequence
 import jax
 import jax.numpy as jnp
 import numpy as np
+from jax.flatten_util import ravel_pytree
+from scipy.optimize import minimize
 
 from ..metrics import errors
 from .autodiff import derivative
@@ -199,8 +203,9 @@ class InversePINNTrainer:
     Features:
       - Uses shared WP04 x_hat with exact hard initial condition x(0) == x0.
       - Autodiff time derivatives computed via mm_allee.pinn.autodiff.derivative.
-      - Pure JAX JIT-compiled joint Adam optimizer with separate learning rates
-        for network weights and physical parameters.
+      - Two-phase joint optimizer: Phase 1 (Adam) with separate learning rates
+        for network weights and physical parameters, followed by Phase 2 (L-BFGS)
+        for rapid second-order refinement.
       - Strict split discipline: training observations ONLY in backprop loss,
         validation observations ONLY for model selection and early stopping,
         test observations strictly held out for final evaluation.
@@ -216,6 +221,7 @@ class InversePINNTrainer:
         lambda_data: float = 1.0,
         lambda_phys: float = 0.1,
         time_budget_s: float | None = None,
+        lbfgs_iters: int = 200,
         # Backward compatibility with positional (net, tp) constructor
         *args,
         **kwargs,
@@ -231,6 +237,7 @@ class InversePINNTrainer:
         self.lambda_data = float(lambda_data)
         self.lambda_phys = float(lambda_phys)
         self.time_budget_s = time_budget_s
+        self.lbfgs_iters = int(lbfgs_iters)
 
     def fit(
         self,
@@ -241,10 +248,15 @@ class InversePINNTrainer:
         n_collocation: int = 100,
         seed: int = 11,
         eval_every: int = 10,
+        adam_iters: int | None = None,
+        lbfgs_iters: int | None = None,
     ) -> InversePINNResult:
         """Run inverse parameter estimation on observation splits."""
         start_time = time.perf_counter()
         known = known_conditions or {}
+
+        def over_budget() -> bool:
+            return bool(self.time_budget_s) and (time.perf_counter() - start_time) > self.time_budget_s
 
         # 1. Parse observation arrays and partition splits
         times_all = np.asarray(observations["time"], dtype=np.float64)
@@ -351,7 +363,7 @@ class InversePINNTrainer:
             total_loss = l_data_w * loss_data + l_phys_w * loss_phys
             return total_loss, (loss_data, loss_phys)
 
-        # 4. Joint pure JAX Adam optimizer with separate learning rates
+        # 4. Phase 1: Joint pure JAX Adam optimizer with separate learning rates
         state = (net_params, raw_p)
         m_net = jax.tree_util.tree_map(jnp.zeros_like, net_params)
         v_net = jax.tree_util.tree_map(jnp.zeros_like, net_params)
@@ -399,6 +411,7 @@ class InversePINNTrainer:
             "loss_val": [],
             "loss_data": [],
             "loss_phys": [],
+            "phase": [],
         }
         for pname in tp.fit_params:
             history[f"param_{pname}"] = []
@@ -409,8 +422,11 @@ class InversePINNTrainer:
         status = "converged"
         success = True
 
-        for epoch in range(1, epochs + 1):
-            if self.time_budget_s and (time.perf_counter() - start_time) > self.time_budget_s:
+        n_adam = epochs if adam_iters is None else int(adam_iters)
+        n_lbfgs = self.lbfgs_iters if lbfgs_iters is None else int(lbfgs_iters)
+
+        for epoch in range(1, n_adam + 1):
+            if over_budget():
                 status = "budget_exhausted"
                 break
 
@@ -426,7 +442,7 @@ class InversePINNTrainer:
 
             # Evaluate validation loss periodically (strictly no gradient)
             val_loss_f = best_val_loss
-            if len(idx_val) > 0 and (epoch % eval_every == 0 or epoch == epochs):
+            if len(idx_val) > 0 and (epoch % eval_every == 0 or epoch == n_adam):
                 pred_val = jax.vmap(lambda t: x_hat(state[0], t, ncfg))(t_val)
                 val_loss_f = float(jnp.mean((pred_val - y_val_norm) ** 2))
 
@@ -445,10 +461,67 @@ class InversePINNTrainer:
             history["loss_val"].append(val_loss_f)
             history["loss_data"].append(float(d_loss))
             history["loss_phys"].append(float(p_loss))
+            history["phase"].append("adam")
 
             curr_phys = tp.get_physical_parameters(state[1])
             for pname in tp.fit_params:
                 history[f"param_{pname}"].append(curr_phys[pname])
+
+        # 6. Phase 2: L-BFGS takes over from the best Adam checkpoint
+        if status in ("converged", "validation_stopped") and n_lbfgs > 0 and not over_budget():
+            flat0, unravel = ravel_pytree(best_state)
+            flat_vg = jax.jit(jax.value_and_grad(lambda flat: loss_fn(unravel(flat))[0]))
+
+            def lbfgs_obj(flat):
+                val, grad = flat_vg(jnp.asarray(flat))
+                return float(val), np.asarray(grad, dtype=np.float64)
+
+            def lbfgs_callback(intermediate_result):
+                l_val = float(intermediate_result.fun)
+                history["epoch"].append(len(history["epoch"]) + 1)
+                history["loss_train"].append(l_val)
+                history["loss_val"].append(best_val_loss)
+                history["loss_data"].append(float("nan"))
+                history["loss_phys"].append(float("nan"))
+                history["phase"].append("lbfgs")
+                if over_budget():
+                    raise StopIteration
+
+            try:
+                fit = minimize(
+                    lbfgs_obj,
+                    np.asarray(flat0, dtype=np.float64),
+                    jac=True,
+                    method="L-BFGS-B",
+                    callback=lbfgs_callback,
+                    options={
+                        "maxiter": n_lbfgs,
+                        "maxfun": 20 * n_lbfgs,
+                        "maxcor": 50,
+                        "ftol": 1e-12,
+                        "gtol": 1e-8,
+                    },
+                )
+                if np.all(np.isfinite(fit.x)):
+                    lbfgs_candidate = unravel(jnp.asarray(fit.x))
+                    if len(idx_val) > 0:
+                        pred_val_lbfgs = jax.vmap(lambda t: x_hat(lbfgs_candidate[0], t, ncfg))(t_val)
+                        val_loss_lbfgs = float(jnp.mean((pred_val_lbfgs - y_val_norm) ** 2))
+                        # Accept L-BFGS solution if it does not degrade validation loss
+                        if val_loss_lbfgs <= best_val_loss * 1.05:
+                            best_state = lbfgs_candidate
+                            best_val_loss = val_loss_lbfgs
+                            status = "converged"
+                    else:
+                        best_state = lbfgs_candidate
+                        status = "converged"
+                else:
+                    status = "nonfinite_loss"
+            except (StopIteration, KeyboardInterrupt):
+                if over_budget():
+                    status = "budget_exhausted"
+            except Exception:
+                pass
 
         wall_time = time.perf_counter() - start_time
 
@@ -460,7 +533,7 @@ class InversePINNTrainer:
         self.params_mod.raw_params = {k: jnp.asarray(v) for k, v in state[1].items()}
         estimated_p = {p: final_phys[p] for p in tp.fit_params}
 
-        # 6. Final evaluation on the entire observation trajectory
+        # 7. Final evaluation on the entire observation trajectory
         t_all_jax = jnp.asarray(times_all, dtype=jnp.float64)
         x_pred_all = jax.vmap(lambda t: x_hat(state[0], t, ncfg))(t_all_jax)
         pred_pop_all = np.asarray(x_pred_all * k_val, dtype=np.float64)

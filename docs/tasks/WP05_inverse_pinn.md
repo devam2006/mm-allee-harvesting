@@ -73,10 +73,13 @@ Deliver future command `python experiments/wp05/run.py --config configs/wp05_smo
 
 - **Owner:** Rohan (`rohanagrawal28`); Devam requested uploading his supplied ZIP on his behalf. Technical PR author is Devam; Rohan stays assignee/code owner.
 - **Branch/PR:** `wp05/rohan-inverse-validation`, [draft PR #7](https://github.com/devam2006/mm-allee-harvesting/pull/7), based on WP03 PR #4 (`wp03/collapse-analysis`, `6ba1555`); retarget to main after the dependency merges.
-- **Delivered for review:** constrained PyTorch inverse trainer, SciPy ODE fit, noise/split utilities, WP05 tests/configs/runner, submitted figures/tables/report/notebook. No acceptance checkbox or human understanding claim is marked complete solely from the ZIP.
-- **Evidence and exact next steps:** see [submission review](../WP05_SUBMISSION_REVIEW.md) for actual checks, reproduction commands and blockers. First reconcile results (33 supplied prediction records vs 108 configured) and the independent PyTorch engine with WP04's JAX PR #6. Preserve failed seeds and disclose the physics-supported prediction domain.
-- **Source record:** `artifacts/manifests/wp05_submission.json` contains archive/import hashes. Existing WP03 code/fixtures/sections are retained; assembled notebook is regenerated from current fragments.
-- **Question for owner defence:** why can a fitted trajectory look accurate while the inferred parameters are wrong, and what additional information makes Model B identifiable?
-- **Pending:** corrected evidence, final sweep, all core acceptance checks, framework/API agreement, non-owner reproduction and required human approvals. Never merge on the basis of the submitted `completed` manifest alone.
-
-PR #7 is assigned to Rohan; review requests were verified for Prem-Mehta03, AshChan07 and RaghavSinghal15. Intake validation: 27 WP05 / 207 full-suite tests passed, CPU smoke completed and 13 notebook code cells ran. Lint/format, final result reconciliation, shared-engine integration and full Jupyter execution remain unresolved; see the linked review.
+- **Status & Reconciled Implementation:**
+  - JAX engine unified with Prem's WP04 engine (`network.py`, `residual.py`, `autodiff.py`, `train_forward.py`).
+  - Two-phase inverse optimization implemented: Phase 1 Adam (with separate learning rates for weights vs physical parameters, and validation early stopping) followed by Phase 2 L-BFGS refinement (`scipy.optimize.minimize` via `ravel_pytree`).
+  - Noise generation seed (`seed`) separated from fit initialization seed (`seed + 1000`), both recorded in metric CSVs.
+  - Evaluation against clean reference trajectories (`test_clean_*`) added alongside noisy observation metrics (`test_*`).
+  - Guessed fallback truth removed; ground truth metadata loaded strictly from `data/fixtures/wp03_reference/truth.json`.
+  - Full 108-run sweep reproduced in Colab: 108 prediction records and 324 parameter records generated in `artifacts/tables/wp05_{prediction,parameter}_metrics.csv`.
+  - Figures regenerated with explicit scales and splits: `artifacts/figures/wp05_recovery_noise.{png,eps}` and `artifacts/figures/wp05_heldout_failure.{png,eps}`.
+  - Report (`report/sections/05_inverse_validation.tex`) and notebooks (`notebooks/sections/05_inverse_validation.ipynb`, `notebooks/project.ipynb`) rewritten to document pure JAX execution, honest recovery errors (PINN relative error $A \approx 93.6\%$, $H \approx 58.5\%$ vs ODE $< 10^{-7}$ on clean Model A), and test extrapolation limits ($t > 6.4$).
+- **Pending:** Peer review from teammates (Prem-Mehta03, AshChan07, RaghavSinghal15), WP03 PR #4 merge, and retargeting PR #7 to main.

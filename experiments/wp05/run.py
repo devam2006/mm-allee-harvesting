@@ -24,6 +24,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from mm_allee.data import generate_noisy_observations
 from mm_allee.inference import fit_ode_least_squares
+from mm_allee.metrics import errors
 from mm_allee.validation import (
     audit_splits_and_leakage,
     compute_parameter_metrics,
@@ -65,16 +66,17 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
     config = json.loads(config_path.read_text(encoding="utf-8"))
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load separate evaluation truth metadata (truth.json) if available
+    # Load separate evaluation truth metadata (truth.json)
     truth_file = REPO_ROOT / "data" / "fixtures" / "wp03_reference" / "truth.json"
-    truth_data = {}
-    if truth_file.exists():
-        truth_data = json.loads(truth_file.read_text(encoding="utf-8")).get("trajectories", {})
+    if not truth_file.exists():
+        raise FileNotFoundError(f"Required evaluation truth file not found: {truth_file}")
+    truth_data = json.loads(truth_file.read_text(encoding="utf-8")).get("trajectories", {})
 
     cases = config["cases"]
     sigmas = config["noise_sigmas"]
     seeds = config["seeds"]
     n_ref = float(config.get("fixed_reference_scales", {}).get("population", 100.0))
+    fit_seed_offset = int(config.get("fit_seed_offset", 1000))
 
     param_metric_records = []
     pred_metric_records = []
@@ -97,19 +99,17 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
         ref_times, ref_pops = load_reference_csv(ref_csv)
 
         # Ground truth parameters for evaluation ONLY (never passed to trainer)
-        p_true = truth_data.get(case_id, {}).get("parameters", {})
-        if not p_true:
-            p_true = {
-                "r": 0.7,
-                "K": 100.0,
-                "A": 20.0,
-                "H": 10.0 if model == "A" else 0.0,
-                "h": 0.21 if model == "B" else 0.0,
-            }
+        if case_id not in truth_data:
+            raise KeyError(
+                f"Evaluation ground truth metadata missing for case '{case_id}' in {truth_file}"
+            )
+        p_true = truth_data[case_id]["parameters"]
 
         for sigma in sigmas:
             for seed in seeds:
                 run_counter += 1
+                noise_seed = seed
+                fit_seed = fit_seed_offset + seed
                 run_id = f"wp05_{case_id}_s{int(sigma*100):02d}_seed{seed}"
 
                 # Generate noisy observations with frozen 60/20/20 train/val/test splits
@@ -119,10 +119,12 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                     trajectory_id=case_id,
                     model=model,
                     noise_sigma=sigma,
-                    noise_seed=seed,
+                    noise_seed=noise_seed,
                     n_ref=n_ref,
                 )
                 audit_splits_and_leakage(obs)
+
+                idx_test = obs["test_indices"]
 
                 # ==============================================================
                 # 1. Conventional ODE Least-Squares Baseline
@@ -150,6 +152,8 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                             "method": "ODE_LS",
                             "noise_sigma": sigma,
                             "seed": seed,
+                            "noise_seed": noise_seed,
+                            "fit_seed": fit_seed,
                             "parameter": pm["parameter"],
                             "true_value": pm["true_value"],
                             "estimated_value": pm["estimated_value"],
@@ -159,7 +163,14 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                         }
                     )
 
-                # Prediction metrics for ODE
+                # Prediction metrics against both noisy observations and clean reference
+                ode_pred_pop = ode_res.predicted_trajectory["population"]
+                ode_clean_test_err = (
+                    errors(ode_pred_pop[idx_test], ref_pops[idx_test])
+                    if len(idx_test) > 0
+                    else {"rmse": float("nan"), "mae": float("nan"), "relative_l2": None}
+                )
+
                 pred_metric_records.append(
                     {
                         "run_id": run_id,
@@ -168,11 +179,16 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                         "method": "ODE_LS",
                         "noise_sigma": sigma,
                         "seed": seed,
+                        "noise_seed": noise_seed,
+                        "fit_seed": fit_seed,
                         "train_rmse": ode_res.train_metrics["rmse"],
                         "val_rmse": ode_res.val_metrics["rmse"],
                         "test_rmse": ode_res.test_metrics["rmse"],
                         "test_mae": ode_res.test_metrics["mae"],
                         "test_relative_l2": ode_res.test_metrics["relative_l2"],
+                        "test_clean_rmse": ode_clean_test_err["rmse"],
+                        "test_clean_mae": ode_clean_test_err["mae"],
+                        "test_clean_relative_l2": ode_clean_test_err["relative_l2"],
                         "wall_seconds": ode_res.wall_seconds,
                         "status": ode_res.status,
                     }
@@ -208,13 +224,14 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                     hidden_layers = pinn_cfg.get("hidden_layers", [32, 32])
                     layers = tuple([1] + list(hidden_layers) + [1])
                     act = pinn_cfg.get("activation", "tanh")
+                    lbfgs_iters = pinn_cfg.get("lbfgs_iters", 200)
 
-                    # Explicit seeding before network weight construction
+                    # Explicit seeding before network weight construction using fit_seed
                     ncfg = NetworkConfig(
                         layers=layers,
                         t_end=float(ref_times.max()),
                         x0=float(ref_pops[0]) / n_ref,
-                        seed=seed,
+                        seed=fit_seed,
                         activation=act,
                     )
                     tp = TrainableParameters(
@@ -230,6 +247,7 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                         lr_params=pinn_cfg.get("lr_params", 0.01),
                         lambda_data=pinn_cfg.get("lambda_data", 1.0),
                         lambda_phys=pinn_cfg.get("lambda_phys", 0.1),
+                        lbfgs_iters=lbfgs_iters,
                     )
 
                     try:
@@ -239,8 +257,10 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                             epochs=pinn_cfg.get("epochs", 1000),
                             patience=pinn_cfg.get("patience", 100),
                             n_collocation=pinn_cfg.get("n_collocation", 100),
-                            seed=seed,
+                            seed=fit_seed,
                             eval_every=pinn_cfg.get("eval_every", 10),
+                            adam_iters=pinn_cfg.get("adam_iters", None),
+                            lbfgs_iters=lbfgs_iters,
                         )
                     except Exception as exc:
                         # Record failed run per seed without crashing the whole sweep
@@ -261,6 +281,8 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                     "method": "PINN",
                                     "noise_sigma": sigma,
                                     "seed": seed,
+                                    "noise_seed": noise_seed,
+                                    "fit_seed": fit_seed,
                                     "parameter": pm["parameter"],
                                     "true_value": pm["true_value"],
                                     "estimated_value": pm["estimated_value"],
@@ -270,6 +292,13 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                 }
                             )
 
+                        pinn_pred_pop = pinn_res.predicted_trajectory["population"]
+                        pinn_clean_test_err = (
+                            errors(pinn_pred_pop[idx_test], ref_pops[idx_test])
+                            if len(idx_test) > 0
+                            else {"rmse": float("nan"), "mae": float("nan"), "relative_l2": None}
+                        )
+
                         pred_metric_records.append(
                             {
                                 "run_id": run_id,
@@ -278,11 +307,16 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                 "method": "PINN",
                                 "noise_sigma": sigma,
                                 "seed": seed,
+                                "noise_seed": noise_seed,
+                                "fit_seed": fit_seed,
                                 "train_rmse": pinn_res.train_metrics["rmse"],
                                 "val_rmse": pinn_res.val_metrics["rmse"],
                                 "test_rmse": pinn_res.test_metrics["rmse"],
                                 "test_mae": pinn_res.test_metrics["mae"],
                                 "test_relative_l2": pinn_res.test_metrics["relative_l2"],
+                                "test_clean_rmse": pinn_clean_test_err["rmse"],
+                                "test_clean_mae": pinn_clean_test_err["mae"],
+                                "test_clean_relative_l2": pinn_clean_test_err["relative_l2"],
                                 "wall_seconds": pinn_res.wall_seconds,
                                 "status": pinn_res.status,
                             }
@@ -319,6 +353,8 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                     "method": "PINN",
                                     "noise_sigma": sigma,
                                     "seed": seed,
+                                    "noise_seed": noise_seed,
+                                    "fit_seed": fit_seed,
                                     "parameter": p_name,
                                     "true_value": p_true.get(p_name, float("nan")),
                                     "estimated_value": float("nan"),
@@ -335,11 +371,16 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                 "method": "PINN",
                                 "noise_sigma": sigma,
                                 "seed": seed,
+                                "noise_seed": noise_seed,
+                                "fit_seed": fit_seed,
                                 "train_rmse": float("nan"),
                                 "val_rmse": float("nan"),
                                 "test_rmse": float("nan"),
                                 "test_mae": float("nan"),
                                 "test_relative_l2": None,
+                                "test_clean_rmse": float("nan"),
+                                "test_clean_mae": float("nan"),
+                                "test_clean_relative_l2": None,
                                 "wall_seconds": 0.0,
                                 "status": fail_status,
                             }
@@ -354,6 +395,8 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                                 "method": "PINN",
                                 "noise_sigma": sigma,
                                 "seed": seed,
+                                "noise_seed": noise_seed,
+                                "fit_seed": fit_seed,
                                 "parameter": p_name,
                                 "true_value": p_true.get(p_name, float("nan")),
                                 "estimated_value": float("nan"),
@@ -370,11 +413,16 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                             "method": "PINN",
                             "noise_sigma": sigma,
                             "seed": seed,
+                            "noise_seed": noise_seed,
+                            "fit_seed": fit_seed,
                             "train_rmse": float("nan"),
                             "val_rmse": float("nan"),
                             "test_rmse": float("nan"),
                             "test_mae": float("nan"),
                             "test_relative_l2": None,
+                            "test_clean_rmse": float("nan"),
+                            "test_clean_mae": float("nan"),
+                            "test_clean_relative_l2": None,
                             "wall_seconds": 0.0,
                             "status": "skipped_no_jax_environment",
                         }
@@ -407,6 +455,7 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
         "cases_evaluated": [c["case_id"] for c in cases],
         "noise_sigmas": sigmas,
         "seeds": seeds,
+        "fit_seed_offset": fit_seed_offset,
         "methods": ["ODE_LS", "PINN" if HAS_JAX else "PINN (code ready, jax pending)"],
         "summary": {
             "total_runs": run_counter,

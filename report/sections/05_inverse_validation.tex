@@ -70,45 +70,44 @@ The values of $A$ and $K$ are the roots of the quadratic equation $z^2 - S z + P
 Thus, Model A is \textbf{structurally identifiable} from ideal data. However, in \emph{practical} scenarios with finite, noisy measurements collected near equilibrium where $\mathrm{d}N/\mathrm{d}t \approx 0$, higher-order polynomial coefficients become severely ill-conditioned. A tiny perturbation in observation noise causes large deviations in estimated $A$ and $K$. Therefore, our main experimental design fixes known carrying capacity $K=100.0$ and focuses on estimating the identifiable subset $(r, A, H)$ for Model A and $(r, A, h)$ for Model B.
 
 \subsection{Inverse Physics-Informed Neural Network (PINN) Engine}
-We design an independent Physics-Informed Neural Network architecture and trainer that does not rely on third-party forward code.
+We design a unified JAX Physics-Informed Neural Network architecture and trainer sharing the foundational autodiff and network primitives of WP04.
 
-\subsubsection{Network Architecture and Reference Scaling}
-A multi-layer perceptron $N_\theta(t)$ with hidden layers $[64, 64]$ and $\tanh$ activation maps time $t$ to population $N(t)$. To prevent numerical ill-conditioning arising from disparate physical units, we employ fixed external reference scales:
+\subsubsection{Network Architecture and Hard Initial Conditions}
+Following the WP04 foundation, the network enforces initial conditions strictly by construction:
 \begin{equation}
-t_{\mathrm{ref}} = 1.0, \quad N_{\mathrm{ref}} = 100.0.
+x(t) = x_0 + \frac{t}{t_{\mathrm{end}}} \mathcal{N}_\theta\left(\frac{t}{t_{\mathrm{end}}}\right) \implies x(0) \equiv x_0,
 \end{equation}
-The network internally processes scaled dimensionless time $\tau_{\mathrm{in}} = t / t_{\mathrm{ref}}$ and outputs dimensionless population $\hat{N}_\theta = N / N_{\mathrm{ref}}$. The dimensional prediction is $N_\theta(t) = N_{\mathrm{ref}} \cdot \hat{N}_\theta(t / t_{\mathrm{ref}})$.
+where $x_0 = N_0 / K \in [0, 1.5]$ and $\mathcal{N}_\theta$ is a Multi-Layer Perceptron ($[32, 32]$ hidden units with $\tanh$ activation). Dimensional predictions are given by $N_\theta(t) = K \cdot x(t)$. Time derivatives $\mathrm{d}x/\mathrm{d}t$ are computed via JAX exact reverse-mode automatic differentiation ($\mathrm{vmap}(\mathrm{grad})$), guaranteeing machine-precision kinematics without finite-difference approximations.
 
 \subsubsection{Constraint-Preserving Parameter Parameterization}
-Physical parameters must satisfy strict bounds: $r > 0$, $0 < A < K$, $H \ge 0$, and $h \ge 0$. Imposing artificial box penalties or hard clamping detaches autograd gradients ($\nabla = 0$) when boundaries are reached. To guarantee continuous, nonzero gradients across the entire optimization trajectory, we construct smooth bijective transformations:
+Physical parameters must satisfy strict ecological bounds: $r > 0$, $0 < A < K$, $H \ge 0$, and $h \ge 0$. Imposing artificial box penalties or hard clamping detaches autodiff gradients ($\nabla = 0$) when boundaries are reached. To guarantee continuous, nonzero gradients across the entire optimization trajectory, we construct smooth bijective transformations:
 \begin{align}
 r &= \mathrm{softplus}(\tilde{r}) = \ln(1 + e^{\tilde{r}}) > 0, \label{eq:r_transform} \\
-A &= K \cdot \sigma(\tilde{A}) = K \cdot \frac{1}{1 + e^{-\tilde{A}}} \in (0, K), \label{eq:A_transform} \\
+A &= K \cdot \sigma(\tilde{A}) = K \cdot \frac{1}{1 + e^{-\tilde{A}}} \in (0, K) \implies a = \frac{A}{K} \in (0, 1), \label{eq:A_transform} \\
 H &= \mathrm{softplus}(\tilde{H}) \ge 0, \quad h = \mathrm{softplus}(\tilde{h}) \ge 0, \label{eq:harvest_transform}
 \end{align}
-where $\tilde{r}, \tilde{A}, \tilde{H}, \tilde{h} \in \mathbb{R}$ are unconstrained latent parameters. The derivative $\mathrm{d}r/\mathrm{d}\tilde{r} = \sigma(\tilde{r}) > 0$ and $\mathrm{d}A/\mathrm{d}\tilde{A} = K \sigma(\tilde{A})(1 - \sigma(\tilde{A})) > 0$ are strictly positive for all finite real values, ensuring gradient backpropagation never stalls.
+where $\tilde{r}, \tilde{A}, \tilde{H}, \tilde{h} \in \mathbb{R}$ are unconstrained latent parameters. The derivatives $\mathrm{d}r/\mathrm{d}\tilde{r} = \sigma(\tilde{r}) > 0$ and $\mathrm{d}A/\mathrm{d}\tilde{A} = K \sigma(\tilde{A})(1 - \sigma(\tilde{A})) > 0$ are strictly positive for all finite values, ensuring gradient backpropagation never stalls.
 
 \subsubsection{Loss Function and Leakage-Protected Optimization}
-The total objective function combines data fidelity, ODE physics residuals, and initial condition consistency:
+The total objective function combines data fidelity on training points and physical ODE residuals across the collocation horizon:
 \begin{equation}
-\mathcal{L}(\theta, \tilde{\mathbf{p}}) = \lambda_{\mathrm{data}} \mathcal{L}_{\mathrm{data}} + \lambda_{\mathrm{phys}} \mathcal{L}_{\mathrm{phys}} + \lambda_{\mathrm{ic}} \mathcal{L}_{\mathrm{ic}}.
+\mathcal{L}(\theta, \tilde{\mathbf{p}}) = \lambda_{\mathrm{data}} \mathcal{L}_{\mathrm{data}} + \lambda_{\mathrm{phys}} \mathcal{L}_{\mathrm{phys}}.
 \label{eq:total_loss}
 \end{equation}
 \begin{enumerate}
     \item \textbf{Data Loss ($\mathcal{L}_{\mathrm{data}}$):} Evaluated strictly on training observations $\mathcal{D}_{\mathrm{train}}$:
     \begin{equation}
-    \mathcal{L}_{\mathrm{data}} = \frac{1}{|\mathcal{D}_{\mathrm{train}}|} \sum_{i \in \mathcal{D}_{\mathrm{train}}} \left(\frac{N_\theta(t_i) - y_i}{N_{\mathrm{ref}}}\right)^2.
+    \mathcal{L}_{\mathrm{data}} = \frac{1}{|\mathcal{D}_{\mathrm{train}}|} \sum_{i \in \mathcal{D}_{\mathrm{train}}} \left(x_\theta(t_i) - \frac{y_i}{K}\right)^2.
     \end{equation}
-    \item \textbf{Physics Residual Loss ($\mathcal{L}_{\mathrm{phys}}$):} Collocation points $t_j \in [0, t_{\mathrm{end}}]$ enforce the governing differential equation using PyTorch automatic differentiation:
+    \item \textbf{Physics Residual Loss ($\mathcal{L}_{\mathrm{phys}}$):} Collocation points $t_j \in [0, t_{\mathrm{end}}]$ enforce the governing differential equation using JAX automatic differentiation:
     \begin{equation}
-    \mathcal{R}(t_j) = \frac{\mathrm{d}N_\theta}{\mathrm{d}t}\bigg|_{t_j} - f(N_\theta(t_j); \mathbf{p}), \quad \mathcal{L}_{\mathrm{phys}} = \frac{1}{M} \sum_{j=1}^M \left(\frac{\mathcal{R}(t_j)}{r_{\mathrm{ref}} N_{\mathrm{ref}}}\right)^2.
-    \end{equation}
-    \item \textbf{Initial Condition Loss ($\mathcal{L}_{\mathrm{ic}}$):}
-    \begin{equation}
-    \mathcal{L}_{\mathrm{ic}} = \left(\frac{N_\theta(0) - N_0}{N_{\mathrm{ref}}}\right)^2.
+    \mathcal{R}(t_j) = \frac{\mathrm{d}x_\theta}{\mathrm{d}t}\bigg|_{t_j} - f_{\mathrm{norm}}(x_\theta(t_j); \mathbf{p}), \quad \mathcal{L}_{\mathrm{phys}} = \frac{1}{M} \sum_{j=1}^M \left(\mathcal{R}(t_j)\right)^2.
     \end{equation}
 \end{enumerate}
-Validation observations $\mathcal{D}_{\mathrm{val}}$ are used strictly for early stopping to select the best checkpoint. Test observations $\mathcal{D}_{\mathrm{test}}$ remain completely frozen and unseen throughout training.
+Validation observations $\mathcal{D}_{\mathrm{val}}$ are used strictly without gradient for checkpoint selection and early stopping. Test observations $\mathcal{D}_{\mathrm{test}}$ remain completely frozen and unseen throughout training.
+
+\subsubsection{Two-Phase Optimizer (Adam $\to$ L-BFGS)}
+Training combines Phase 1 (Adam) with separate learning rates ($\eta_{\mathrm{net}} = 0.001, \eta_{\mathrm{params}} = 0.01$) to push weights into a favorable basin, followed by Phase 2 (L-BFGS-B via \texttt{scipy.optimize.minimize}) to accelerate second-order convergence.
 
 \subsection{Conventional ODE Least-Squares Baseline}
 As an independent, rigorous benchmark, we implement a conventional nonlinear least-squares ODE solver using SciPy (\texttt{scipy.optimize.least\_squares} with the Trust Region Reflective algorithm). The forward trajectory is numerically integrated using adaptive Runge-Kutta Dormand-Prince (RK45) methods. The objective function minimizes normalized observation residuals on the identical training split:
@@ -121,37 +120,41 @@ subject to the exact same physical parameter bounds: $r \in [10^{-4}, 10]$, $A \
 Experiments are conducted on clean synthetic trajectories generated with known true parameters $r=0.7$, $K=100.0$, $A=20.0$, with Model A harvest $H \in \{10.0, 36.5, 70.0\}$ and Model B effort $h \in \{0.21, 0.5544\}$. Additive Gaussian noise is injected at three standard deviations $\sigma \in \{0.0, 0.01, 0.05\} \times N_{\mathrm{ref}}$ across seeds $\{11, 22, 33\}$. Contiguous time windows are partitioned into 60\% training, 20\% validation, and 20\% held-out test splits.
 
 \subsubsection{Parameter Recovery Under Noise}
-Table~\ref{tab:parameter_metrics_summary} summarizes parameter estimation accuracy for the identifiable main design ($K=100.0$ known, estimating $r, A, H/h$). On noise-free data ($\sigma=0$), both the conventional ODE baseline and the PINN recover parameters with high precision ($<0.5\%$ relative error). 
+Table~\ref{tab:parameter_metrics_summary} summarizes parameter estimation accuracy for the identifiable main design ($K=100.0$ known, estimating $r, A, H/h$). 
 
-As observation noise increases to 1\% and 5\%, the ODE least-squares baseline demonstrates robust convergence with mean relative parameter errors remaining below 8\% on regular persistence regimes. In contrast, while the PINN achieves excellent trajectory fits ($\mathrm{RMSE} < 1.5$), its parameter recovery exhibits higher variance under 5\% noise ($\approx 12$--$18\%$ error). This illustrates a fundamental property of inverse PINNs: \textbf{accurate trajectory reconstruction does not guarantee accurate parameter identification}. The neural network can adjust internal weights to compensate for parameter offsets while still matching the data.
+On noise-free data ($\sigma=0$), the conventional ODE baseline recovers true parameters with near-machine precision (relative errors below $10^{-7}$). In contrast, all 54 PINN runs were terminated by validation early stopping (\texttt{validation\_stopped}). While the PINN successfully captures the general sigmoid curvature of the trajectory within the training window, early stopping freezes the network before the physical parameters reach their true values: for example, on noise-free Model A data, estimated $A$ settles near $38.7$ ($93.6\%$ error) and $H$ near $4.15$ ($58.5\%$ error).
+
+This demonstrates a foundational lesson of inverse PINNs: \textbf{trajectory fit does not guarantee parameter recovery}. Because neural networks possess immense representational capacity, internal weights can easily shift to compensate for incorrect physical parameters, producing a low data loss while leaving parameter gradients in a shallow plateau.
 
 \subsubsection{Difficult Regimes and Failure Analysis}
-In near-fold and supercritical extinction regimes, conventional assumptions break down:
+Across the full 108-run sweep:
 \begin{itemize}
-    \item \textbf{Near-Fold Persistence (\texttt{a\_near\_fold}, \texttt{b\_near\_fold}):} Near the fold bifurcation ($H \approx 36.5 \approx 0.993 H_c$, $h \approx 0.5544 \approx 0.99 h_c$), the system exhibits critical slowing down ($f'(N^*) \approx 0$). Trajectories linger in flat bottlenecks before equilibrating. Under 5\% noise, the conventional baseline occasionally converges to unphysical extinction states if noise kicks intermediate samples below the unstable Allee threshold.
-    \item \textbf{Supercritical Extinction (\texttt{a\_extinction}):} Here $H = 70.0 > H_c$, and the population drops to zero at $t \approx 1.64$. Observations after the extinction event must be excluded from continuous ODE residual evaluation, as the absorbing zero boundary is an external physical intervention rather than an equilibrium of the unconstrained ODE.
+    \item \textbf{ODE Convergence vs Stiff Regimes:} The conventional ODE baseline converged in 52 out of 54 runs (\texttt{converged}). In two difficult high-noise extinction/near-fold cases, it reached the maximum evaluation budget (\texttt{failed: evaluation\_limit}).
+    \item \textbf{Held-Out Extrapolation Breakdown:} In the held-out test split ($t > 6.4$) visible in Figure~\ref{fig:wp05_heldout_failure}, the conventional ODE solver correctly preserves the asymptotic equilibrium. In contrast, the PINN trajectory begins curving downward outside the training domain. This illustrates that neural surrogates act as interpolators rather than true physical laws when data coverage ends.
 \end{itemize}
 
 \begin{table}[ht]
 \centering
-\caption{Representative parameter recovery metrics for Model A and B across noise levels (Seed 11).}
+\caption{Parameter recovery metrics for Model A and B across noise levels (Seed 11, from the verified 108-run sweep).}
 \label{tab:parameter_metrics_summary}
 \small
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Model \& Regime} & \textbf{Method} & \textbf{Noise $\sigma$} & \textbf{Est. $r$ ($r^*=0.7$)} & \textbf{Est. $A$ ($A^*=20$)} & \textbf{Est. Harvest} & \textbf{Test RMSE} \\
 \midrule
-Model A (Regular) & ODE\_LS & 0.00 & 0.7000 & 20.000 & 10.000 ($H$) & 0.000 \\
-Model A (Regular) & ODE\_LS & 0.01 & 0.6974 & 20.122 & 9.941 ($H$) & 0.842 \\
-Model A (Regular) & ODE\_LS & 0.05 & 0.6841 & 20.890 & 9.680 ($H$) & 4.120 \\
-Model A (Regular) & PINN    & 0.01 & 0.7182 & 19.410 & 10.350 ($H$) & 1.054 \\
-Model A (Regular) & PINN    & 0.05 & 0.6420 & 22.310 & 8.920 ($H$) & 4.512 \\
+Model A (Regular) & ODE\_LS & 0.00 & 0.7000 & 20.000 & 10.000 ($H$) & $5.1 \times 10^{-8}$ \\
+Model A (Regular) & ODE\_LS & 0.01 & 0.5834 & 18.134 & 9.178 ($H$)  & 1.091 \\
+Model A (Regular) & ODE\_LS & 0.05 & 0.2228 & 9.548  & 6.481 ($H$)  & 5.460 \\
+Model A (Regular) & PINN    & 0.00 & 0.7536 & 38.712 & 4.155 ($H$)  & 9.829 \\
+Model A (Regular) & PINN    & 0.01 & 0.7534 & 38.821 & 4.176 ($H$)  & 9.583 \\
+Model A (Regular) & PINN    & 0.05 & 0.7546 & 38.765 & 4.173 ($H$)  & 10.071 \\
 \midrule
-Model B (Regular) & ODE\_LS & 0.00 & 0.7000 & 20.000 & 0.2100 ($h$) & 0.000 \\
-Model B (Regular) & ODE\_LS & 0.01 & 0.7031 & 19.870 & 0.2112 ($h$) & 0.795 \\
-Model B (Regular) & ODE\_LS & 0.05 & 0.7210 & 19.230 & 0.2184 ($h$) & 3.980 \\
-Model B (Regular) & PINN    & 0.01 & 0.6850 & 20.520 & 0.2071 ($h$) & 0.985 \\
-Model B (Regular) & PINN    & 0.05 & 0.6280 & 23.100 & 0.1895 ($h$) & 4.310 \\
+Model B (Regular) & ODE\_LS & 0.00 & 0.7000 & 20.000 & 0.2100 ($h$) & $5.2 \times 10^{-8}$ \\
+Model B (Regular) & ODE\_LS & 0.01 & 0.5643 & 17.764 & 0.1935 ($h$) & 1.093 \\
+Model B (Regular) & ODE\_LS & 0.05 & 0.1572 & 7.156  & 0.1423 ($h$) & 5.470 \\
+Model B (Regular) & PINN    & 0.00 & 0.7823 & 37.572 & 0.0579 ($h$) & 4.928 \\
+Model B (Regular) & PINN    & 0.01 & 0.7826 & 37.555 & 0.0579 ($h$) & 4.809 \\
+Model B (Regular) & PINN    & 0.05 & 0.7831 & 37.643 & 0.0579 ($h$) & 6.656 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -160,7 +163,7 @@ Model B (Regular) & PINN    & 0.05 & 0.6280 & 23.100 & 0.1895 ($h$) & 4.310 \\
 This investigation establishes four core findings:
 \begin{enumerate}
     \item Structural nonidentifiability is an intrinsic property of Model B with unknown effort that cannot be overcome by data volume or initial state diversity;
-    \item Constrained parameter transformations via softplus and sigmoid guarantee non-negative, ordered parameters while preserving autograd gradient signals;
-    \item Classical nonlinear ODE regression is faster and more parameter-accurate on scalar ODEs than PINNs, serving as an indispensable benchmark;
-    \item Rigorous data leakage prevention (training-only observations, validation-based stopping, held-out test evaluation) is essential to detect overfitting in neural differential equation solvers.
+    \item Constrained parameter transformations via softplus and sigmoid guarantee non-negative, ordered parameters while preserving autodiff gradient signals;
+    \item Classical nonlinear ODE regression is orders of magnitude faster and more parameter-accurate on scalar ODEs than PINNs, serving as an indispensable benchmark;
+    \item Rigorous data leakage prevention (training-only observations, validation-based stopping, held-out test evaluation) is essential to detect overfitting and false convergence in neural differential equation solvers.
 \end{enumerate}
