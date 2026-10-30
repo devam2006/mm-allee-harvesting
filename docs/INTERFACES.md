@@ -95,3 +95,9 @@ the six clean CSV fixtures, threshold/basin conventions and outcomes are unchang
 WP01 and WP02 must validate requested solver blocks before creating their own
 outputs when adopting this shared solver. This does not change either owner's
 branch or certify their existing preflight validation.
+
+Reference validation still accepts a baseline at the supported minimum. Its
+refinement caps the requested relative tolerance at that minimum, continues to
+reduce atol/max_step, and records `refinement_rtol` and
+`refinement_rtol_at_floor` in its evidence. It never silently requests an
+unsupported refinement tolerance.

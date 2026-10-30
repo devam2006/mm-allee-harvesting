@@ -82,7 +82,7 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
 - **31 October latest-head recheck:** verified WP01 PR #8 f427d5f, WP02 PR #9
   a6ad5d3 and WP03 PR #4 2a2f673 directly against GitHub/fetched refs. Fixed
   WP03's own unsupported-tolerance acceptance in the shared solver and reference
-  config validator; 7 new regressions check early rejection and the initialized
+  config validator; 8 new regressions check early rejection and the initialized
   integrator. Original WP01 fixes remain fixed; cross-package fold policy still
   requires explicit owner agreement. See the new analysis follow-up for actual
   validation. No merge, scientific approval or final integration is claimed.

@@ -220,3 +220,26 @@ def test_reference_cli_rejects_unsupported_rtol_before_writing(tmp_path):
     with pytest.raises(ValueError, match="RK45 rtol must be at least"):
         module.run(config, tmp_path / "invalid-rtol")
     assert not (tmp_path / "invalid-rtol").exists()
+
+
+def test_reference_validation_at_supported_rtol_floor_records_effective_refinement(monkeypatch):
+    from scipy.integrate import RK45
+
+    from mm_allee.solver import MIN_RK45_RTOL
+
+    initialized = []
+    original = RK45.__init__
+
+    def record(self, *args, **kwargs):
+        original(self, *args, **kwargs)
+        initialized.append(self.rtol)
+
+    monkeypatch.setattr(RK45, "__init__", record)
+    settings = dict(CONFIG["solver"], rtol=MIN_RK45_RTOL)
+    case = CONFIG["cases"][0]
+    actual = generate_reference(case, settings)
+    evidence = validate_reference(case, actual, settings)
+    assert evidence["status"] == "passed"
+    assert evidence["refinement_rtol"] == MIN_RK45_RTOL
+    assert evidence["refinement_rtol_at_floor"] is True
+    assert initialized == [MIN_RK45_RTOL, MIN_RK45_RTOL]

@@ -24,6 +24,6 @@ are recorded in [WP03 analysis](docs/WP03_ANALYSIS.md). The PR remains unmerged;
 remaining human reviews and cross-package integration are pending.
 
 31 October 2026: latest-head recheck adds WP03's unsupported-RK45-tolerance
-validation fix and seven regressions. Default numerical results and reference
+validation fix and eight regressions. Default numerical results and reference
 fixtures are preserved. WP01/WP02 dependency and convention alignment remains
 pending; evidence is in the [WP03 analysis follow-up](docs/WP03_ANALYSIS.md).

@@ -8,7 +8,8 @@
     "src/mm_allee/solver.py": "ecbcd509c1221c8ec5538e974f9ec0741e660ccb26dc7d608a5c1675ea5c7695",
     "src/mm_allee/datasets.py": "628690be8d8dbac75468af31d9af99606f4980ee675b24dc16fca5e1d12bbae1",
     "tests/wp03/test_solver_sampling.py": "be07e9d4da6b02c6f5b259b4fe0aee7db3aebda742e34a33a0fc5431965aeae2",
-    "tests/wp03/test_reference_datasets.py": "a8ad107df8a29d9b18b0baa8faab238bf6b90d0a90b0e87b47fa9da6b126791d"
+    "tests/wp03/test_reference_datasets.py": "1eaf2f3c8a703e13843dd8ac90d43c36d1944edd4380f888d0c71c24297d5e69",
+    "src/mm_allee/reference_validation.py": "3954868e50a18c1e36f3fc7023104ff613f3624f966391986c77f9596bf27547"
   },
   "versions": {
     "python": "3.14.3",
@@ -20,11 +21,12 @@
     "requested_rtol_before": 1e-16,
     "effective_RK45_rtol_before": 2.220446049250313e-14,
     "after": "Reject below supported floor before integration or reference output creation",
-    "new_regression_cases": 7
+    "new_regression_cases": 8,
+    "accepted_floor_refinement": "Clamp requested refinement rtol to supported floor, tighten atol/max_step, and record effective rtol/floor flag"
   },
   "checks": {
-    "wp03_tests": 157,
-    "full_tests": 200,
+    "wp03_tests": 158,
+    "full_tests": 201,
     "skipped": "1 optional Torch test; Torch absent",
     "lint": "passed",
     "format": "passed",
@@ -95,10 +97,10 @@
     "WP03_base": "2a2f6736285c43a76f32f919af5d5f66c93bf402",
     "WP03_patch": "The source hashes recorded above",
     "WP02_proposal": "Remove obsolete FOLD_TOL import; preserve 1e-12 comparison input exclusion as a local constant",
-    "tests_passed": 407,
+    "tests_passed": 408,
     "tests_skipped": 1,
     "notebook_cells_passed": 17,
-    "notebook_seconds": 23.05,
+    "notebook_seconds": 41.86,
     "notebook_method": "Fresh Python process, Agg plotting backend; not Jupyter kernel execution",
     "merged": false,
     "owner_branches_modified": "WP03 only; WP02 proposal remains temporary"
@@ -108,5 +110,6 @@
     "No report or slide re-render in this numerical preflight follow-up",
     "No human approval or non-author human reproduction",
     "New commit CI status must be checked separately"
-  ]
+  ],
+  "new_refinement_followup_parent_sha": "284a61b8696698a1d2ca166e094e3714cf8fc5b4"
 }

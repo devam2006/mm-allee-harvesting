@@ -166,17 +166,23 @@ examples pass at #8's current head; the old code restored in #9 is not that head
 An additional probe found our own configurable reference API accepted
 `rtol=1e-16` while initialized RK45 used 2.220446049250313e-14. The shared solver
 and dataset configuration validator now reject unsupported small requests.
-Seven new tests cover early rejection (including initial-zero fast paths),
+Eight new tests cover early rejection (including initial-zero fast paths),
 reference CLI rejection before output creation, and the actual initialized
 integrator tolerance at the accepted floor. This is a preflight/provenance fix:
 the default settings, exact-control fold convention and numerical algorithms
 are unchanged.
 
+The follow-up also checks validation at the accepted floor: the refinement
+uses the supported minimum rtol, still tightens atol/max_step, and records the
+actual refinement rtol and whether it is at the floor. Its evidence CSV gains
+these two fields; the six observation CSVs and their numerical arrays do not
+change. This avoids rejecting a valid accurate baseline during verification.
+
 Observed checks in the existing Windows/Python 3.14.3 review environment, with
 UTF-8 and this checkout's source selected explicitly:
 
-- `python -m pytest tests/wp03 -q`: **157 passed**.
-- `python -m pytest -q`: **200 passed, 1 skipped** (Torch absent).
+- `python -m pytest tests/wp03 -q`: **158 passed**.
+- `python -m pytest -q`: **201 passed, 1 skipped** (Torch absent).
 - Ruff lint/format, ownership sync, smoke and whitespace checks: passed.
 - Default analysis run: all seven tables reproduced, with row counts
   6/427/34/7/6/61/6. All seven CSVs are byte-identical to the pre-fix run in
@@ -187,10 +193,10 @@ UTF-8 and this checkout's source selected explicitly:
 - A temporary combined tree used current WP01/WP02 owned sources on WP03,
   plus this tolerance fix and one proposed **WP02-only** import repair:
   remove the deleted `FOLD_TOL` import and retain WP02's existing absolute
-  input-exclusion guard as its own named constant. **407 tests passed,
+  input-exclusion guard as its own named constant. **408 tests passed,
   1 skipped**, lint/format passed, and WP02's default experiment reproduced.
   All **17 combined notebook code cells** passed in a fresh headless Python
-  process (23.05 s). This is not a Jupyter kernel claim or a merged-tree claim;
+  process (41.86 s in the final check). This is not a Jupyter kernel claim or a merged-tree claim;
   the WP02 proposal has not been applied to Ashwath's branch. An initial
   sequential run with an interactive plotting backend was stopped; the
   successful check explicitly used Agg.
