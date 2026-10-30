@@ -1,22 +1,9 @@
 {
   "schema_version": 1,
-  "scope": "WP05 Inverse Parameter Estimation, Baseline Comparison and Failure Analysis",
-  "run_id": "wp05_final_production_20261030",
-  "utc_timestamp": "2026-10-30T01:12:00Z",
-  "owner": "@rohanagrawal28",
-  "models": ["A", "B"],
-  "units": {
-    "time": "model_time_unit",
-    "population": "population_unit"
-  },
-  "fixed_reference_scales": {
-    "time": 1.0,
-    "population": 100.0
-  },
-  "noise_sigmas": [0.0, 0.01, 0.05],
-  "seeds": [11, 22, 33],
-  "methods": ["ODE_LS", "PINN"],
-  "cases": [
+  "run_id": "wp05_experiment_1793339975",
+  "utc_timestamp": "2026-10-30T05:59:35.563652+00:00",
+  "total_wall_seconds": 464.21549154000013,
+  "cases_evaluated": [
     "a_regular",
     "b_regular",
     "a_near_fold",
@@ -24,23 +11,27 @@
     "a_extinction",
     "b_decline"
   ],
-  "splits": {
-    "train_ratio": 0.6,
-    "val_ratio": 0.2,
-    "test_ratio": 0.2,
-    "policy": "contiguous_ordered_time_windows"
+  "noise_sigmas": [
+    0.0,
+    0.01,
+    0.05
+  ],
+  "seeds": [
+    11,
+    22,
+    33
+  ],
+  "methods": [
+    "ODE_LS",
+    "PINN"
+  ],
+  "summary": {
+    "total_runs": 54,
+    "parameter_records": 324,
+    "prediction_records": 108
   },
-  "artifacts": {
-    "tables": [
-      "artifacts/tables/wp05_parameter_metrics.csv",
-      "artifacts/tables/wp05_prediction_metrics.csv"
-    ],
-    "figures": [
-      "artifacts/figures/wp05_recovery_noise.png",
-      "artifacts/figures/wp05_recovery_noise.eps",
-      "artifacts/figures/wp05_heldout_failure.png",
-      "artifacts/figures/wp05_heldout_failure.eps"
-    ]
-  },
-  "status": "completed"
+  "output_files": {
+    "parameter_metrics": "wp05_parameter_metrics.csv",
+    "prediction_metrics": "wp05_prediction_metrics.csv"
+  }
 }
