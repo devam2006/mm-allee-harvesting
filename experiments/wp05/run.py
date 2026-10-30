@@ -248,6 +248,9 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict:
                         lambda_data=pinn_cfg.get("lambda_data", 1.0),
                         lambda_phys=pinn_cfg.get("lambda_phys", 0.1),
                         lbfgs_iters=lbfgs_iters,
+                        lbfgs_ftol=pinn_cfg.get("lbfgs_ftol", 1e-12),
+                        lbfgs_gtol=pinn_cfg.get("lbfgs_gtol", 1e-8),
+                        validation_selection=pinn_cfg.get("validation_selection", True),
                     )
 
                     try:

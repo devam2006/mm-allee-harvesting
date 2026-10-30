@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "scope": "Held-out confirmation of the frozen final design (swish, 300 uniform points) on seeds 11/22/33, which were not used to select swish (selection used seeds 0/1/42). Nothing else changed.",
+  "scope": "Held-out confirmation of the frozen final design (swish, 300 uniform points) on seeds 11/22/33, which were not used to select swish (selection used seeds 0/1/42). Nothing else changed. Shared setting adopted on the integration branch: tanh, 2x32, network lr 1e-3, 300 points, Adam 1000 + L-BFGS 2500.",
   "manifest_name": "wp04_confirmation.json",
   "seeds": [
     11,
@@ -23,11 +23,11 @@
       1
     ],
     "n_collocation": 300,
-    "lr": 0.01,
+    "lr": 0.001,
     "adam_iters": 1000,
     "lbfgs_iters": 2500,
     "time_budget_s": 300,
-    "activation": "swish"
+    "activation": "tanh"
   },
   "cases": [
     {

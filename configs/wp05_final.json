@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "scope": "WP05 Comprehensive Inverse Parameter Estimation Sweep and Failure Analysis",
+  "scope": "WP05 inverse sweep with the shared forward+inverse setting (see experiments/integration/README.md); Rohan's original settings are kept in wp05_final_original_settings.json",
   "units": {
     "time": "model_time_unit",
     "population": "population_unit"
@@ -9,19 +9,34 @@
     "time": 1.0,
     "population": 100.0
   },
-  "noise_sigmas": [0.0, 0.01, 0.05],
-  "seeds": [11, 22, 33],
+  "noise_sigmas": [
+    0.0,
+    0.01,
+    0.05
+  ],
+  "seeds": [
+    11,
+    22,
+    33
+  ],
   "pinn_settings": {
-    "hidden_layers": [64, 64],
+    "hidden_layers": [
+      32,
+      32
+    ],
     "activation": "tanh",
-    "epochs": 1500,
+    "epochs": 1000,
     "patience": 150,
-    "n_collocation": 120,
+    "n_collocation": 300,
     "lr_net": 0.001,
-    "lr_params": 0.01,
+    "lr_params": 0.001,
     "lambda_data": 1.0,
     "lambda_phys": 0.1,
-    "lambda_ic": 1.0
+    "lambda_ic": 1.0,
+    "lbfgs_iters": 2500,
+    "lbfgs_ftol": 0.0,
+    "lbfgs_gtol": 0.0,
+    "validation_selection": false
   },
   "ode_settings": {
     "max_nfev": 500
@@ -36,8 +51,16 @@
         "known_K": 100.0,
         "known_initial_population": 45.0
       },
-      "fit_params": ["r", "A", "H"],
-      "initial_guess": {"r": 1.0, "A": 30.0, "H": 5.0}
+      "fit_params": [
+        "r",
+        "A",
+        "H"
+      ],
+      "initial_guess": {
+        "r": 1.0,
+        "A": 30.0,
+        "H": 5.0
+      }
     },
     {
       "case_id": "b_regular",
@@ -48,8 +71,16 @@
         "known_K": 100.0,
         "known_initial_population": 45.0
       },
-      "fit_params": ["r", "A", "h"],
-      "initial_guess": {"r": 1.0, "A": 30.0, "h": 0.1}
+      "fit_params": [
+        "r",
+        "A",
+        "h"
+      ],
+      "initial_guess": {
+        "r": 1.0,
+        "A": 30.0,
+        "h": 0.1
+      }
     },
     {
       "case_id": "a_near_fold",
@@ -60,8 +91,16 @@
         "known_K": 100.0,
         "known_initial_population": 85.0
       },
-      "fit_params": ["r", "A", "H"],
-      "initial_guess": {"r": 1.0, "A": 30.0, "H": 25.0}
+      "fit_params": [
+        "r",
+        "A",
+        "H"
+      ],
+      "initial_guess": {
+        "r": 1.0,
+        "A": 30.0,
+        "H": 25.0
+      }
     },
     {
       "case_id": "b_near_fold",
@@ -72,8 +111,16 @@
         "known_K": 100.0,
         "known_initial_population": 85.0
       },
-      "fit_params": ["r", "A", "h"],
-      "initial_guess": {"r": 1.0, "A": 30.0, "h": 0.4}
+      "fit_params": [
+        "r",
+        "A",
+        "h"
+      ],
+      "initial_guess": {
+        "r": 1.0,
+        "A": 30.0,
+        "h": 0.4
+      }
     },
     {
       "case_id": "a_extinction",
@@ -84,8 +131,16 @@
         "known_K": 100.0,
         "known_initial_population": 80.0
       },
-      "fit_params": ["r", "A", "H"],
-      "initial_guess": {"r": 1.0, "A": 30.0, "H": 50.0}
+      "fit_params": [
+        "r",
+        "A",
+        "H"
+      ],
+      "initial_guess": {
+        "r": 1.0,
+        "A": 30.0,
+        "H": 50.0
+      }
     },
     {
       "case_id": "b_decline",
@@ -96,8 +151,16 @@
         "known_K": 100.0,
         "known_initial_population": 10.0
       },
-      "fit_params": ["r", "A", "h"],
-      "initial_guess": {"r": 1.0, "A": 15.0, "h": 0.15}
+      "fit_params": [
+        "r",
+        "A",
+        "h"
+      ],
+      "initial_guess": {
+        "r": 1.0,
+        "A": 15.0,
+        "h": 0.15
+      }
     }
   ]
 }

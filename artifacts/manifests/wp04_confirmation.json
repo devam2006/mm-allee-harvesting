@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "run_id": "wp04-20261030T180947Z",
-  "created_utc": "2026-10-30T18:09:47.291550+00:00",
+  "run_id": "wp04-20261030T202354Z",
+  "created_utc": "2026-10-30T20:23:54.588964+00:00",
   "git": {
-    "sha": "3bb8d25750e01d6d49d83472039f56c8fb5ffec5",
+    "sha": "b3642027174d6f62c6369a9c723c9038b64ad83f",
     "dirty": true
   },
-  "command": "python experiments/wp04/run.py --config configs/wp04_confirm.json --output results/wp04_confirm",
+  "command": "python experiments/wp04/run.py --config configs/wp04_confirm.json --output results/wp04_tanh_confirm",
   "config": {
     "schema_version": 1,
-    "scope": "Held-out confirmation of the frozen final design (swish, 300 uniform points) on seeds 11/22/33, which were not used to select swish (selection used seeds 0/1/42). Nothing else changed.",
+    "scope": "Held-out confirmation of the frozen final design (swish, 300 uniform points) on seeds 11/22/33, which were not used to select swish (selection used seeds 0/1/42). Nothing else changed. Shared setting adopted on the integration branch: tanh, 2x32, network lr 1e-3, 300 points, Adam 1000 + L-BFGS 2500.",
     "manifest_name": "wp04_confirmation.json",
     "seeds": [
       11,
@@ -32,11 +32,11 @@
         1
       ],
       "n_collocation": 300,
-      "lr": 0.01,
+      "lr": 0.001,
       "adam_iters": 1000,
       "lbfgs_iters": 2500,
       "time_budget_s": 300,
-      "activation": "swish"
+      "activation": "tanh"
     },
     "cases": [
       {
@@ -111,7 +111,7 @@
   "optimiser": {
     "scheme": "Adam then L-BFGS-B (SciPy) on the JAX gradient",
     "adam_iters": 1000,
-    "lr": 0.01,
+    "lr": 0.001,
     "lbfgs_iters": 2500
   },
   "loss": "physics residual MSE only; initial condition enforced exactly (hard constraint)",
@@ -123,7 +123,7 @@
   "lbfgs_exit_counts": {
     "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT": 18
   },
-  "elapsed_seconds": 110.46,
+  "elapsed_seconds": 68.1,
   "dependencies": {
     "python": "3.13.4",
     "jax": "0.11.2",
@@ -140,13 +140,13 @@
     "dtype": "float64"
   },
   "outputs": {
-    "wp04_forward_metrics.csv": "16a77ad9f894dfb3490cd7e3037d2c68959955b8edcd52001140110816c787c9",
-    "wp04_forward.png": "4e0139fdaa56b5bc58d559aa13a49ea57b179d6393aa277d30a38d812f6db8c3",
-    "wp04_forward.eps": "ffa4f2844d0807bdde1809ee0360c68da885f03d291918fd80a4b1cb1c9fc884",
-    "wp04_forward.pdf": "5eb374ce0e9fb756b3c14f23d925140e2ba41c5cc28b26454fae163ab0daa854",
-    "wp04_error_loss.png": "450887cea1e0d1f3acd14d97ffc5f59dafde15ba211bb4ad63a69fdc76681d37",
-    "wp04_error_loss.eps": "52b2ea2389fdcd7fb11b2c1f93de7ff2093081f33704e9d03da8695c75f8470d",
-    "wp04_error_loss.pdf": "2d147be1860e5e6f71817eb4953335ba025b537de5f9881f7ac05bf2e2de9530"
+    "wp04_forward_metrics.csv": "919648cc8725276ace98955d1584c8deb20638b40ba438a70bd89b4ca519dc3f",
+    "wp04_forward.png": "9dd5af51f253a68d6b64c3568b7cb5a37c3c31670cb0c2cd2721197816ae8d92",
+    "wp04_forward.eps": "7aadb520924212129bfc0033ff14229890358c3189e527441957b7e59089fd7a",
+    "wp04_forward.pdf": "a9c8305bd33953f00013ca3d2057ee3b16f058f0e227d016ea8bc48f39fb3a8b",
+    "wp04_error_loss.png": "410a4d5f01c663d7a9b5a7e06dccfc737ae3ed97f15f63ca360ef83bb653062f",
+    "wp04_error_loss.eps": "7a6f02d2c1cd810051c3c94d170fc6e7bcd9d2f6add564f7748225726b43f5b6",
+    "wp04_error_loss.pdf": "c134c0e4fedca1ff9a5eb4928b73fc397d5293c0e49fb41eda8381f8c36ffd8d"
   },
   "status": "completed"
 }

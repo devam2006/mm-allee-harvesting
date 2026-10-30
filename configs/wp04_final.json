@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "scope": "Frozen final forward sweep: JAX, hard IC, swish activation (selected by the pre-declared rule in experiments/wp04/README.md), 300 uniform collocation points, seeds 0/1/42, Adam then L-BFGS.",
+  "scope": "Frozen final forward sweep: JAX, hard IC, swish activation (selected by the pre-declared rule in experiments/wp04/README.md), 300 uniform collocation points, seeds 0/1/42, Adam then L-BFGS. Shared setting adopted on the integration branch: tanh, 2x32, network lr 1e-3, 300 points, Adam 1000 + L-BFGS 2500.",
   "manifest_name": "wp04_forward.json",
   "seeds": [
     0,
@@ -23,11 +23,11 @@
       1
     ],
     "n_collocation": 300,
-    "lr": 0.01,
+    "lr": 0.001,
     "adam_iters": 1000,
     "lbfgs_iters": 2500,
     "time_budget_s": 300,
-    "activation": "swish"
+    "activation": "tanh"
   },
   "cases": [
     {
