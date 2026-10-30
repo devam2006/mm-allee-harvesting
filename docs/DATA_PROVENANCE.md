@@ -7,3 +7,10 @@ WP03 owns clean reference generation, stable IDs and manifests; WP05 owns observ
 Record generating parameters, solver/tolerances, initial conditions, interval, sampling grid, units/scales, seed, noise level, split IDs, code commit and file SHA256. Keep generator truth in evaluation metadata separate from the data passed to the optimiser. Test data must not enter parameter fitting, hyperparameter selection, loss weighting or early stopping.
 
 Any later external dataset requires original URL, author/provider, download date, license/usage terms, units, preprocessing decisions, train/val/test design and a bibliography entry. Every external/adapted figure or published formula needs a verified citation. No claim that synthetic benchmark success establishes reliable real-world prediction.
+
+
+## WP05 submitted observation protocol
+
+The submitted WP05 utilities add seeded Gaussian noise as `observed = clean + sigma*N_ref*epsilon`, with fixed external `N_ref=100` and declared `t_ref=1`. Configurations specify sigma 0/0.01/0.05 and seeds 11/22/33; observations are not clipped. The code assigns contiguous 60/20/20 index splits and uses training observations for the data objective and validation for checkpoint selection. Test values are scored after fitting. Physics collocation spans the complete observation horizon, so the held-out tail is physics-supported prediction, not extrapolation outside the collocation domain.
+
+The original WP03 fixture files and evaluation-only `truth.json` come from PR #4. The ZIP's curated WP05 results and `wp05_manifest.json` are submitted evidence awaiting reproduction; their `completed` label is not accepted as a project status. Coverage and code/result inconsistencies are recorded in `WP05_SUBMISSION_REVIEW.md`. The original archive hash and imported file hashes are in `artifacts/manifests/wp05_submission.json`.

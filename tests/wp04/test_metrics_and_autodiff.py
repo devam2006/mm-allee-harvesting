@@ -23,13 +23,16 @@ def test_bad_metric_inputs(pred, ref):
 
 @pytest.mark.pinn
 def test_derivative_retains_parameter_gradient():
-    torch = pytest.importorskip("torch")
+    jax = pytest.importorskip("jax")
+    import jax.numpy as jnp
+
     from mm_allee.pinn.autodiff import derivative
 
-    t = torch.tensor([[0.2], [0.7]], dtype=torch.float64, requires_grad=True)
-    weight = torch.tensor(2.0, dtype=torch.float64, requires_grad=True)
-    value = weight * t**3
-    dvalue = derivative(value, t)
-    torch.testing.assert_close(dvalue, 3 * weight * t**2)
-    dvalue.sum().backward()
-    assert weight.grad is not None and weight.grad.item() > 0
+    t = jnp.array([0.2, 0.7])
+
+    def total(weight):
+        return jnp.sum(derivative(lambda s: weight * s**3, t))
+
+    # d/dt (w t^3) = 3 w t^2, so d/dw of its sum is 3 * sum(t^2): a hand-derived expectation.
+    np.testing.assert_allclose(derivative(lambda s: 2.0 * s**3, t), 3 * 2.0 * np.asarray(t) ** 2)
+    assert float(jax.grad(total)(2.0)) == pytest.approx(3 * float(jnp.sum(t**2)))

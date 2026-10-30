@@ -1,14 +1,16 @@
-"""One implemented autograd primitive; this is not a completed PINN trainer."""
+"""Elementwise time derivative with JAX; this is the only autodiff primitive the PINN needs."""
+
+import jax
+
+jax.config.update("jax_enable_x64", True)  # float64 everywhere; must precede any array creation
 
 
-def derivative(output, time):
-    """Elementwise derivative for independent batch samples, retaining the graph.
+def derivative(fn, time):
+    """d fn / d time at each sample of ``time`` (shape (n,)), for a scalar function ``fn``.
 
-    Network outputs must not mix time samples across the batch (no batch coupling).
-    Torch is imported here so classical users do not need the optional dependency.
+    ``fn`` maps one scalar time to one scalar value, so samples cannot mix. The
+    derivative is exact reverse-mode autodiff of whatever ``fn`` closes over
+    (network weights, physical parameters), so gradients of anything built from it
+    with respect to those arrays remain available (no detaching, no float casts).
     """
-    import torch
-
-    return torch.autograd.grad(
-        output, time, grad_outputs=torch.ones_like(output), create_graph=True
-    )[0]
+    return jax.vmap(jax.grad(fn))(time)

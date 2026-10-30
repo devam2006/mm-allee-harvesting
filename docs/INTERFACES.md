@@ -60,3 +60,10 @@ Figure names: `wpNN_short_description.png/.eps`; add a manifest mapping figure/t
 - `collapse_study.build_study(config)` returns analysis data and enforces its budget before publication. `experiments/wp03/run.py` writes tables, paired figures, summary and a hash manifest.
 
 Precision, evidence mapping and commands: [WP03_ANALYSIS.md](WP03_ANALYSIS.md). This PR restores the prior clean CSV contract after main's revert; WP05 still owns noise/splits.
+
+
+## WP05 submitted interface (pending review)
+
+The ZIP adds `data.generate_noisy_observations(...)`, returning arrays plus train/val/test indices; `inference.fit_ode_least_squares(...) -> FitResult`; and `pinn.inverse.{TrainableParameters, InversePINNTrainer, InversePINNResult}` with `pinn.network.PINN`. `validation.py` audits splits, writes metric tables and creates figures. Imports and definitions are preserved from the submission.
+
+**Integration blocker:** these are independent PyTorch dimensional-population APIs. PR #6 replaces the same `pinn/{__init__,network,residual,autodiff}.py` paths with JAX dimensionless-population APIs. They cannot be combined by copying files over each other. WP04/WP05 owners must agree a shared framework/API or explicit coexistence before merge; this submission does not implement that decision.

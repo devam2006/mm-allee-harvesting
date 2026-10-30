@@ -67,3 +67,19 @@ Deliver future command `python experiments/wp05/run.py --config configs/wp05_smo
 - [ ] Owner can explain parameter versus trajectory accuracy, structural versus practical identifiability in plain terms, leakage, noise and why a PINN can fit data with wrong parameters.
 
 **Presentation:** 20–25 min: inverse setup, identifiability warning, noisy recovery and held-out results, failure/limitations, final project conclusions. All five handle 25–30 min Q&A.
+
+
+## Current handoff
+
+- **Owner:** Rohan (`rohanagrawal28`); Devam requested uploading his supplied ZIP on his behalf. Technical PR author is Devam; Rohan stays assignee/code owner.
+- **Branch/PR:** `wp05/rohan-inverse-validation`, [draft PR #7](https://github.com/devam2006/mm-allee-harvesting/pull/7), based on WP03 PR #4 (`wp03/collapse-analysis`, `6ba1555`); retarget to main after the dependency merges.
+- **Status & Reconciled Implementation:**
+  - JAX engine unified with Prem's WP04 engine (`network.py`, `residual.py`, `autodiff.py`, `train_forward.py`).
+  - Two-phase inverse optimization implemented: Phase 1 Adam (with separate learning rates for weights vs physical parameters, and validation early stopping) followed by Phase 2 L-BFGS refinement (`scipy.optimize.minimize` via `ravel_pytree`).
+  - Noise generation seed (`seed`) separated from fit initialization seed (`seed + 1000`), both recorded in metric CSVs.
+  - Evaluation against clean reference trajectories (`test_clean_*`) added alongside noisy observation metrics (`test_*`).
+  - Guessed fallback truth removed; ground truth metadata loaded strictly from `data/fixtures/wp03_reference/truth.json`.
+  - Full 108-run sweep reproduced in Colab: 108 prediction records and 324 parameter records generated in `artifacts/tables/wp05_{prediction,parameter}_metrics.csv`.
+  - Figures regenerated with explicit scales and splits: `artifacts/figures/wp05_recovery_noise.{png,eps}` and `artifacts/figures/wp05_heldout_failure.{png,eps}`.
+  - Report (`report/sections/05_inverse_validation.tex`) and notebooks (`notebooks/sections/05_inverse_validation.ipynb`, `notebooks/project.ipynb`) rewritten to document pure JAX execution, honest recovery errors (PINN relative error $A \approx 93.6\%$, $H \approx 58.5\%$ vs ODE $< 10^{-7}$ on clean Model A), and test extrapolation limits ($t > 6.4$).
+- **Pending:** Peer review from teammates (Prem-Mehta03, AshChan07, RaghavSinghal15), WP03 PR #4 merge, and retargeting PR #7 to main.
