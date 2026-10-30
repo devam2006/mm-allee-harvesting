@@ -79,3 +79,10 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
 - **30 October review follow-up:** addressed Raghav's PR #4 suggestions: stable B lower root, basin cells bounded at the exact critical control, vector PDF report figures and conditioning explanation. Added 8 regression cases: 150 WP03 and 194 full-suite passes. Fold convention differences and merge-order steps are documented in INTERFACES/DECISIONS; they await cross-package integration. Current evidence: [analysis follow-up](../WP03_ANALYSIS.md#raghavs-pr-4-review-follow-up-30-october-2026).
 - **Next:** reviewers reproduce the exact commands; WP01/WP02 review the threshold/basin interface. When #4/#8 integrate, preserve both sets of documentation, rebuild and execute the combined notebook. WP05 retains noisy-observation/split/inverse ownership.
 - **Human understanding:** pending at Devam's request. Speaking notes are study material; no human approval, understanding check or non-author reproduction is claimed.
+- **31 October latest-head recheck:** verified WP01 PR #8 f427d5f, WP02 PR #9
+  a6ad5d3 and WP03 PR #4 2a2f673 directly against GitHub/fetched refs. Fixed
+  WP03's own unsupported-tolerance acceptance in the shared solver and reference
+  config validator; 7 new regressions check early rejection and the initialized
+  integrator. Original WP01 fixes remain fixed; cross-package fold policy still
+  requires explicit owner agreement. See the new analysis follow-up for actual
+  validation. No merge, scientific approval or final integration is claimed.

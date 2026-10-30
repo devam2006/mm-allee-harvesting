@@ -80,3 +80,18 @@ PRs #4 and #8 both change `docs/INTERFACES.md`, `docs/DECISIONS.md` and the asse
 notebook. Whichever merges second must preserve both sets of documentation and
 notebook fragments, rerun `python scripts/assemble_notebook.py`, and execute the
 combined notebook/tests. These steps remain pending until the branches integrate.
+
+### RK45 tolerance validation (31 October 2026)
+
+The WP03-owned shared solver and reference configuration validator reject
+`rtol < MIN_RK45_RTOL`, where `MIN_RK45_RTOL = 100*np.finfo(float).eps`
+(about 2.220446049250313e-14). SciPy otherwise increases such requests while
+experiment configurations can still record the smaller requested value.
+Rejection occurs before integration, including initial-zero fast paths, and
+before the reference CLI writes outputs. The minimum itself is accepted and
+tested against the initialized RK45 object's actual tolerance. Default settings,
+the six clean CSV fixtures, threshold/basin conventions and outcomes are unchanged.
+
+WP01 and WP02 must validate requested solver blocks before creating their own
+outputs when adopting this shared solver. This does not change either owner's
+branch or certify their existing preflight validation.

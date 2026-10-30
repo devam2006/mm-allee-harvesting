@@ -36,3 +36,12 @@ currently uses a 64*eps relative fold band. A unified convention requires owner
 review at integration. Preserve both PRs' interface/decision notes and rebuild
 the assembled notebook when the second PR merges. No merge or human approval
 is supplied by these fixes.
+
+31 October 2026, latest-head integration recheck: WP01 PR #8 at f427d5f already
+fixes the original PR #3 findings in c47084e. WP02 PR #9 at a6ad5d3 still copies
+the old restoration; that is a dependency-version issue, not an instruction to
+Raghav to redo those completed fixes. WP03's shared solver/reference validator
+now reject rtol below SciPy RK45's supported floor rather than allowing requested
+and effective tolerances to diverge. Default numerical results and exact-fold
+classification remain unchanged. Adoption by WP01/WP02 and a single cross-package
+fold policy remain owner-reviewed integration steps; no owner agreement is invented.

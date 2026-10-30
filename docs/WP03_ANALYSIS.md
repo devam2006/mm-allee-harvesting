@@ -154,3 +154,57 @@ The assembled notebook's nine code cells passed in order in a fresh Python
 process (10.68 s), including analysis and six-case reference regeneration.
 Local Jupyter/nbconvert launch attempts stalled and were stopped; a full local
 kernel run is unverified. GitHub CI checks the real kernel on the updated PR.
+
+## Latest-head integration and tolerance follow-up (31 October 2026)
+
+Verified by GitHub API and fresh Git fetch: Raghav's original WP01 PR #3 is
+merged/closed (then reverted on main); its replacement is PR #8 at f427d5f,
+including the original fixes in c47084e and regenerated evidence in 350cd7c.
+WP03 PR #4 was at 2a2f673 and WP02 PR #9 at a6ad5d3. The original WP01 review
+examples pass at #8's current head; the old code restored in #9 is not that head.
+
+An additional probe found our own configurable reference API accepted
+`rtol=1e-16` while initialized RK45 used 2.220446049250313e-14. The shared solver
+and dataset configuration validator now reject unsupported small requests.
+Seven new tests cover early rejection (including initial-zero fast paths),
+reference CLI rejection before output creation, and the actual initialized
+integrator tolerance at the accepted floor. This is a preflight/provenance fix:
+the default settings, exact-control fold convention and numerical algorithms
+are unchanged.
+
+Observed checks in the existing Windows/Python 3.14.3 review environment, with
+UTF-8 and this checkout's source selected explicitly:
+
+- `python -m pytest tests/wp03 -q`: **157 passed**.
+- `python -m pytest -q`: **200 passed, 1 skipped** (Torch absent).
+- Ruff lint/format, ownership sync, smoke and whitespace checks: passed.
+- Default analysis run: all seven tables reproduced, with row counts
+  6/427/34/7/6/61/6. All seven CSVs are byte-identical to the pre-fix run in
+  this same environment.
+- Clean reference generation: six trajectories passed independent validation.
+  Exact arrays and event values match the original 2a2f673 implementation in
+  all six cases. Existing curated fixtures were not rewritten.
+- A temporary combined tree used current WP01/WP02 owned sources on WP03,
+  plus this tolerance fix and one proposed **WP02-only** import repair:
+  remove the deleted `FOLD_TOL` import and retain WP02's existing absolute
+  input-exclusion guard as its own named constant. **407 tests passed,
+  1 skipped**, lint/format passed, and WP02's default experiment reproduced.
+  All **17 combined notebook code cells** passed in a fresh headless Python
+  process (23.05 s). This is not a Jupyter kernel claim or a merged-tree claim;
+  the WP02 proposal has not been applied to Ashwath's branch. An initial
+  sequential run with an interactive plotting backend was stopped; the
+  successful check explicitly used Agg.
+
+The exact fold-policy agreement remains pending. Do not broaden WP03's control
+classification merely to match a plotting tolerance: a genuinely supercritical
+path has finite extinction, whereas a true fold has an equilibrium pole.
+The concrete proposal is shared threshold values and exact computed-control
+equality for topology, with any floating-point band reported separately as
+numerical uncertainty; WP03's initial-state `root_tol` stays separate. Raghav
+must confirm the WP01 convention before claiming unified edge-case outputs.
+Ashwath and Devam can continue regular-regime integration using the current
+reviewed sources and a conservative exclusion guard without waiting for that
+decision. Two narrow WP01 follow-up examples remain documented in #8's review;
+they do not invalidate the default experiments or require repeating the original
+fixes. Source hashes and measured evidence are in
+[wp03_tolerance_followup.json](../artifacts/manifests/wp03_tolerance_followup.json).

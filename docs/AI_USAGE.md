@@ -35,3 +35,14 @@ checks. Actual commands/outcomes and environment limits are recorded in
 `docs/WP03_ANALYSIS.md` and `artifacts/manifests/wp03_review_followup.json`.
 This is agent-assisted validation, not human understanding, a new human
 approval or permission to merge.
+
+On 31 October 2026, Devam requested a latest-commit recheck of Raghav's two WP01
+PRs, WP03 and Ashwath's WP02, correction of our own issues, and a new ownership-
+specific review comment. OpenAI ChatGPT/Codex verified remote heads and original
+fixes, tested a temporary combined source tree with a proposed WP02-only import
+repair, and found that WP03's configurable reference generator also accepted
+rtol below SciPy's floor. It fixed that validation in WP03's shared solver and
+reference configuration, added seven independent rejection/effective-tolerance
+checks, and recorded actual tests/reproduction evidence. Temporary WP02 code is
+a proposal, not a change to Ashwath's branch. No change to the mathematical fold
+convention, human approval, merge or human understanding is claimed.

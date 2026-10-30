@@ -150,7 +150,9 @@ def test_invalid_reference_case_is_rejected(problem):
         generate_reference(case)
 
 
-@pytest.mark.parametrize("settings", [{"rtol": 0}, {"max_step": float("nan")}, {"method": "RK4"}])
+@pytest.mark.parametrize(
+    "settings", [{"rtol": 0}, {"rtol": 1e-16}, {"max_step": float("nan")}, {"method": "RK4"}]
+)
 def test_invalid_solver_settings(settings):
     with pytest.raises(ValueError):
         solver_settings(settings)
@@ -205,3 +207,16 @@ def test_cli_module_is_import_safe_and_invalid_case_writes_nothing(tmp_path, mon
     with pytest.raises(ValueError):
         module.run(config, tmp_path / "invalid")
     assert not (tmp_path / "invalid").exists()
+
+
+def test_reference_cli_rejects_unsupported_rtol_before_writing(tmp_path):
+    spec = importlib.util.spec_from_file_location(
+        "wp03_reference_rtol_cli", ROOT / "experiments/wp03/generate_reference.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    config = deepcopy(CONFIG)
+    config["solver"]["rtol"] = 1e-16
+    with pytest.raises(ValueError, match="RK45 rtol must be at least"):
+        module.run(config, tmp_path / "invalid-rtol")
+    assert not (tmp_path / "invalid-rtol").exists()
