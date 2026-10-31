@@ -28,6 +28,11 @@ def test_experiment_outputs_and_provenance(tmp_path):
         if name.endswith(".csv"):
             assert b"\r\n" not in (tmp_path / name).read_bytes()
     assert result["config"]["solver"] == config["solver"]
+    for dependency in ("thresholds.py", "collapse.py"):
+        name = f"src/mm_allee/{dependency}"
+        assert (
+            result["source_sha256"][name] == hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
+        )
 
 
 def test_invalid_solver_settings_fail_instead_of_only_entering_manifest(tmp_path):

@@ -70,3 +70,14 @@ The slide PDF companion was generated from the inspected renders after the nativ
 export limitation; the PPTX preserves editable evidence. No human review was claimed.
 
 31 October 2026: at Devam's explicit request to fix the outstanding PRs and build a separate WP01-WP03 integration PR, OpenAI ChatGPT/Codex applied the WP02 compatibility/review corrections and ran focused tests. 40 WP02 tests passed. Removed the deleted WP01 constant import while keeping the conservative comparison exclusion local; reject unsupported tiny rtol before output; exported notebook provenance no longer requires Git. The older restored WP01 dependency is replaced by current WP01 only in the separate integration PR. These changes are authored as Devam-assisted fixes, not an approval or statement of the original owner's understanding.
+
+
+31 October 2026, Ashwath's PR #9 review response: Codex read Devam's and Raghav's
+reviews in GitHub, fetched through GitHub Desktop, and fast-forwarded WP02 to
+the existing classical integration #11 at the user's request. It corrected
+stale WP02 wording, reused the shared solver tolerance minimum, documented
+unrepresentable roots, and added shared dependency provenance coverage.
+It reran tests, all three classical experiments and the real combined notebook,
+regenerated WP02 artifacts/portable notebook, and updated evidence/handoff.
+421 full-suite tests passed (one optional Torch skip); no human approval,
+understanding, rehearsal or main merge was supplied by the agent.

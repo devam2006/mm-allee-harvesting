@@ -27,3 +27,13 @@ remaining human reviews and cross-package integration are pending.
 validation fix and eight regressions. Default numerical results and reference
 fixtures are preserved. WP01/WP02 dependency and convention alignment remains
 pending; evidence is in the [WP03 analysis follow-up](docs/WP03_ANALYSIS.md).
+
+
+31 October 2026, WP02 review follow-up: PR #9 incorporates classical integration
+#11 (`649e0c1`), replacing the obsolete WP01 restoration with corrected WP01/WP03
+and shared exact-fold/basin semantics. Full suite: 421 passed, one optional Torch
+skip; all three classical experiments and the combined notebook execute.
+[WP02 evidence](docs/tasks/WP02_validation.md) supersedes its old publishing
+blocker. Raghav reproduced/approved WP02 at `879b110`; fresh review of the updated
+head and the other required approvals remain pending. No main merge, final
+presentation rehearsal or certification of human understanding is claimed.

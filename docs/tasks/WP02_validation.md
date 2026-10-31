@@ -4,7 +4,25 @@
 
 WP02 owner: @AshChan07. Implement Model B equilibrium records, two explicitly distinct comparison protocols, and state-continuous harvesting histories for A/B with separate restocking. Add tests, reproducible synthetic evidence, section 2 of report/notebook, three editable slides and a five-minute script.
 
-Dependency: this branch restores WP01 PR #3 via 9a1132a. Its changes will appear in a main-based diff. This is not approval of WP01 or a bypass of its review; coordinate restoration separately before merging. WP02 comparison guards exclude WP01's unresolved near-fold/domain regimes. WP03 helpers are absent locally; its owner should review the proposed interfaces in docs/DECISIONS.md.
+Dependency: [PR #9](https://github.com/devam2006/mm-allee-harvesting/pull/9)
+now incorporates integration PR #11 at `649e0c1`, including corrected WP01
+`b83bba8`, WP03 `16a05ce` and WP02 compatibility fixes `879b110`.
+The fast-forward preserves all three owned report/notebook fragments and the
+integration decisions. Shared thresholds use exact computed-control equality;
+initial-state uncertainty remains `boundary_unresolved`. WP02 retains its
+conservative input exclusion independently of equilibrium topology. Raghav's
+review of #11 accepts the shared convention. All four latest-head approvals
+are still required; no PR has been merged into main.
+
+## Review corrections (31 October 2026)
+
+- Adopt current WP01/WP03 via #11, including shared threshold/basin regressions.
+- Preserve the obsolete-import fix and reject unsupported RK45 rtol before output,
+  using the shared minimum constant.
+- Correct stale absolute-fold wording, document unrepresentable-root
+  `ArithmeticError`, and hash the newly shared threshold/basin dependencies.
+- Regenerate WP02 evidence and the portable classical notebook; replace publishing
+  blockers and the PR template with actual evidence.
 
 ## Scientific evidence
 
@@ -24,20 +42,41 @@ At a=0.2, unassisted populations fail to recover after both tested harvest ramps
 
 ## Validation
 
-Run from repository root with .venv:
+Run from repository root with .venv (31 October 2026):
 
-- `.venv/bin/python -m pytest tests/wp02 -q`: 38 passed.
-- `.venv/bin/python -m pytest -q`: 204 passed, 1 skipped (optional Torch test; Torch absent).
+- `.venv/bin/python -m pytest -q`: 421 passed, 1 skipped (optional Torch absent).
+- `.venv/bin/python -m pytest tests/wp02 tests/test_classical_integration.py -q`:
+  48 passed after the final source edits (40 WP02 plus 8 integration cases).
 - `.venv/bin/ruff check .`; `.venv/bin/ruff format --check .`: pass.
 - `.venv/bin/python scripts/sync_team.py --check`: current.
-- `.venv/bin/python scripts/assemble_notebook.py`: 34 cells assembled.
-- `JUPYTER_CONFIG_DIR=/private/tmp/wp02-jupyter-config JUPYTER_RUNTIME_DIR=/private/tmp/wp02-jupyter IPYTHONDIR=/private/tmp/wp02-ipython MPLCONFIGDIR=/private/tmp/wp02-mpl .venv/bin/jupyter nbconvert --to notebook --execute notebooks/project.ipynb --output project.executed.ipynb --output-dir results --ExecutePreprocessor.timeout=120`: succeeds after approved local kernel networking. Earlier sandbox attempts failed on config writes/port binding.
-- `MPLCONFIGDIR=/private/tmp/wp02-mpl .venv/bin/python experiments/wp02/run.py --config configs/wp02.json --output results/wp02 --curate`: success, approximately 1.4 seconds; actual duration in manifest.
-- `latexmk -pdf -interaction=nonstopmode -halt-on-error -cd report/main.tex`: 12 pages, WP02 pages 7–11 visually inspected; other-package scaffolds remain.
+- `.venv/bin/python scripts/assemble_notebook.py`: 43 cells.
+- `JUPYTER_CONFIG_DIR=/private/tmp/wp02-jupyter-config JUPYTER_RUNTIME_DIR=/private/tmp/wp02-jupyter IPYTHONDIR=/private/tmp/wp02-ipython MPLCONFIGDIR=/private/tmp/wp02-mpl .venv/bin/jupyter nbconvert --to notebook --execute notebooks/project.ipynb --output project.review-executed.ipynb --output-dir results --ExecutePreprocessor.timeout=120`: fresh-kernel execution succeeds.
+- `MPLCONFIGDIR=/private/tmp/wp02-mpl .venv/bin/python experiments/wp02/run.py --config configs/wp02.json --output results/wp02-review --curate`: success, 1.465 s, within the recorded 120-second budget.
+- `MPLCONFIGDIR=/private/tmp/wp02-mpl .venv/bin/python experiments/wp01/run.py --config configs/wp01.json --output results/wp01-review`: succeeds, 11 files and manifest.
+- `MPLCONFIGDIR=/private/tmp/wp02-mpl .venv/bin/python experiments/wp03/run.py --config configs/wp03.json --output results/wp03-review`: succeeds, 1.974 s within the 60-second budget; seven analysis CSVs.
+- `.venv/bin/python scripts/assemble_notebook.py --packages 1 2 3 --output notebooks/wp01_wp03.ipynb`
+  and `.venv/bin/python scripts/export_standalone_notebook.py --packages 1 2 3`:
+  portable classical snapshot rebuilt with current sources and evidence.
 - `git diff --check`: pass.
-- Three slide renders inspected; PPTX contains native charts/table/text. PDF companion is raster because native PDF export encountered a font-runtime error.
 
-CI has not been run for this unpublished change. Optional relaxation-time analysis deferred. Final five-person slide assembly awaits missing contributions; actual rehearsal, another human's reproduction and all four approvals remain outstanding.
+Cross-package evidence: `test_shared_thresholds_and_adjacent_control_topology`
+checks below/at/above-fold roots and stability for both models;
+`test_logistic_adjacent_controls_are_not_merged` checks logistic topology;
+`test_comparison_propagates_basin_uncertainty` checks the starting-population
+uncertainty contract. `test_unsupported_rtol_is_rejected_before_creating_output`
+checks early rejection, and `test_experiment_outputs_and_provenance` checks the
+new dependency hashes.
+
+Raghav reported independent reproduction of 40 WP02 tests and the default
+experiment on `879b110`, and approved that snapshot. This is not approval of
+the later branch updates. CI passed on that earlier head; new-head CI must be
+checked after publication. All four latest-head human approvals remain required.
+
+The report is now maintained separately in Overleaf by the group; this pass
+preserves its owned repository sections but does not claim a new report compile.
+Existing three editable WP02 slides and raster PDF companion remain available.
+Final five-person slide assembly and actual rehearsal remain pending; optional
+relaxation-time analysis is deferred. No human understanding is certified.
 
 ## Handoff checklist
 
@@ -47,5 +86,5 @@ CI has not been run for this unpublished change. Optional relaxation-time analys
 - [ ] Proposed interfaces reviewed by affected owners.
 - [x] Actual AI use and synthetic-data limitations recorded.
 - [x] No environment, secret, bulk trajectories or weights included.
-- [ ] Request reviewers: @devam2006, @Prem-Mehta03, @rohanagrawal28, @RaghavSinghal15; assign @AshChan07.
+- [x] Request reviewers: @devam2006, @Prem-Mehta03, @rohanagrawal28, @RaghavSinghal15; assign @AshChan07.
 - [ ] Independent reproduction, four human approvals, green CI, and non-author merge.

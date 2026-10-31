@@ -68,47 +68,24 @@ Deliver future command `python experiments/wp02/run.py --config configs/wp02.jso
 
 ## Current handoff
 
-- **Owner / branch:** @AshChan07; `codex/wp02/model-b-history`. PR draft prepared in
-  local `pr-body.md`; remote fetch/push unavailable because Git HTTPS authentication
-  is not configured. The completed implementation is commit `f7d5956`. A push
-  attempt was also rejected by automatic approval review pending explicit upload
-  authorization to `devam2006/mm-allee-harvesting`. No remote work was published.
-  Do not merge without the four human reviews.
-- **Dependency:** this branch restores WP01 PR #3 in commit `9a1132a`. A PR against
-  main therefore includes that dependency; disclose it explicitly. WP01 numerical
-  edge cases remain upstream; comparison APIs exclude unsupported a values and
-  unresolved fold bands. WP03 helpers and final WP03–WP05 slide contributions are
-  absent from this checkout; their current remote state could not be verified.
-- **Implemented:** Model B roots/signs; two fair comparison protocols and logistic
-  calibration caveat; continuous staircase histories for A/B at two dwell times;
-  explicit absorbing A shutdown and separate restocking; reproducible synthetic
-  experiment; figures PNG/EPS/PDF, three CSV tables and provenance; report/notebook
-  section; three editable WP02 slides and five-minute script.
-- **Evidence:** 38 WP02 tests pass. Full suite: 204 passed, 1 optional Torch test
-  skipped (Torch unavailable). Ruff lint/format and team sync pass. Notebook
-  assembles to 34 cells and executes in a fresh kernel; sandbox denied configuration
-  writes and local kernel ports initially, then execution succeeded with temporary
-  config/cache paths and approved local networking. LaTeX compiles to 12 pages;
-  WP02 pages 7–11 inspected. Three slide renders inspected. Slide PDF is a raster
-  companion of those renders; the PPTX retains editable charts/table/text. Native
-  slide PDF export had a font-runtime error in the existing build attempt.
-- **Experiment:** `configs/wp02.json` records a 120-second CPU budget. Successful
-  deterministic run took about 1.4 seconds. A extinction tau = 13.436601 (dwell 1)
-  and 34.612578 (dwell 3); B first sampled x<=1e-6 at 20.4 and 42.0, never an exact
-  finite extinction claim. Unassisted runs do not recover; adding 0.6K at zero
-  harvest restores x approximately 1. Refinement errors below 2e-9.
-- **Next command:** `.venv/bin/python -m pytest tests/wp02 -q`, then
-  `.venv/bin/python experiments/wp02/run.py --config configs/wp02.json --output results/wp02`.
-  Authenticate GitHub locally to push and open the prepared PR; request
-  @devam2006, @Prem-Mehta03, @rohanagrawal28 and @RaghavSinghal15.
-- **Still pending:** other-member reproduction, affected-owner interface review,
-  four approvals, final five-person slide assembly and actual rehearsal. Optional
-  relaxation-time analysis deferred. Source hashes and dirty status identify the
-  development experiment; curated manifest does not claim a clean released run.
-- **Explain:** proportional harvesting reduces catch as biomass falls but does not
-  remove the Allee recovery barrier. Why does returning h to zero fail below A?
-  Human understanding and rehearsal have not been assessed or certified.
-
-## Integration follow-up, 31 October 2026
-
-40 WP02 tests passed. Removed the deleted WP01 constant import while keeping the conservative comparison exclusion local; reject unsupported tiny rtol before output; exported notebook provenance no longer requires Git. The older restored WP01 dependency is replaced by current WP01 only in the separate integration PR. The separate integration PR records current source heads, combined tests and notebook execution. The normal review process remains required.
+- **Owner / branch / PR:** @AshChan07; `codex/wp02/model-b-history`;
+  [PR #9](https://github.com/devam2006/mm-allee-harvesting/pull/9).
+- **Review follow-up:** fast-forwarded integration PR #11 at `649e0c1`, preserving
+  corrected WP01 `b83bba8`, WP03 `16a05ce`, and WP02 `879b110`. Shared thresholds
+  and basin uncertainty now agree in the combined tree. Corrected stale fold
+  wording, reused the shared RK45 minimum and recorded new dependency hashes.
+- **Evidence:** full suite 421 passed / one optional Torch skip; all three default
+  classical experiments succeed; combined 43-cell notebook executes in a fresh
+  kernel. WP02 rerun took 1.465 s within its 120-second budget; extinction times
+  and recovery conclusions are unchanged. Detailed named evidence and commands:
+  [WP02 validation](WP02_validation.md). Curated provenance records source hashes
+  and dirty development state honestly.
+- **Next step:** review the updated #9 diff and CI; request all four teammates'
+  latest-head reviews. Raghav's reproduction/approval at `879b110` is recorded
+  separately from the new changes. A non-author human performs any main merge
+  after the project review requirements are met.
+- **Pending:** four current approvals, final group-slide assembly and real
+  rehearsal; optional slowing analysis deferred. The group's Overleaf report
+  is maintained separately. No human understanding or rehearsal is certified.
+- **Explain:** proportional harvest falls with biomass but does not remove the
+  Allee recovery barrier. Why does returning effort to zero fail below A?
