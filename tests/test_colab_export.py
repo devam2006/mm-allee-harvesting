@@ -12,11 +12,20 @@ from zipfile import ZipFile
 import pytest
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
-sys.path.insert(0, str(SCRIPTS))
-SPEC = importlib.util.spec_from_file_location("colab_export", SCRIPTS / "export_colab_notebook.py")
-EXPORT = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(EXPORT)
 REF = "a" * 40
+
+
+@pytest.fixture(scope="module")
+def exporter():
+    # The PINN-only CI selection does not install notebook authoring dependencies.
+    # Load them when these core tests run, not while pytest collects all modules.
+    sys.path.insert(0, str(SCRIPTS))
+    spec = importlib.util.spec_from_file_location(
+        "colab_export", SCRIPTS / "export_colab_notebook.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def manifest(payload=b"snapshot"):
@@ -28,8 +37,8 @@ def manifest(payload=b"snapshot"):
     }
 
 
-def test_colab_notebook_opens_without_large_encoded_cells_or_attachments(tmp_path):
-    notebook = EXPORT.export_notebook(manifest(), REF, tmp_path / "project.ipynb")
+def test_colab_notebook_opens_without_large_encoded_cells_or_attachments(tmp_path, exporter):
+    notebook = exporter.export_notebook(manifest(), REF, tmp_path / "project.ipynb")
     assert (tmp_path / "project.ipynb").stat().st_size < 150_000
     assert max(len(cell.source) for cell in notebook.cells if cell.cell_type == "code") < 10_000
     assert not any("base64" in cell.source or cell.get("attachments") for cell in notebook.cells)
@@ -39,12 +48,12 @@ def test_colab_notebook_opens_without_large_encoded_cells_or_attachments(tmp_pat
 
 
 @pytest.mark.parametrize("ref", ["main", "not-a-commit"])
-def test_hosted_assets_require_an_immutable_commit(ref):
+def test_hosted_assets_require_an_immutable_commit(ref, exporter):
     with pytest.raises(ValueError, match="immutable"):
-        EXPORT.setup_source(manifest(), ref)
+        exporter.setup_source(manifest(), ref)
 
 
-def run_setup(monkeypatch, tmp_path, payload, expected_payload=None):
+def run_setup(monkeypatch, tmp_path, payload, exporter, expected_payload=None):
     runtime = tmp_path / "runtime"
     runtime.mkdir()
     (runtime / "example.zip").write_bytes(payload)
@@ -55,31 +64,33 @@ def run_setup(monkeypatch, tmp_path, payload, expected_payload=None):
     monkeypatch.setattr("urllib.request.urlopen", lambda *a, **k: pytest.fail("Unexpected network"))
     monkeypatch.setattr("subprocess.check_call", lambda *a, **k: None)
     namespace = {"get_ipython": lambda: SimpleNamespace(run_line_magic=lambda *args: None)}
-    exec(EXPORT.setup_source(manifest(expected_payload or payload), REF), namespace)
+    exec(exporter.setup_source(manifest(expected_payload or payload), REF), namespace)
     return namespace
 
 
-def test_packaged_runtime_restores_offline_and_preserves_source_bytes(monkeypatch, tmp_path):
+def test_packaged_runtime_restores_offline_and_preserves_source_bytes(
+    monkeypatch, tmp_path, exporter
+):
     stream = io.BytesIO()
     expected = b"answer = 42\n"
     with ZipFile(stream, "w") as archive:
         archive.writestr("src/example.py", expected)
         archive.writestr("pyproject.toml", "[project]\nname='example'\n")
-    namespace = run_setup(monkeypatch, tmp_path, stream.getvalue())
+    namespace = run_setup(monkeypatch, tmp_path, stream.getvalue(), exporter)
     root = namespace["ROOT"]
     assert (root / "src/example.py").read_bytes() == expected
     assert str(root / "src") == sys.path[0] == os.environ["PYTHONPATH"]
 
 
-def test_tampered_runtime_is_rejected_before_extraction(monkeypatch, tmp_path):
+def test_tampered_runtime_is_rejected_before_extraction(monkeypatch, tmp_path, exporter):
     with pytest.raises(RuntimeError, match="checksum mismatch"):
-        run_setup(monkeypatch, tmp_path, b"tampered", expected_payload=b"expected")
+        run_setup(monkeypatch, tmp_path, b"tampered", exporter, expected_payload=b"expected")
 
 
-def test_runtime_archive_cannot_escape_the_restored_folder(monkeypatch, tmp_path):
+def test_runtime_archive_cannot_escape_the_restored_folder(monkeypatch, tmp_path, exporter):
     stream = io.BytesIO()
     with ZipFile(stream, "w") as archive:
         archive.writestr("../escape.txt", "invalid")
     with pytest.raises(RuntimeError, match="Invalid project data path"):
-        run_setup(monkeypatch, tmp_path, stream.getvalue())
+        run_setup(monkeypatch, tmp_path, stream.getvalue(), exporter)
     assert not (tmp_path / "escape.txt").exists()
