@@ -1,5 +1,17 @@
 # Open and run the project
 
+## Final notebook
+
+The final notebook combines reviewed WP01–WP03 with Prem/Rohan's supplied
+layout and approved factual corrections. It has 68 cells (29 code), is 78,854
+bytes, and passed a fresh-kernel run without errors in 36.12 seconds, including
+16 figure outputs. The existing verified runtime pin is unchanged.
+See [final versions and checks](FINAL_NOTEBOOK.md).
+
+[Download the refreshed notebook + 17 EPS figures](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v2/mm-allee-final-notebook-eps.zip).
+The public main notebook is the current Colab entry point. Older versioned
+downloads and draft-refresh details below are retained as provenance.
+
 ## Current draft integration candidate
 
 PR #5 now includes the reviewed WP01/WP02 notebook updates and Prem PR #10

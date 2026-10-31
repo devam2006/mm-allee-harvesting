@@ -1,5 +1,9 @@
 # Reviewed WP01–WP03 refresh, 31 October 2026
 
+The later [final uploaded-notebook integration](FINAL_NOTEBOOK.md) supersedes
+the publication/packaging status below. Prem/Rohan's supplied layout is now
+reconciled, tested and packaged; these earlier refresh details remain provenance.
+
 This refresh brings the reviewed classical changes into draft integration PR #5.
 It does not merge or approve any source PR, update Overleaf, or publish a new
 final ZIP. Devam subsequently requested Prem's latest notebook changes in this

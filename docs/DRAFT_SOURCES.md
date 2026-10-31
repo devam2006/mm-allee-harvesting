@@ -1,5 +1,10 @@
 # Source ledger for the notebook/data/figure handoff
 
+The final notebook also incorporates Devam's supplied Prem/Rohan Markdown
+attachment, preserving its WP04/WP05 layout with approved factual corrections.
+See `FINAL_NOTEBOOK.md` for its exact SHA-256, preserved classical cells and final
+execution/archive evidence. The source PR ledger below remains valid.
+
 | Package | Exact source | Scope |
 |---|---|---|
 | WP01 | PR #8 b83bba8c7f3c7d094d4439cf9b6d281a325ae4d0; notebook PR #12 6deae943d56ce0481a80d2321ce590dbfa567180 | Reviewed numerical fixes and clearer notebook derivation/algorithm; checksum-only follow-up 58ff57a9cb183d6df868014a9e789778761232ea |

@@ -42,7 +42,9 @@ def test_colab_notebook_opens_without_large_encoded_cells_or_attachments(tmp_pat
     assert (tmp_path / "project.ipynb").stat().st_size < 150_000
     assert max(len(cell.source) for cell in notebook.cells if cell.cell_type == "code") < 10_000
     assert not any("base64" in cell.source or cell.get("attachments") for cell in notebook.cells)
-    assert len([cell for cell in notebook.cells if "_figures.display" in cell.source]) == 5
+    # The finalized layout has two WP04 and two WP05 display figures;
+    # the exploratory diagnostic remains in the downloadable figure assets.
+    assert len([cell for cell in notebook.cells if "_figures.display" in cell.source]) == 4
     bundle = notebook.metadata.runtime_bundle
     assert f"/{REF}/runtime/" in bundle.url and bundle.sha256 == manifest()["sha256"]
 

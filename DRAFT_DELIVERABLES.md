@@ -1,11 +1,6 @@
 # Notebook, dataset and figure handoff (PR #5)
 
-**Current integration update:** reviewed WP01 notebook text from PR #12 and
-WP02 notebook/provenance changes from PR #9 are included here. See
-`docs/CLASSICAL_REFRESH.md`. Prem's latest notebook wording from PR #10 is also
-included. Rohan's remaining updates and the final ZIP
-rebuild remain pending. The tracked/public ZIP downloads below are earlier
-snapshots and do not yet contain this refresh.
+**Final notebook update:** Prem/Rohan's supplied layout is integrated with the reviewed WP01–WP03 work. All 29 code cells executed without errors. The refreshed notebook/EPS-only ZIP is described in `docs/FINAL_NOTEBOOK.md`; the older draft-refresh notes and full support archive remain provenance. The report template remains blank in every body, including WP03.
 
 The requested final download is `deliverables/mm-allee-final-notebook-eps.zip`: one finalized notebook and 17 EPS figures only. It has no report, PDF or PNG exports. The notebook downloads its fixed public runtime on first use. The older full support archive is retained separately. The editable LaTeX report is maintained in Overleaf; the old repository report/slide previews are historical and are not rebuilt by this task.
 

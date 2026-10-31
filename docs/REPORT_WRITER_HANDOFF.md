@@ -1,5 +1,10 @@
 # Full report writing handoff for an AI agent
 
+**Final notebook update:** Prem/Rohan's supplied notebook has now been reconciled
+with the reviewed WP01–WP03 work. Read `docs/FINAL_NOTEBOOK.md` and use the current
+PR #5 notebook and source ledger when drafting. The template remains blank in
+all report bodies, explicitly including WP03.
+
 ## Current request and starting point
 
 Use **PR #5**, branch `integration/final-deliverables-draft`, as the combined
@@ -25,13 +30,11 @@ if it were already final. The repository's existing `report/main.tex`, report
 sections and old PDF are historical prose sources; they are not the current
 complete report or the authoritative Overleaf layout.
 
-Devam will provide Prem and Rohan's notebook copies separately. The current
-baseline already includes Prem PR #10 `a0cbbc9` wording and the validated shared
-PINN implementation, but the incoming copies have not yet been reconciled.
-An initial full report may use the current verified baseline. Its final version
-must be checked against the integrated final WP01–WP05 notebook after those
-copies have been reviewed. Identify the version used; never invent missing
-results or silently describe incoming untested content as verified.
+Devam has supplied the edited notebook, now reconciled and executed as described
+in `docs/FINAL_NOTEBOOK.md`. Use that final WP01–WP05 notebook together with the
+saved evidence, and record the actual current PR head used for the report.
+The earlier computational baseline above remains provenance. Never invent
+missing results or silently describe untested content as verified.
 
 ## Layout and editable section split
 
@@ -191,7 +194,6 @@ If using Overleaf, set Main document = `main.tex`, Compiler = pdfLaTeX, then
 recompile and inspect/download the PDF. Keep the source ZIP self-contained;
 no `../artifacts` paths, private tokens or absolute workstation paths.
 
-The final notebook will be integrated separately from Prem/Rohan's supplied
-copies and checked against the report. The notebook/EPS submission ZIP remains
-deferred. This handoff does not write or approve the report, alter notebook
-science, update Overleaf live, or merge any source PR.
+Check the report against the final integrated notebook and its evidence. The
+notebook/EPS ZIP is described in `docs/FINAL_NOTEBOOK.md`. This handoff does not
+write or approve the report, update Overleaf live, or merge any source PR.

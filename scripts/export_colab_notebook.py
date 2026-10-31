@@ -248,6 +248,9 @@ def export_notebook(manifest, asset_ref, target):
         "**Reproduction:** the public snapshot is pinned to a commit and SHA-256. Keep those values "
         "unchanged to reproduce this version. Python 3.11+ and NumPy/SciPy/Matplotlib/IPython/JAX are required."
     )
+    custom_introduction = ROOT / "notebooks/colab_introduction.md"
+    if custom_introduction.is_file():
+        introduction.source = custom_introduction.read_text(encoding="utf-8")
     introduction.id = "colab-introduction"
     setup = nbformat.v4.new_code_cell(setup_source(manifest, asset_ref))
     setup.id = "colab-project-setup"

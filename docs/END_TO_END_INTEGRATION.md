@@ -1,5 +1,11 @@
 # Five-package notebook integration
 
+**Final notebook:** the supplied Prem/Rohan layout is integrated with the reviewed
+WP01–WP03 cells. The final source suite passes 531 tests; a fresh kernel passed
+all 29 code cells in 36.12 seconds, with 16 PNG outputs. See
+[FINAL_NOTEBOOK.md](FINAL_NOTEBOOK.md) for current notebook/archive versions.
+Earlier draft publication and pending-copy notes below are historical.
+
 **Current draft refresh:** WP01 PR #12 text, WP02 PR #9 `cba9051` notebook and
 Windows provenance updates, and Prem PR #10 `a0cbbc9` result/domain wording are
 included. The refreshed source passed 531 tests; the new small notebook ran
