@@ -1,5 +1,10 @@
 # Final WP01–WP05 notebook
 
+**Latest WP01 update:** Raghav PR #13 is selectively integrated into the latest
+WP05 version. All non-WP01 cells are unchanged. See
+[WP01_NOTEBOOK_REFRESH.md](WP01_NOTEBOOK_REFRESH.md) for the v4 download and
+27-cell fresh-kernel check. Earlier version details below are provenance.
+
 **Latest WP05-only update:** Rohan's additional notebook has now been integrated
 only in WP05; every other notebook cell is identical to the previous final
 version. Read [WP05_NOTEBOOK_UPDATE.md](WP05_NOTEBOOK_UPDATE.md) for the new live

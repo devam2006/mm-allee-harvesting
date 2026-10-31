@@ -1,5 +1,11 @@
 # Full report writing handoff for an AI agent
 
+**Current WP01 presentation:** PR #13 is selectively integrated. Read
+`docs/WP01_NOTEBOOK_REFRESH.md` for the latest v4 notebook; WP02–WP05 and the
+scientific engine are unchanged. The detailed WP01 derivations and numerical
+edge-case tests remain in the source even though its notebook is shorter.
+The existing WP05 live-demo/frozen-benchmark distinction still applies.
+
 **Latest WP05 evidence:** `docs/WP05_NOTEBOOK_UPDATE.md` records Rohan's clean/noisy
 live demonstrations and separate settings. All non-WP05 notebook cells are
 unchanged. Distinguish these illustrations from the unchanged frozen 108-fit

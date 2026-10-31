@@ -1,5 +1,13 @@
 # Open and run the project
 
+The current notebook includes the selective WP01 refresh from Raghav PR #13.
+All WP02–WP05 cells are unchanged, including Rohan's latest demos. The notebook
+is 88,495 bytes and passed 27 code cells without errors in 45.83 seconds.
+Use the [v4 notebook](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v4/project.ipynb)
+or [v4 notebook plus 19 EPS figures](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v4/mm-allee-final-notebook-eps.zip).
+See [WP01 refresh evidence](WP01_NOTEBOOK_REFRESH.md). Earlier versions below
+are retained as provenance.
+
 The latest **WP05-only** update is described in
 [WP05_NOTEBOOK_UPDATE.md](WP05_NOTEBOOK_UPDATE.md): every other cell is unchanged,
 and the combined notebook passed 29 code cells with no errors in 36.37 seconds.

@@ -76,3 +76,14 @@ Implement the future reproduction command `python experiments/wp01/run.py --conf
 ## Integration follow-up, 31 October 2026
 
 189 WP01 tests passed, including 90-digit independent roots for both reported close-fold examples and rejection of unsupported rtol before any output. Near-fold roots are solved in offsets; simple-root signs/derivatives use the factored cubic. The existing standalone fold-band policy is unchanged pending the separate integration PR. The separate integration PR records current source heads, combined tests and notebook execution. The normal review process remains required.
+
+## Notebook handoff, 1 November 2026
+
+At Devam's request, PR #5 selectively imports the condensed WP01 presentation
+from PR #13 d555f01 onto 9d96b85, retaining all newer WP02–WP05 work. The math
+inside the main-result HTML box is moved to normal Markdown for Colab. The
+source and all three WP01 figures are unchanged. Fresh combined notebook:
+27 code cells, zero errors, 45.83 seconds. WP01/export checks: 195 passed.
+See [WP01_NOTEBOOK_REFRESH.md](../WP01_NOTEBOOK_REFRESH.md) for exact versions,
+reproduction and download links. Human reviews remain required; no source PR
+merge or approval was performed.

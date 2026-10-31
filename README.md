@@ -2,10 +2,10 @@
 
 The current PR #5 source combines reviewed WP01–WP03 with Prem/Rohan's final
 notebook layout and approved factual corrections. See
-[WP05_NOTEBOOK_UPDATE.md](docs/WP05_NOTEBOOK_UPDATE.md) for the 29-cell execution and archive
+[WP01_NOTEBOOK_REFRESH.md](docs/WP01_NOTEBOOK_REFRESH.md) for the 27-cell execution and archive
 checks. The Overleaf template remains blank, including WP03.
 
-[**Download the final notebook + EPS figures ZIP**](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v3/mm-allee-final-notebook-eps.zip). It contains your finalized notebook and 19 EPS figures only. [Open the notebook directly in Colab](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb), connect a CPU runtime and Run all. It downloads the fixed public code/data snapshot; no Drive mount or private repo access is needed. The Overleaf report is maintained separately. See `docs/COLAB_QUICKSTART.md` for reproduction details.
+[**Download the final notebook + EPS figures ZIP**](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v4/mm-allee-final-notebook-eps.zip). It contains your finalized notebook and 19 EPS figures only. [Open the notebook directly in Colab](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb), connect a CPU runtime and Run all. It downloads the fixed public code/data snapshot; no Drive mount or private repo access is needed. The Overleaf report is maintained separately. See `docs/COLAB_QUICKSTART.md` for reproduction details.
 
 # MM project: harvesting under a strong Allee effect
 
