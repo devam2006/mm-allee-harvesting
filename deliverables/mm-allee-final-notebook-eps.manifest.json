@@ -1,7 +1,7 @@
 {
   "archive": "mm-allee-final-notebook-eps.zip",
-  "zip_sha256": "421696d55a9feed67cf7723f6eb90d30111eb659d34abb8e0cfd07df4ceee48d",
-  "zip_bytes": 483322,
+  "zip_sha256": "a6060b12947cb6672fd9a85ebbd91d00adfe72fcac6f8cf2c0911f45661d0b7a",
+  "zip_bytes": 481172,
   "files": 18,
   "notebooks": 1,
   "eps_figures": 17,
@@ -14,7 +14,7 @@
     "url": "https://raw.githubusercontent.com/devam2006/mm-allee-notebook-runtime/b0c6f278a5bff74dda2341cea3b0823c018c21de/runtime/wp01-wp05-1aa5283ac899d954.zip"
   },
   "file_sha256": {
-    "project.ipynb": "bae4265b3ae1341d28692a3e986ab74bb4d17522fa233e6e48c3a678a434ebeb",
+    "project.ipynb": "386b35d08019a64aaf63ea7822f8b707779287e7ba717e4042713cc408b8c285",
     "figures/wp01_logistic_vs_allee.eps": "01cafb74d2b12325efddc584c250a4dc4cafe9c03d8fe33e1fb6d0bfa200b7d4",
     "figures/wp01_model_a_branches.eps": "d426d8a8ea03d59b0336ddcb04fa4e8033281b3531725ca2fd37114f55bf7a3c",
     "figures/wp01_model_a_perturbations.eps": "78d2f45d3f1cec66f1a479697bb9b1837d00b54b458f8b58fcec83842206b63b",
