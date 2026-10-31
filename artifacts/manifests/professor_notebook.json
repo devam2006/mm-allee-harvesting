@@ -1,0 +1,13 @@
+{
+  "notebook_sha256": "3adcb7772071e5dc696e201532ebf7d64e5730fdcc30d767380521be8746d80f",
+  "notebook_bytes": 84695,
+  "code_cells": 27,
+  "kernel_seconds": 58.11,
+  "kernel_errors": 0,
+  "focused_tests": 46,
+  "zip_sha256": "28cfd0a39ba7c6dc6d6d455960b86c1e4dce7c025d853377305b77917fbf3a31",
+  "zip_bytes": 509730,
+  "eps_figures": 18,
+  "wp02_attachment_sha256": "dbf516a91159e2890ed2d316891b5104084c9f4a39be44a6daab66e50e9da01c",
+  "scope": "WP02 import only; authorized Markdown-only professor-facing cleanup elsewhere; all non-WP02 code exact"
+}

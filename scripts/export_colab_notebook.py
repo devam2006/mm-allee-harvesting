@@ -279,17 +279,15 @@ def export_notebook(manifest, asset_ref, target):
     notebook.cells = cells
     acknowledgements = nbformat.v4.new_markdown_cell(
         "## Reproduction, sources and acknowledgements\n\n"
-        f"Public code, synthetic datasets, figures and references: https://github.com/{PUBLIC_REPOSITORY}. "
-        "The runtime version and checksum are fixed in the setup cell. Long-study tables are "
-        "recorded evidence; the short demonstrations are actual notebook runs.\n\n"
+        "The short demonstrations are executed when this notebook runs; long-study tables "
+        "are recorded evidence. The setup fixes the code/data version and checks its integrity.\n\n"
         "**Contributions:** Raghav Singhal (WP01), Ashwath Chandramouli (WP02), "
         "Devam Jatin Bhavsar (WP03), Prem Mehta (WP04), Rohan Agrawal (WP05). "
         "Codex and Claude Code assisted derivation, implementation, experiments, review and "
         "integration under the members' direction. Humans remain responsible for the work; "
         "execution checks do not certify their understanding or approval.\n\n"
-        "All examples are synthetic. See the public repository's `docs/REFERENCES.md` and "
-        "`docs/DATA_PROVENANCE.md` for sources and data-generation details. "
-        "The editable report is maintained in Overleaf."
+        "All examples are synthetic. Data-generation details and references are supplied "
+        "with the reproducibility resources linked at the start. The report is maintained separately."
     )
     acknowledgements.id = "colab-reproduction-acknowledgements"
     notebook.cells.append(acknowledgements)

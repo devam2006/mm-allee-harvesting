@@ -8,7 +8,9 @@
 |WP04|Mehta Prem Kalpesh|2024ADPS0851G|
 |WP05|Rohan Agrawal|2024ADPS0004G|
 
-**Colab:** connect a CPU runtime, then choose **Runtime → Run all**. The first cell downloads the required code and synthetic data from a fixed public GitHub version (1.55 MB), verifies its checksum and prepares the project. No Google Drive mount, private-repository access or API key is required.
+**Running this notebook:** connect a CPU runtime in Colab, then choose **Runtime → Run all**. The setup automatically downloads the required code and synthetic data (about 1.57 MB), verifies their checksum and prepares the environment. Internet is required on first use; no Drive mount or API key is needed.
+
+**Reproducibility resources:** [Code, synthetic data and references](https://github.com/devam2006/mm-allee-notebook-runtime). The notebook runs directly; familiarity with this supporting resource is not required.
 
 The notebook opens without large encoded code cells. Figures and demonstration results appear when their cells run. Most scientific packages are already available in Colab; only missing dependencies are installed. **Internet is needed on the first run**, unless the companion download's runtime ZIP is beside this notebook under `runtime/`.
 
