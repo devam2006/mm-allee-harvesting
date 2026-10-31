@@ -1,5 +1,7 @@
 # Source ledger for the notebook/data/figure handoff
 
+**Current WP03 update:** the numbered core-only notebook/report now supersedes older optional-scope notes. Owner-finalized WP01/WP05 and all other package cells are unchanged. See [WP03 core delivery](WP03_CORE_NOTEBOOK.md). The v5 minimal ZIP contains one notebook and 18 EPS files; the WP03 editable section/three-EPS update is separate. The blank template ZIP remains blank.
+
 The latest WP05-only import is Rohan's supplied notebook with SHA-256
 `9e6b29a749a614885017add2087ce56d3c04f58bc06389db3b8fa38e6ab4457d`.
 Its demo settings, live results, scope proof and new figure provenance are in

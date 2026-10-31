@@ -84,3 +84,22 @@ files), ownership synchronization and whitespace checks passed. The actual
 core study completed in 3.01 seconds; its four numerical tables match the
 historical records exactly. The new trajectories-only plot was inspected.
 Final portable execution and download hashes follow in the delivery record.
+
+## Final portable delivery
+
+[Notebook](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v5/project.ipynb) · [Notebook/EPS ZIP](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v5/mm-allee-final-notebook-eps.zip) · [WP03 Overleaf update](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v5/wp03-overleaf-update.zip) · [Editable WP03 TeX](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v5/03_collapse.tex)
+
+The actual new public runtime passed all **27 code cells with zero errors in
+33.34 seconds**, producing **16 PNG outputs**. All other package sections,
+front matter and acknowledgements are identical to baseline 2ab0cac in all
+assembled/portable variants. Runtime bootstrap/pin changes carry only the new
+WP03 runner; shared models/solvers, PINN code/configs and fixtures remain exact.
+All embedded payload-file hashes and outer checksums were verified.
+
+Notebook SHA-256: `0d1c8d95cf803d7360b21f2c9a3d45e521825a2cd118a7d31e613be0202322eb`.
+ZIP SHA-256: `2a5a2199b67fbe2b30bc99698896d5f1d4ed75115c51c0e37a803a59075acd7a`; 510,803 bytes / 19 files.
+WP03 report update SHA-256: `e08a324ac37ed86a033e40d10b104a58bc3ee29e5a297f2f80fe5ae311d10c94`; 166,855 bytes / five files.
+
+The report update is editable LaTeX/EPS source; no compiled report PDF is
+included or layout certification claimed. Compile the existing main.tex on
+Overleaf after copying the owned files and make your final edits there.

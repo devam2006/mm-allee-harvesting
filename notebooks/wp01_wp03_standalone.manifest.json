@@ -1,5 +1,5 @@
 {
-  "source_commit": "87bea768e798e826c39c9776541a3e3ef183175d",
+  "source_commit": "ca8d863bb20e5a6140325ac5e74d7da010fd5018",
   "source_dirty": true,
   "work_packages": [
     1,
@@ -29,6 +29,9 @@
     "artifacts/figures/wp03_bottleneck.eps": "d4876fdd771e79b8928d515247bd720da6941fdafa716c19c0e4242fdec2ba6a",
     "artifacts/figures/wp03_bottleneck.pdf": "d1f7b6440a4950fb682c8fbbddba84c8bc633960d35ea1215cdbff5e56eb578b",
     "artifacts/figures/wp03_bottleneck.png": "e0c80a5cb5da027f7a5b7e071f9b4ede622a245d28970ce8b093ba2b7d8fc778",
+    "artifacts/figures/wp03_bottleneck_core.eps": "14800c4fa565c764099504b22cc669097e2112b75fc1fe09e8afb18a14337a86",
+    "artifacts/figures/wp03_bottleneck_core.pdf": "59d4bd52afed62c9ec3b2e9435ba0c51592a44d722370dd4d3ddf493f9eb8a19",
+    "artifacts/figures/wp03_bottleneck_core.png": "203881ecb0a0fda33e963a3ee81021e88bcf1d13a96768013b12b702647ac44c",
     "artifacts/figures/wp03_extinction.eps": "56b4fb3514cfcbb15892343ca3d09601998c51627601cec75b019413afbd4f78",
     "artifacts/figures/wp03_extinction.pdf": "bf1eaab043d7c8555f8b3c88001a098a3476485dee4901083dbcae16a7fa3821",
     "artifacts/figures/wp03_extinction.png": "e9fd55730d3d6fea9d193d0d20907363ef2b198fb078bd5f6f3954afdd3e24fe",
@@ -37,9 +40,11 @@
     "artifacts/figures/wp03_sensitivity_yield.eps": "52ca8454bb641a5fa4c58fbf135159ff592a9dbe0ff24dccc24e9cc5202bce21",
     "artifacts/figures/wp03_sensitivity_yield.pdf": "38388d01bd86e442b4569a71399c0a02bbcc4b34383e5e27f9ac648b5a212e61",
     "artifacts/figures/wp03_sensitivity_yield.png": "e95b2c3be7435b4a6fc860bb51ebf4b20e27d603ee27fbdc37b1efb359c7e239",
+    "artifacts/manifests/wp01_notebook_refresh.json": "cd2a3d14a6d4060aef79343d7773af19421ac5e471af73427fab58b8dc78340b",
     "artifacts/manifests/wp01_run.json": "9055a88801adab003997504506030aeddb2c1914dbe7262093588dd180a14cea",
     "artifacts/manifests/wp02_run.json": "e9dcc5071b8b1d22779a6961784164c13da8058b6173a8b506d7ab95de8724c4",
     "artifacts/manifests/wp03_analysis.json": "759b331a369470278a64e42c2e0a319bc1cea3b5934fe0964e8d1c187cd8d117",
+    "artifacts/manifests/wp03_core_analysis.json": "1a64096a9c0ff55ee29d23bc489484ae0b3c1e4f530abbd35c492f1d575af234",
     "artifacts/manifests/wp03_environment.txt": "e19d7f5c057b40df14c07d64004c3e3532c833ce2985d67033e92b3b5a80e221",
     "artifacts/manifests/wp03_reference.json": "ff3ad29f1acbfac6199d8d8e1b8558a1332986f239f776359ba3e9ef7dd8e070",
     "artifacts/manifests/wp03_reproduction.json": "eb3bc38456a9eb0d0a545d92332a1e3fe077701ab22a72336ce9071775fd03c1",
@@ -76,15 +81,15 @@
     "data/fixtures/wp03_reference/README.md": "6aae8d2a7cbc3c5dc459b2cdaa084d0cf979b1e5486b45db050b2003780908de",
     "data/fixtures/wp03_reference/truth.json": "a96aee0d43a16803f0db7737f2b3325d0bba4af6e39d940ba99017af9b7d9d42",
     "data/fixtures/wp03_reference/validation.csv": "a7923a459cf55d14e048e93e7872f3e8797f9de92ec2a3bf9b5874a51b22c3ae",
-    "docs/AI_USAGE.md": "c03f9c91ed360343e16314c730f5a660200a1b1269835ac6feb278f3eca6a413",
+    "docs/AI_USAGE.md": "b19e0c825f113372002903b995d685f6002c007f0a39ddf528eb0354a83ac500",
     "experiments/wp01/run.py": "d4e715eea189e4050c9a6f05515de3dae48e88de73e098662e7878015e50dbca",
     "experiments/wp02/run.py": "5c097191f1be6b79b1097d55b0da67bfbd5fc3a7f2e3ae003f0f54d0f386b5cc",
     "experiments/wp03/generate_reference.py": "202a5762e6dc49d07b0370287cbf0bc588cbae1018b3c9c898158f70f9cab5af",
-    "experiments/wp03/run.py": "a7574721db452bbc0ae37b24053534393a353a7e6198c8e808ac95bfe4246596",
+    "experiments/wp03/run.py": "745e25c2efc41ce228dca3b59065f6dc3dda6bdc85a9dc5ff07de241f9dabea2",
     "pyproject.toml": "4b551dff961fd819669eee4e9a492b803de2ade03ae0b03cfc95cd297f8ec841",
     "src/mm_allee/__init__.py": "b65690d61f03f0dee198f8cc69f6075cb78ed291fd8257d90934a38d9c3f2b92",
     "src/mm_allee/collapse.py": "00eeba90b9b8b50a3e2f46c5cd22a42518646b0b9cdfcbd65fa49eff39834cbb",
-    "src/mm_allee/collapse_study.py": "314e51d564f7912341e67c042f62067b7a403d7c30cf307f772603010dec9b47",
+    "src/mm_allee/collapse_study.py": "78c971056104c7bed18a7095863496bb3e90274b83f282f4abc2eb55b6f71b84",
     "src/mm_allee/comparison.py": "3fa08bb08f067340a3a40c615aef5bfc02db0fd076bedbb92acff0e06018cac6",
     "src/mm_allee/data.py": "77b5de19a12abb205cfe10156c7ca99e82804cae370b545fe651a6eb0715bb66",
     "src/mm_allee/datasets.py": "628690be8d8dbac75468af31d9af99606f4980ee675b24dc16fca5e1d12bbae1",
@@ -108,6 +113,6 @@
     "src/mm_allee/validation.py": "380544c733d7bed6679a4ef4b4cbf6bdd26ac50c9ae0491641a30bf866c6c7c4",
     "src/mm_allee/wp02_experiment.py": "79c5ea90b63666f8b1f80357bd7f82b9ed1cbb37a6f013e1f928d6b9f05f0168"
   },
-  "payload_sha256": "d0fa772f314800d6169447b790ce6ffb6d860467b7f2bf06f9f9e909dd321ea3",
-  "notebook_sha256": "d72519c6d04b537f65d4464f1fc2c8e319273bde7dbf8d154886e525050c0193"
+  "payload_sha256": "f80905b5ffa3ba3213533f9572205853914c3fd2df4deaae998f7ae7e2c2b66c",
+  "notebook_sha256": "e941cd7a35b99ba9d3effef14697cb44a51c99264a4f364b827c165025611b77"
 }

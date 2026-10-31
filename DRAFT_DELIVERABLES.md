@@ -1,5 +1,7 @@
 # Notebook, dataset and figure handoff (PR #5)
 
+**Current WP03 update:** the numbered core-only notebook/report now supersedes older optional-scope notes. Owner-finalized WP01/WP05 and all other package cells are unchanged. See [WP03 core delivery](docs/WP03_CORE_NOTEBOOK.md). The v5 minimal ZIP contains one notebook and 18 EPS files; the WP03 editable section/three-EPS update is separate. The blank template ZIP remains blank.
+
 **Latest WP05-only update:** the additional Rohan notebook changes are now integrated only into WP05; all other cells are identical. The v3 ZIP includes the two new WP05 EPS plots (19 EPS total). See `docs/WP05_NOTEBOOK_UPDATE.md`.
 
 **Earlier final notebook update:** Prem/Rohan's supplied layout is integrated with the reviewed WP01–WP03 work. All 29 code cells executed without errors. The refreshed notebook/EPS-only ZIP is described in `docs/FINAL_NOTEBOOK.md`; the older draft-refresh notes and full support archive remain provenance. The report template remains blank in every body, including WP03.

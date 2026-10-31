@@ -1,5 +1,19 @@
 # Open and run the project
 
+**Current WP03 core delivery (v5):** numbered 3.1–3.6 explanations retain thresholds,
+basins, extinction, numerical checks, a qualitative bottleneck and reference data.
+Every other work package's notebook cells are exact copies of the finalized
+baseline; only the shared runtime pin changes to load the new WP03 core runner.
+The notebook passed all 27 code cells in a fresh kernel (33.34 s, zero errors,
+16 PNG outputs); **533 source tests passed**. It has 61 cells and
+is 88,192 bytes. The minimal ZIP has one notebook and **18 EPS figures**,
+excluding WP03's two archived extension figures and including its new core plot.
+The editable WP03 report section and three EPS files are also available as a
+separate update ZIP; teammates' report sections and the blank template ZIP are
+unchanged. Earlier version notes below are provenance.
+
+[Notebook](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v5/project.ipynb) · [Notebook/EPS ZIP](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v5/mm-allee-final-notebook-eps.zip) · [WP03 Overleaf update](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v5/wp03-overleaf-update.zip) · [Editable WP03 TeX](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v5/03_collapse.tex)
+
 The current notebook includes the selective WP01 refresh from Raghav PR #13.
 All WP02–WP05 cells are unchanged, including Rohan's latest demos. The notebook
 is 88,495 bytes and passed 27 code cells without errors in 45.83 seconds.

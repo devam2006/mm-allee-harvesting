@@ -1,0 +1,41 @@
+{
+  "baseline": "2ab0cac2729c20ec77d80b307f7f789755fe0835",
+  "source_commit": "ca8d863bb20e5a6140325ac5e74d7da010fd5018",
+  "scope": "WP03 only; other sections exact; runtime pin refreshed",
+  "notebook_bytes": 88192,
+  "notebook_sha256": "0d1c8d95cf803d7360b21f2c9a3d45e521825a2cd118a7d31e613be0202322eb",
+  "cells": 61,
+  "code_cells": 27,
+  "kernel_seconds": 33.34,
+  "kernel_errors": 0,
+  "png_outputs": 16,
+  "full_tests": 533,
+  "tests_seconds": 58.58,
+  "runtime": {
+    "asset_commit": "6ff183adae6093c26e663dfac254d2c071ea06a0",
+    "bytes": 1573878,
+    "path": "runtime/wp01-wp05-def74213164d849f.zip",
+    "sha256": "def74213164d849f511f28c1ff8f581e87fef01ba67bb6b33c77934ff72ef64c",
+    "source_commit": "ca8d863bb20e5a6140325ac5e74d7da010fd5018",
+    "url": "https://raw.githubusercontent.com/devam2006/mm-allee-notebook-runtime/6ff183adae6093c26e663dfac254d2c071ea06a0/runtime/wp01-wp05-def74213164d849f.zip"
+  },
+  "zip_bytes": 510803,
+  "zip_sha256": "2a5a2199b67fbe2b30bc99698896d5f1d4ed75115c51c0e37a803a59075acd7a",
+  "zip_files": 19,
+  "eps_figures": 18,
+  "report_update": {
+    "archive": "wp03-overleaf-update.zip",
+    "bytes": 166855,
+    "sha256": "e08a324ac37ed86a033e40d10b104a58bc3ee29e5a297f2f80fe5ae311d10c94",
+    "files": {
+      "sections/03_collapse.tex": "9b91e5516e054eea5f8f45ffff2b9814a6446aa1dd284a3f31bb0c32011057a4",
+      "figures/wp03_basins.eps": "8b388baa0d4e75c5e71f8fae36aec8824b1e9104a18eb1517cc25a47cd207821",
+      "figures/wp03_extinction.eps": "56b4fb3514cfcbb15892343ca3d09601998c51627601cec75b019413afbd4f78",
+      "figures/wp03_bottleneck_core.eps": "14800c4fa565c764099504b22cc669097e2112b75fc1fe09e8afb18a14337a86",
+      "README.txt": "a3e4115ac32ba5ebecee6d85821fff0c8776f444fe2fd6af7b62668a69b078f0"
+    },
+    "scope": "WP03 section only; copy into the current Overleaf project",
+    "compiled_pdf_included": false
+  },
+  "human_approval": false
+}
