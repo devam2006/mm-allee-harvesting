@@ -1,5 +1,7 @@
 # Open and run the project
 
+[Download the final notebook + EPS-only ZIP](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v1/mm-allee-final-notebook-eps.zip). This minimal download contains one notebook and 17 EPS figures only; the notebook fetches its public runtime on first run. The earlier full support archive described below remains separate.
+
 [**Open the small notebook in Google Colab**](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb).
 
 Connect a CPU runtime and choose **Runtime → Run all**. No Drive mount, private
@@ -42,7 +44,7 @@ synthetic. Existing PINN accuracy/identifiability limitations still apply.
 
 ## Download or reproduce
 
-`notebooks/project_colab.ipynb` is the small entry point. The companion delivery
+`notebooks/project_colab.ipynb` is the small entry point. The earlier full support
 ZIP includes this notebook, an executed `project.ipynb`, all figure files,
 datasets, readable source and its exact `runtime/` ZIP. With that directory next
 to the notebook, a Jupyter kernel can restore locally without downloading the

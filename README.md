@@ -1,6 +1,6 @@
 # Five-package notebook, data and figure handoff
 
-Open the small [Colab notebook](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb), connect a CPU runtime and Run all. It downloads a fixed, checksum-verified public snapshot of the code and synthetic data. No Drive mount or private-repository access is needed. `notebooks/project_colab.ipynb` is the same small entry point; the download ZIP includes its runtime for offline Jupyter use. The larger embedded `project_standalone.ipynb` is retained as a legacy offline export. Read `docs/COLAB_QUICKSTART.md` for the entry points and measured checks. The report remains in Overleaf.
+[**Download the final notebook + EPS figures ZIP**](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v1/mm-allee-final-notebook-eps.zip). It contains your finalized notebook and 17 EPS figures only. [Open the notebook directly in Colab](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb), connect a CPU runtime and Run all. It downloads the fixed public code/data snapshot; no Drive mount or private repo access is needed. The Overleaf report is maintained separately. See `docs/COLAB_QUICKSTART.md` for reproduction details.
 
 # MM project: harvesting under a strong Allee effect
 

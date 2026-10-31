@@ -70,6 +70,8 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
 
 ## Current handoff
 
+- **Requested final download:** public `downloads/mm-allee-final-notebook-eps.zip` contains exactly the finalized notebook and 17 EPS figures. No report/PDF/PNG exports are included, per Devam's latest instruction. Rebuild with `python scripts/package_notebook_eps.py`; code/data are fetched by the notebook from its existing public runtime pin. The larger support ZIP remains a separate artifact.
+
 - **Colab entry-point fix:** the small public `project_colab.ipynb` replaces the
   multi-megabyte encoded code cell for browser use. It downloads a pinned,
   checksum-verified runtime (or uses the copy in the handoff ZIP). Anonymous
