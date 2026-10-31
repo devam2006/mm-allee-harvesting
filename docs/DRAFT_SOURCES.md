@@ -2,11 +2,16 @@
 
 | Package | Exact source | Scope |
 |---|---|---|
-| WP01 | PR #8 b83bba8c7f3c7d094d4439cf9b6d281a325ae4d0 | Original fixes plus both close-root/tolerance follow-up corrections |
-| WP02 | PR #9 879b110b0b5bfac52840b6e2db5b6cf00cbec050 | Comparison/history plus consumer/provenance fixes |
+| WP01 | PR #8 b83bba8c7f3c7d094d4439cf9b6d281a325ae4d0; notebook PR #12 6deae943d56ce0481a80d2321ce590dbfa567180 | Reviewed numerical fixes and clearer notebook derivation/algorithm; checksum-only follow-up 58ff57a9cb183d6df868014a9e789778761232ea |
+| WP02 | PR #9 cba9051dec77b82f7cf0aafb2ce3d82f1e14d832 | Reviewed comparison/history, dimensional notebook tables, dependency hashes and Windows POSIX-path fix |
 | WP03 | PR #4 16a05ce2f2c8eabfca7a95bcecf78dd7b5e190c8 | Reviewed collapse/reference analysis plus effective-tolerance fix |
 | WP01–WP03 integration | PR #11 649e0c1bd545d73f2ea153e09a4a214c6fd2324e | Shared thresholds/branches/exact fold, notebook structure and standalone export |
 | WP04–WP05 | Prem PR #10 00393cd78057e8b16c50698521f0a91ed341fb12 | JAX shared setting, validated reporting fixes and refreshed 54-fit exit evidence |
+
+The latest WP01–WP03 refresh and exact reproduction evidence are recorded in
+`CLASSICAL_REFRESH.md`. Later Prem/Rohan updates remain for the next integration
+pass. Existing ZIPs/public notebook releases are earlier snapshots until the
+final packaging pass; they are not rebuilt as part of this refresh.
 
 The refreshed combined source passed 525 tests; its portable notebook executed 27 code cells without errors (29.53 seconds). Detailed checks are in `END_TO_END_INTEGRATION.md`. Its portable notebook ran in a real fresh Jupyter kernel (27 code cells, no errors). Notebook-only integration changes embed missing helpers/static figures and qualify current review limitations. Prem's latest trainer fixes and refreshed tables are included without modifying his implementation. Legacy status semantics remain explicit. All source PRs remain reviewable and unmerged.
 

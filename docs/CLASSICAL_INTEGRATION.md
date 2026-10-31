@@ -1,5 +1,11 @@
 # WP01–WP03 notebook integration
 
+The later [reviewed refresh](CLASSICAL_REFRESH.md) incorporates WP01 PR #12
+notebook text and WP02 PR #9 `cba9051`, including Windows provenance keys and
+explicit dimensional yield/history tables. The shared mathematical contract
+below is unchanged; the older source IDs and timings describe the original
+classical assembly.
+
 This branch combines WP01 PR #8 (`b83bba8`), WP02 PR #9 (`879b110`), and
 WP03 PR #4 (`16a05ce`). The source PRs include the requested review fixes;
 the integrated shared contract is reviewed here. No merge or human approval

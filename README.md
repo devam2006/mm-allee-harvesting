@@ -1,5 +1,10 @@
 # Five-package notebook, data and figure handoff
 
+The current PR #5 source includes the reviewed WP01–WP03 refresh described in
+[CLASSICAL_REFRESH.md](docs/CLASSICAL_REFRESH.md). The public notebook and ZIP
+linked below remain earlier published snapshots until the remaining Prem/Rohan
+updates and final packaging pass are complete.
+
 [**Download the final notebook + EPS figures ZIP**](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v1/mm-allee-final-notebook-eps.zip). It contains your finalized notebook and 17 EPS figures only. [Open the notebook directly in Colab](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb), connect a CPU runtime and Run all. It downloads the fixed public code/data snapshot; no Drive mount or private repo access is needed. The Overleaf report is maintained separately. See `docs/COLAB_QUICKSTART.md` for reproduction details.
 
 # MM project: harvesting under a strong Allee effect

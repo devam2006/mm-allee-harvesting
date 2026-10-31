@@ -1,5 +1,11 @@
 # Notebook, dataset and figure handoff (PR #5)
 
+**Current integration update:** reviewed WP01 notebook text from PR #12 and
+WP02 notebook/provenance changes from PR #9 are being incorporated here. See
+`docs/CLASSICAL_REFRESH.md`. Subsequent Prem/Rohan updates and the final ZIP
+rebuild remain pending. The tracked/public ZIP downloads below are earlier
+snapshots and do not yet contain this refresh.
+
 The requested final download is `deliverables/mm-allee-final-notebook-eps.zip`: one finalized notebook and 17 EPS figures only. It has no report, PDF or PNG exports. The notebook downloads its fixed public runtime on first use. The older full support archive is retained separately. The editable LaTeX report is maintained in Overleaf; the old repository report/slide previews are historical and are not rebuilt by this task.
 
 - `notebooks/project_colab.ipynb`: small recommended Colab/Jupyter entry point using a fixed public snapshot.

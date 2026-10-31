@@ -117,3 +117,5 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
   integrator. Original WP01 fixes remain fixed; cross-package fold policy still
   requires explicit owner agreement. See the new analysis follow-up for actual
   validation. No merge, scientific approval or final integration is claimed.
+
+- **Latest classical refresh:** PR #5 incorporates Raghav PR #12 notebook text (6deae94) and Ashwath PR #9 notebook/provenance fixes (cba9051); WP03 math delimiters and scientific source remain unchanged. See [refresh evidence](../CLASSICAL_REFRESH.md). Next: integrate the later Prem/Rohan updates, then rebuild the final notebook/EPS ZIP; current downloads are earlier snapshots.
