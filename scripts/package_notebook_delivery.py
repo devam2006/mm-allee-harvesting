@@ -87,6 +87,16 @@ def package_delivery(executed_notebook, target):
     if any(out.output_type == "error" for cell in cells for out in cell.outputs):
         raise ValueError("Notebook contains an execution error")
     files = {"project.ipynb": Path(executed_notebook).read_bytes()}
+    if bundle := nb.metadata.get("runtime_bundle"):
+        runtime = ROOT / "artifacts/notebook_runtime" / Path(bundle["path"]).name
+        payload = runtime.read_bytes()
+        if hashlib.sha256(payload).hexdigest() != bundle["sha256"]:
+            raise ValueError(
+                "Packaged runtime differs from the executed notebook's pinned snapshot"
+            )
+        files[bundle["path"]] = payload
+        # The small notebook is the preferred entry; keep its local runtime beside it for offline use.
+        files["project_colab.ipynb"] = (ROOT / "notebooks/project_colab.ipynb").read_bytes()
     for directory, prefix in [
         ("src", "source/src"),
         ("scripts", "source/scripts"),
@@ -182,7 +192,7 @@ def package_delivery(executed_notebook, target):
     )
     files["SOURCE_SNAPSHOT.json"] = json.dumps(snapshot, indent=2).encode()
     files["README.md"] = (
-        "# Notebook, data and figure handoff\n\nOpen project.ipynb in Jupyter and Restart Kernel / Run All. It contains its source/config/data/evidence snapshot and restores it automatically; no repository checkout or dataset download is needed. "
+        "# Notebook, data and figure handoff\n\nOpen project.ipynb in Jupyter and Restart Kernel / Run All, or open the small project_colab.ipynb in Colab. The companion runtime/ ZIP restores the fixed source/data snapshot locally; keep it beside the notebook for offline Jupyter use. A notebook opened alone downloads the same checksum-verified snapshot from public GitHub. No private-repository access or Google Drive mount is needed. "
         "Install the scientific dependencies listed in the first Markdown cell. The tested environment is in environment.json. "
         "The saved notebook includes the actual successful kernel outputs; its ordinary demonstrations are not reruns of all recorded research sweeps.\n\n"
         "figures/ includes PNG/EPS pairs and available PDFs; use EPS files in the separately maintained Overleaf report. Historical alternatives are labelled in INVENTORY.json. "
