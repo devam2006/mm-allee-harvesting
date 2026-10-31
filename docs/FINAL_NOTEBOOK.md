@@ -1,5 +1,10 @@
 # Final WP01–WP05 notebook
 
+**Latest WP05-only update:** Rohan's additional notebook has now been integrated
+only in WP05; every other notebook cell is identical to the previous final
+version. Read [WP05_NOTEBOOK_UPDATE.md](WP05_NOTEBOOK_UPDATE.md) for the new live
+demos, measured results and v3 download. The v2 details below remain provenance.
+
 Devam supplied `project_colab_markdown_fixed _1_.ipynb` as Prem and Rohan's
 edited notebook. Its SHA-256 is
 `7ee09306a9eb66d056e57f8d23f1252c416c8940d29cbb2e8674bb5b8b689e75`.

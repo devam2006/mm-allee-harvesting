@@ -1,5 +1,11 @@
 # Open and run the project
 
+The latest **WP05-only** update is described in
+[WP05_NOTEBOOK_UPDATE.md](WP05_NOTEBOOK_UPDATE.md): every other cell is unchanged,
+and the combined notebook passed 29 code cells with no errors in 36.37 seconds.
+It is 95,322 bytes and displays 17 PNG outputs. The v3 ZIP adds the two new WP05
+EPS plots to the existing 17 figures; the runtime pin is unchanged.
+
 ## Final notebook
 
 The final notebook combines reviewed WP01–WP03 with Prem/Rohan's supplied
@@ -8,7 +14,7 @@ bytes, and passed a fresh-kernel run without errors in 36.12 seconds, including
 16 figure outputs. The existing verified runtime pin is unchanged.
 See [final versions and checks](FINAL_NOTEBOOK.md).
 
-[Download the refreshed notebook + 17 EPS figures](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v2/mm-allee-final-notebook-eps.zip).
+[Download the refreshed notebook + 19 EPS figures](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v3/mm-allee-final-notebook-eps.zip).
 The public main notebook is the current Colab entry point. Older versioned
 downloads and draft-refresh details below are retained as provenance.
 

@@ -1,5 +1,11 @@
 # Source ledger for the notebook/data/figure handoff
 
+The latest WP05-only import is Rohan's supplied notebook with SHA-256
+`9e6b29a749a614885017add2087ce56d3c04f58bc06389db3b8fa38e6ab4457d`.
+Its demo settings, live results, scope proof and new figure provenance are in
+`WP05_NOTEBOOK_UPDATE.md`. The underlying engine/frozen benchmark ledger remains
+unchanged.
+
 The final notebook also incorporates Devam's supplied Prem/Rohan Markdown
 attachment, preserving its WP04/WP05 layout with approved factual corrections.
 See `FINAL_NOTEBOOK.md` for its exact SHA-256, preserved classical cells and final

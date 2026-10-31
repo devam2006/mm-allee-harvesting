@@ -1,5 +1,10 @@
 # Full report writing handoff for an AI agent
 
+**Latest WP05 evidence:** `docs/WP05_NOTEBOOK_UPDATE.md` records Rohan's clean/noisy
+live demonstrations and separate settings. All non-WP05 notebook cells are
+unchanged. Distinguish these illustrations from the unchanged frozen 108-fit
+benchmark when writing the report. The current minimal release is v3.
+
 **Final notebook update:** Prem/Rohan's supplied notebook has now been reconciled
 with the reviewed WP01–WP03 work. Read `docs/FINAL_NOTEBOOK.md` and use the current
 PR #5 notebook and source ledger when drafting. The template remains blank in
