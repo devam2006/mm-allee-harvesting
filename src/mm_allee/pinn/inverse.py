@@ -484,6 +484,16 @@ class InversePINNTrainer:
                 history["loss_data"].append(float("nan"))
                 history["loss_phys"].append(float("nan"))
                 history["phase"].append("lbfgs")
+                x_vec = getattr(intermediate_result, "x", intermediate_result)
+                try:
+                    cand_state = unravel(jnp.asarray(x_vec))
+                    curr_phys = tp.get_physical_parameters(cand_state[1])
+                    for pname in tp.fit_params:
+                        history[f"param_{pname}"].append(float(curr_phys[pname]))
+                except Exception:
+                    for pname in tp.fit_params:
+                        prev = history[f"param_{pname}"][-1] if history[f"param_{pname}"] else 0.0
+                        history[f"param_{pname}"].append(prev)
                 if over_budget():
                     raise StopIteration
 
@@ -532,6 +542,13 @@ class InversePINNTrainer:
         final_phys = tp.get_physical_parameters(state[1])
         self.params_mod.raw_params = {k: jnp.asarray(v) for k, v in state[1].items()}
         estimated_p = {p: final_phys[p] for p in tp.fit_params}
+
+        # Ensure history param lists match epoch length and end at estimated values
+        for pname in tp.fit_params:
+            while len(history[f"param_{pname}"]) < len(history["epoch"]):
+                history[f"param_{pname}"].append(float(final_phys[pname]))
+            if len(history[f"param_{pname}"]) > 0:
+                history[f"param_{pname}"][-1] = float(final_phys[pname])
 
         # 7. Final evaluation on the entire observation trajectory
         t_all_jax = jnp.asarray(times_all, dtype=jnp.float64)
