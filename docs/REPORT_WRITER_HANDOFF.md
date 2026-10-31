@@ -1,5 +1,7 @@
 # Full report writing handoff for an AI agent
 
+**Current WP03 scope overrides older notes below:** Devam explicitly authorized an editable WP03 report draft. Use `report/sections/03_collapse.tex` and `docs/WP03_CORE_NOTEBOOK.md`: retain thresholds/basins/extinction/validation/reference data, explain the bottleneck qualitatively, and omit sensitivity/MSY/margins/asymptotic derivations. Its figure is `wp03_bottleneck_core.eps`. Other report bodies and the separate blank template ZIP are unchanged. Owner-finalized WP01/WP05 notebook sections must be preserved.
+
 **Current WP01 presentation:** PR #13 is selectively integrated. Read
 `docs/WP01_NOTEBOOK_REFRESH.md` for the latest v4 notebook; WP02–WP05 and the
 scientific engine are unchanged. The detailed WP01 derivations and numerical

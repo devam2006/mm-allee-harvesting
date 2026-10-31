@@ -1,250 +1,304 @@
-\section{Collapse thresholds, extinction and basins}
+% Owner: Devam Bhavsar (WP03). Proposed replacement for sections/03_collapse.tex.
+% Core-scope notebook/report update on PR #5 baseline 2ab0cac; WP01/WP05 preserved.
+\section{Collapse Thresholds, Extinction and Basins}
 \label{sec:collapse}
-All examples below are synthetic, under a deterministic, well-mixed population
-with constant parameters, no age structure or delays, $r>0$, $0<A<K$ and
-nonnegative harvest. Let $g(N)=rN(1-N/K)(N/A-1)$. Setting
-$x=N/K$, $\tau=rt$, $a=A/K$, $q=H/(rK)$, $e=h/r$ gives
-\[
-x'=G(x)-q\quad(\mathrm A),\qquad x'=G(x)-ex\quad(\mathrm B),
-\qquad G(x)=-x^3/a+(1+a)x^2/a-x .
-\]
-Here prime means differentiation with respect to dimensionless time $\tau$.
 
-\subsection{Critical controls from calculus}
-Differentiation gives $G'(x)=[-3x^2+2(1+a)x-a]/a$.
-Write $d=\sqrt{1-a+a^2}$. The minus stationary point $(1+a-d)/3$
-lies below $a$; the plus stationary point
-$x_*=(1+a+d)/3$ lies in $(a,1)$ and has $G''(x_*)=-2d/a<0$.
-Consequently
-\[
-q_c=G(x_*),\quad
-N_*=\frac{K+A+\sqrt{K^2-KA+A^2}}{3},\quad H_c=rKq_c .
-\]
-For B, a positive equilibrium satisfies $e=P(x)=(1-x)(x/a-1)$.
-Since $P'(x)=(1+a-2x)/a$ and $P''=-2/a$, its maximum is at
-$(1+a)/2$, giving
-\[
-e_c=\frac{(1-a)^2}{4a},\qquad h_c=\frac{r(K-A)^2}{4AK}.
-\]
-The class logistic maximum is instead $1/4$ at $x=1/2$,
-so $H_{c,\mathrm{logistic}}=rK/4$. Equal $r,K$ do not calibrate these
-different production functions. Also $H$ has population/time units while
-$h$ has inverse-time units; their numerical values cannot be compared directly.
+We now use the two harvesting models to answer three questions: how much
+harvesting can the population sustain, which initial populations survive,
+and how long extinction takes when collapse occurs.
+We assume a deterministic, well-mixed population with constant parameters,
+no age structure or time delays, and nonnegative harvesting. All numerical
+examples are synthetic; they do not describe observations of a particular species.
 
-For $r=0.7$, $K=100$, $A=20$, the example gives
-$N_*=70.55050463$, $H_c=36.75966303$, $h_c=0.56$ and
-$H_{c,\mathrm{logistic}}=17.5$ in declared model units.
-Bounded numerical maximisation checks both critical controls for six
-$a$ values from $0.05$ to $0.95$; see \texttt{wp03\_thresholds.csv}.
-
-\subsection{Basins and exact critical cases}
-For $0<q<q_c$, A has two positive roots $x_-<x_+$ in $(a,1)$.
-The signs of $G-q$ are negative, positive and negative on the three intervals:
-the lower root is unstable and the upper root stable. The negative cubic root
-is excluded from the population domain. For B the positive roots are
+The natural population growth rate under a strong Allee effect is
 \[
-x_\pm=\frac{1+a\pm\sqrt{(1-a)^2-4ae}}{2},
-\qquad f_B'(0)=-(1+e)<0 .
+g(N)=rN\left(1-\frac{N}{K}\right)\left(\frac{N}{A}-1\right),
+\qquad r>0,\quad 0<A<K.
 \]
-For numerical evaluation as $a\to0$, compute $x_+$ first and use the
-quadratic root product $x_-=a(1+e)/x_+$ to avoid cancellation in the minus
-formula. At the computed fold, return the repeated root $(1+a)/2$ explicitly.
-At either positive fold the roots coalesce. Although the derivative is zero,
-the vector field is negative on both sides locally: the double root is
-semistable, attracting from above and departing from below.
+Here $r$ is a growth-rate parameter, $K$ is the carrying capacity and $A$
+is the Allee threshold. Using the dimensionless variables
+\[
+x=\frac{N}{K},\qquad \tau=rt,\qquad a=\frac{A}{K},\qquad
+q=\frac{H}{rK},\qquad e=\frac{h}{r},
+\]
+the equations for constant harvesting (Model A) and proportional harvesting
+(Model B) become
+\[
+\frac{dx}{d\tau}=G(x)-q \quad\text{(A)},\qquad
+\frac{dx}{d\tau}=G(x)-ex \quad\text{(B)},\qquad
+G(x)=x(1-x)\left(\frac{x}{a}-1\right).
+\]
+In the population equations, $x'$ denotes $dx/d\tau$.
 
-\begin{center}\small
-\begin{tabular}{p{0.18\linewidth}p{0.36\linewidth}p{0.36\linewidth}}
+\subsection{Critical Harvesting Rates}
+\label{sec:wp03-thresholds}
+
+For Model A, an equilibrium satisfies $G(x)=q$: natural growth must balance
+the fixed catch. The largest catch that can be balanced is therefore the
+maximum of $G(x)$ for $x\geq0$. Expanding and differentiating gives
+\[
+G(x)=-\frac{x^3}{a}+\frac{(1+a)x^2}{a}-x,
+\qquad
+G'(x)=\frac{-3x^2+2(1+a)x-a}{a}.
+\]
+Solving $G'(x)=0$ gives two stationary points,
+\[
+x=\frac{1+a\pm\sqrt{1-a+a^2}}{3}.
+\]
+The smaller lies below $a$. The larger lies in $(a,1)$ and is the point of
+maximum growth. Writing $d=\sqrt{1-a+a^2}$, it is
+\[
+x_*=\frac{1+a+d}{3},\qquad G''(x_*)=-\frac{2d}{a}<0.
+\]
+Thus the critical constant harvest and its corresponding population are
+\begin{equation}
+q_c=G(x_*),\qquad H_c=rKq_c,\qquad
+N_*=\frac{K+A+\sqrt{K^2-KA+A^2}}{3}.
+\label{eq:wp03-critical-a}
+\end{equation}
+If $H>H_c$, harvesting exceeds natural growth at every population level,
+so there is no positive equilibrium. For $0<H<H_c$, positive equilibria
+exist, but survival still depends on the initial population.
+
+For Model B, a positive equilibrium satisfies $G(x)=ex$. Dividing by
+$x>0$ gives
+\[
+e=(1-x)\left(\frac{x}{a}-1\right)=P(x).
+\]
+We now maximise growth per individual rather than total growth.
+Since
+\[
+P'(x)=\frac{1+a-2x}{a},\qquad P''(x)=-\frac{2}{a}<0,
+\]
+the maximum occurs at $x=(1+a)/2$. Substitution gives
+\begin{equation}
+e_c=\frac{(1-a)^2}{4a},\qquad
+h_c=\frac{r(K-A)^2}{4AK}.
+\label{eq:wp03-critical-b}
+\end{equation}
+For $h>h_c$, there is no positive equilibrium and every positive initial
+population approaches zero.
+
+For the example $r=0.7$, $K=100$ and $A=20$, we obtain
+\[
+N_*\approx70.5505,\qquad H_c\approx36.7597,\qquad h_c=0.56.
+\]
+The standard logistic model gives $H_{c,\mathrm{logistic}}=rK/4=17.5$.
+This is a reference calculation: using the same $r,K$ does not make the
+logistic and Allee growth functions identical. Also, $H$ has units of
+population per time, whereas $h$ has units of inverse time. Comparing their
+raw numerical values does not compare harvesting risk.
+We checked both dimensionless thresholds by numerical maximisation for
+$a=0.05,0.1,0.2,0.5,0.8,0.95$\cite{scipy_bounded}.
+
+\subsection{Initial Population and Basins of Attraction}
+\label{sec:wp03-basins}
+
+A basin of attraction is the set of initial populations that approach the
+same long-term state. For Model A with $0<q<q_c$, there are two positive
+equilibria $x_-<x_+$, both between $a$ and $1$. The signs of $G(x)-q$ are
+negative below $x_-$, positive between the roots and negative above $x_+$.
+Thus $x_-$ is unstable and $x_+$ is stable. A start below $x_-$ declines
+to zero, while a start above it approaches $x_+$.
+
+Model B has the positive equilibria
+\[
+x_\pm=\frac{1+a\pm\sqrt{(1-a)^2-4ae}}{2},\qquad 0\leq e<e_c.
+\]
+Its smaller root is also the boundary between decline and persistence.
+Unlike Model A with positive catch, Model B has a stable zero equilibrium:
+if $f_B(x)=G(x)-ex$, then $f_B'(0)=-(1+e)<0$.
+
+At the critical harvest, the two positive equilibria merge. This is called
+a fold. The merged population is $x_*$ for A and $(1+a)/2$ for B.
+The population decreases on both sides near this equilibrium. A start
+above it therefore approaches it, while a start below moves away toward
+zero. This one-sided attraction is called semistability; a zero derivative
+alone would not establish stability.
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{p{0.16\linewidth}p{0.37\linewidth}p{0.37\linewidth}}
 \toprule
-Control & A: constant yield & B: effort\\
+Harvest level & Model A & Model B\\
 \midrule
-Zero & Below $a$ approaches zero; above $a$ tends to 1
-& Same positive-state basins; zero stable\\
-Below fold & Below $x_-$ hits zero; above $x_-$ tends to $x_+$
-& Below $x_-$ approaches zero; above tends to $x_+$\\
-At fold & Below $x_*$ hits zero; above approaches $x_*$
-& Below double root approaches zero; above approaches double root\\
-Above fold & Every finite positive start hits zero
-& Every positive start approaches zero\\
+Zero & $0<x_0<a$: approaches zero; $x_0>a$: approaches $1$.
+& Same behaviour.\\
+Below critical & $0<x_0<x_-$: reaches zero; $x_0>x_-$: approaches $x_+$.
+& $0<x_0<x_-$: approaches zero; $x_0>x_-$: approaches $x_+$.\\
+At critical & $0<x_0<x_*$: reaches zero; $x_0>x_*$: approaches $x_*$.
+& Below the merged root: approaches zero; above it: approaches that root.\\
+Above critical & Every finite $x_0>0$ reaches zero.
+& Every $x_0>0$ approaches zero.\\
 \bottomrule
 \end{tabular}
-\end{center}
-Exact initial equilibria remain there in every row. A with $q>0$ has
-$f_A(0)=-q$: zero is not an equilibrium; initial zero records immediate
-boundary termination. At $q=0$ and for B, zero is an equilibrium.
+\caption{Outcomes for positive initial populations. Below critical means
+positive harvest below the relevant model's threshold. An initial population
+exactly at any equilibrium remains there.}
+\label{tab:wp03-basins}
+\end{table}
 
-The classifier uses sign arguments, not a finite solver horizon. Exact
-floating matches to returned roots are recognised. Non-exact starts within
-$2\,10^{-12}$ dimensionless population units of an unstable or semistable
-boundary are labelled unresolved. Controls are not merged by a fold tolerance:
-adjacent representable controls below and above the computed cliff remain
-distinct. These are finite-precision conventions, not measurement uncertainty.
-WP01/WP02 retain ownership of their full equilibrium/stability presentations.
+With no harvesting, $x_0=a$ remains at the Allee threshold and $x_0=0$
+remains zero. For Model A with $q>0$, however, $x'=-q$ at $x=0$; zero is a
+boundary at which we stop the physical solution, not an equilibrium of
+the original equation. A start at zero has extinction time zero.
 
-\begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_basins}
-\caption{Synthetic analytical basin grids. Solid black curves are basin
-boundaries, dashed curves upper positive equilibria, dotted vertical lines folds.
-A decline under positive yield reaches zero in finite time; B decline is
-asymptotic. The exact equilibrium lines and thin zero-harvest column also
-require the classification table; the colour grid has finite resolution.
-The colour regions meet exactly at the fold, which is drawn as a line.}
-\end{figure}
-
-\subsection{Extinction quadrature and numerical checks}
-On a reaching-zero A path, separation gives
-\[
-\tau_{\rm ext}=\int_0^{x_0}\frac{du}{q-G(u)},\qquad
-t_{\rm ext}=\tau_{\rm ext}/r=\int_0^{N_0}\frac{dN}{H-g(N)}.
-\]
-Classify before integrating. For a subcritical reaching-zero start, the
-denominator is continuous and strictly positive on $[0,x_0]$, giving finite
-time. For $q>q_c$, $G(x)\le q_c$ for all $x\ge0$ additionally gives
-$\tau_{\rm ext}\le x_0/(q-q_c)$. An intervening equilibrium is a pole and
-makes this extinction formula inapplicable. With $q=0$, smoothness and
-uniqueness exclude a positive state arriving at the zero equilibrium in
-finite time. The same argument applies to B; no B cutoff time is claimed
-as exact extinction.
-
-Near a subcritical basin boundary, factor the cubic as
-$(x-x_n)(x_--x)(x_+-x)/a$, where $x_n<0$.
-For the difficult upper portion of the integral, the substitution
-$u=\log[x_-/(x_--x)]$ removes the vanishing factor and avoids cancellation.
-At the computed fold, put $s=x_*-x_0>0$ and $d=\sqrt{1-a+a^2}$.
-Partial fractions give an elementary evaluation of the same integral:
-\[
-\tau_{\rm ext}=\frac{a x_0}{d s x_*}
-+\frac{a}{d^2}\log\left(1+\frac{d x_0}{s(d-x_*)}\right).
-\]
-This avoids missed endpoint contributions for starts extremely close below
-the fold. Its method is recorded as \texttt{fold\_closed\_form}, with no
-invented quadrature-error estimate. Root rounding remains a separate source
-of uncertainty near a basin boundary. For a subcritical start approaching
-$x_-$ from below, $d\tau_{\rm ext}/dx_0=1/[q-G(x_0)]
-\sim1/[f'_A(x_-)(x_--x_0)]$: input/root rounding is amplified as the gap
-shrinks, so extra reported digits do not imply extra physical accuracy.
-
-SciPy RK45 uses the Dormand--Prince 5(4) pair: shared stage slopes produce
-two estimates, their difference controls local error, and the fifth-order
-value advances the state\cite{scipy_solve_ivp}. The wrapper stops at the first
-downward zero event for positive-yield A and includes the event endpoint.
-No post-event zero tail is passed to the original ODE. Output times do not
-prescribe internal adaptive steps. Default reference tolerances are
-$10^{-9}$ relative, $10^{-11}$ absolute, maximum dimensionless step $0.1$.
-
-The 427 initial-state/control evaluations retain explicit outcome labels;
-a blank time means no finite extinction or unresolved classification, not
-zero or a finite-horizon estimate. Six representative finite paths, including
-the fold from below, are checked by the separated integral (quadrature or the
-fold expression above), RK45 at relative tolerances
-$10^{-8}$ and $10^{-10}$, and DOP853 at $10^{-12}$. The latter integrates the
-independently expanded polynomial $-q-x+(1+a)x^2/a-x^3/a$.
-Acceptance is $|\Delta\tau|\le2\,10^{-7}+5\,10^{-7}\tau_{\rm ext}$;
-the largest observed discrepancy is below $4.6\,10^{-8}$.
-QUADPACK's error output is an estimate, not a rigorous bound\cite{scipy_quad}.
-Tests additionally cover several $a$ values, physical units, exact logistic
-solutions and deliberate corruption of the production RHS.
+Figure~\ref{fig:wp03-basins} shows the basins. They are classified using
+the signs of the equations, rather than the end of a finite simulation.
+Very close to an unstable or merged root, rounding can change the apparent
+outcome. The implementation labels non-exact starts within
+$2\times10^{-12}$ dimensionless population units of this boundary as
+unresolved. This numerical tolerance does not represent measurement error
+or change the critical harvesting rate.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_extinction}
-\caption{A extinction time versus initial state and catch in declared model
-units; vertical axes are logarithmic. Gaps mean no finite extinction,
-equilibrium or unresolved boundary; initial zero has time zero and is omitted.
-The dashed line on the right is $H_c$. Times grow near a basin boundary and
-decrease with catch along a fixed reaching-zero initial state.}
+\includegraphics[width=\linewidth]{wp03_basins.eps}
+\caption{Basins for the synthetic example $a=0.2$. Each horizontal axis uses
+a fraction of its model's own critical harvest. Solid curves mark the lower
+equilibrium boundaries, dashed curves the upper equilibria, and dotted
+vertical lines the critical harvests. A reaches zero in finite time under
+positive catch; B approaches zero asymptotically. The finite-resolution
+colour grid should be read together with Table~\ref{tab:wp03-basins}.}
+\label{fig:wp03-basins}
 \end{figure}
 
-\subsection{Bottleneck above the fold}
-Set $q=q_c+\delta$, $\delta>0$, and $y=x-x_*$. The cubic expansion is exact:
-\[
-q-G(x)=\delta+\beta y^2+y^3/a,\qquad \beta=d/a>0.
-\]
-For a fixed start above $x_*$ and a terminal state below it, the leading
-passage contribution follows from
-\[
-\int\frac{dy}{\delta+\beta y^2}
-=\frac{\arctan(y\sqrt{\beta/\delta})}{\sqrt{\beta\delta}},
-\qquad \tau_{\rm ext}\sim\frac{\pi}{\sqrt{\beta\delta}}
-\quad(\delta\downarrow0).
-\]
-This is passage after the positive equilibria disappear, distinct from local
-relaxation toward a stable equilibrium. A fixed start below $x_*$ does not
-cross this bottleneck and need not have this leading divergence.
-At the fold itself, a start above approaches algebraically:
-$y'\simeq-\beta y^2$ gives $y\simeq y_0/(1+\beta y_0\tau)$.
-A start below still reaches zero.
+\subsection{Time to Extinction}
+\label{sec:wp03-extinction}
 
-The substitution $y=\sqrt{\delta/\beta}\tan\theta$ resolves the full
-near-fold integral, with transformed integrand
-$[\sqrt{\beta\delta}(1+(y/d)\sin^2\theta)]^{-1}$.
-At $x_0=1.1$, the example's measured
-$\tau_{\rm ext}\sqrt{\delta}$ rises from $1.36535$ at $\delta/q_c=0.1$
-to $1.46542$ at $10^{-4}$, approaching the predicted $1.46756$.
+For a Model A trajectory that reaches zero, $x'=-(q-G(x))$. Separating
+variables and integrating from $x_0$ to zero gives
+\begin{equation}
+\tau_{\mathrm{ext}}=\int_0^{x_0}\frac{du}{q-G(u)},\qquad
+t_{\mathrm{ext}}=\frac{\tau_{\mathrm{ext}}}{r}
+=\int_0^{N_0}\frac{dN}{H-g(N)}.
+\label{eq:wp03-extinction}
+\end{equation}
+This formula is used only after checking the basin. On a declining path
+that reaches zero under positive catch, the denominator stays positive
+over the whole interval. The integral is then finite. If an equilibrium
+lies in the interval, the denominator vanishes and the integral cannot
+be used as a finite extinction time.
+
+For $q>q_c$, we have $G(x)\leq q_c$ for every $x\geq0$. Hence
+\[
+q-G(x)\geq q-q_c>0,\qquad
+\tau_{\mathrm{ext}}\leq\frac{x_0}{q-q_c}.
+\]
+This also proves finite extinction for every finite positive start above
+the critical catch. At $q=q_c$, starts below $x_*$ still reach zero,
+but starts above it approach $x_*$ instead.
+
+Model B behaves differently. Its right-hand side is smooth and zero is
+an equilibrium. Uniqueness of solutions prevents a positive trajectory
+from arriving at that equilibrium in finite time. The same reasoning
+applies to Model A when $q=0$. A numerical time to a small positive cutoff
+would therefore measure near-extinction, not exact extinction, in these cases.
+
+We evaluated \eqref{eq:wp03-extinction} numerically using quadrature
+\cite{scipy_quad}. Close to a basin boundary or the fold, the integrand
+can become sharply peaked. The implementation uses changes of variable
+near these points and an analytical expression at the fold. These methods
+evaluate the same separated integral. Quadrature error estimates do not
+include uncertainty from rounded equilibrium locations and are not rigorous
+error bounds.
+
+The extinction curves contain 427 initial-population/harvest evaluations.
+A missing finite time indicates an equilibrium, asymptotic decline,
+persistence or unresolved classification; it is not a time of zero.
+Figure~\ref{fig:wp03-extinction} shows that extinction can take much longer
+near a basin boundary. For a fixed initial population on a reaching-zero
+path, increasing the constant catch reduces the extinction time.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_bottleneck}
-\caption{Synthetic supercritical A trajectories and bottleneck divergence.
-Both axes on the right are dimensionless and logarithmic. The dashed
-small-$\delta$ expression is a leading asymptotic, not an exact finite-$\delta$
-fit. All trajectories terminate at their zero event.}
+\includegraphics[width=\linewidth]{wp03_extinction.eps}
+\caption{Model A extinction times for $r=0.7$, $K=100$, $A=20$, varying
+the initial population (left) and constant catch (right). Time is dimensional
+and both vertical axes are logarithmic. Gaps have no reported finite
+extinction time. Initial zero has time zero and is omitted from the log plot.
+The dashed line on the right marks $H_c$.}
+\label{fig:wp03-extinction}
 \end{figure}
 
-\subsection{Optional sensitivity and sustainable yield}
-Holding the other dimensional parameters fixed, $g_N(N_*)=0$ removes
-the derivative of $N_*$ from $dH_c$:
-\[
-H_{c,r}=H_c/r,\quad
-H_{c,K}=rN_*^2(N_*/A-1)/K^2,\quad
-H_{c,A}=-rN_*^2(1-N_*/K)/A^2.
-\]
-Since $h_c=\tfrac r4(K/A-2+A/K)$,
-\[
-h_{c,r}=h_c/r,\quad h_{c,K}=\tfrac r4(1/A-A/K^2),\quad
-h_{c,A}=\tfrac r4(-K/A^2+1/K).
-\]
-Elasticity is $(p/C)\partial C/\partial p$. For the example, the
-$(r,K,A)$ elasticities are $(1,2.39564,-1.39564)$ for $H_c$ and
-$(1,1.5,-1.5)$ for $h_c$. Central differences check the partials;
-population-scale homogeneity makes the last two elasticities sum to 1
-and 0 respectively. An $a$ sweep at fixed $r,K$ is a different experiment.
+\subsection{Numerical Method and Accuracy Checks}
+\label{sec:wp03-validation}
 
-For A the stable positive branch has yield approaching the supremum $H_c$,
-at the semistable fold with zero control margin.
-For B, $Y(h)=hN_+(h)=g(N_+(h))$. Since $N_*>(K+A)/2$, the
-production-maximising state is on its stable upper branch. Hence
-\[
-h_{\rm MSY}=g(N_*)/N_*<h_c,\qquad Y_{\rm MSY}=H_c.
-\]
-The example gives $h_{\rm MSY}=0.5210404$ and effort margin
-$1-h_{\rm MSY}/h_c=0.0695707$. Independent bounded maximisation
-checks this interior optimum\cite{scipy_bounded}. The initial population
-must still lie above the unstable root.
+We solved the population equation with SciPy's RK45 method, which uses
+the Dormand--Prince Runge--Kutta pair of orders five and four
+\cite{scipy_solve_ivp}. The difference between its two estimates controls
+the step size, and the fifth-order estimate advances the solution.
+Requested plotting times do not fix the internal solver steps.
+The reference settings are relative tolerance $10^{-9}$, absolute
+tolerance $10^{-11}$ and maximum dimensionless step $0.1$.
 
-At $N_0=90$, illustrative policies A at $H=0.8H_c$ and B at its MSY
-give population margins $N_0-N_-=36.1954$ and $40.5505$, with control
-margins $20\%$ and $6.957\%$. Their initial realised catches differ;
-these separate examples do not establish a universal risk ranking.
+For Model A with positive catch, a terminal event stops the solution at
+its first downward crossing of zero and includes the computed event point.
+We do not continue the original equation into negative populations or
+append a zero tail as if it solved that equation.
+
+We checked six finite-extinction cases, including a start below the fold
+population at the critical catch. Each separated integral was compared
+with RK45 at relative tolerances $10^{-8}$ and $10^{-10}$, and with DOP853
+at $10^{-12}$. The corresponding absolute tolerances were $10^{-10}$,
+$10^{-12}$ and $10^{-14}$; all three integrations used maximum step $0.1$.
+For DOP853 we separately expanded the right-hand side as
+$-q-x+(1+a)x^2/a-x^3/a$.
+The acceptance condition was
+\[
+|\Delta\tau|\leq2\times10^{-7}
++5\times10^{-7}\tau_{\mathrm{ext}}.
+\]
+All six saved cases passed. The largest discrepancy from the integral
+was $4.56\times10^{-8}$ in dimensionless time. This supports numerical
+agreement for the tested cases; it is not a proof of accuracy for every
+parameter choice or a validation against field observations.
+
+\subsection{Slow Decline Just Above the Critical Catch}
+\label{sec:wp03-bottleneck}
+
+Extinction need not happen quickly when $q$ is only slightly larger than
+$q_c$. Although no positive equilibrium remains, growth almost balances
+the constant catch near the former equilibrium population $x_*$. The net
+decline is small there, so the population can spend a long time in this
+region before falling to zero. This slow passage is called a bottleneck.
+
+Figure~\ref{fig:wp03-bottleneck} shows numerical trajectories for three
+catches just above the critical value, all starting at $x_0=1.1$ with
+$a=0.2$. Catches closer to the critical value produce longer delays.
+Each trajectory ends at its computed zero event. The apparently flat
+part of a short simulation must not be interpreted as permanent survival.
+We use this as a visual observation of the numerical solutions and do not
+fit or claim an asymptotic scaling law.
 
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_sensitivity_yield}
-\caption{Optional dimensional elasticities and B upper-branch yield.
-The interior MSY is distinct from the semistable effort cliff.
-Yield uses declared population/time units. Each elasticity holds the other
-dimensional parameters fixed.}
+\includegraphics[width=0.9\linewidth]{wp03_bottleneck_core.eps}
+\caption{Model A trajectories just above the critical catch, with $a=0.2$
+and $x_0=1.1$. Time and population are dimensionless. The dashed horizontal
+line marks the former fold population. Each curve ends at its zero event;
+closer-to-critical catches show longer delays before collapse.}
+\label{fig:wp03-bottleneck}
 \end{figure}
 
-\subsection{Reproduction, handoff and limitations}
-The versioned WP03 experiment regenerates the same tables and figures used
-here and in the notebook; manifests record config, versions and source/file
-hashes. The early reference handoff remains six cases and 606 clean synthetic
-points, with known conditions separate from unknown evaluation truth.
-WP05 owns observation selection, noise, frozen splits, inverse fitting,
-baseline and held-out evaluation; WP04 supplies the neural engine.
-No field-data or species-specific validation is claimed.
+\subsection{Reference Data and Limitations}
+\label{sec:wp03-limitations}
 
-The submission audit lists unfinished group sections and missing final
-artifacts/metadata. Group packaging waits for the other work packages,
-reviews and reproduction; this section does not certify their completion.
-AI assistance: OpenAI ChatGPT/Codex for implementation, exposition, testing
-and documentation, recorded in the project acknowledgement log.
-Devam's detailed learning review remains pending.
+The numerical work also supplied an early clean reference set of six
+synthetic trajectories, with 606 sampled points in total. It covers regular
+persistence, decline or extinction, and near-critical behaviour in both
+models. The generator records parameter values, units and solver settings,
+and keeps evaluation truth separate from declared known conditions.
+This early reference set is distinct from WP05's later observation,
+noise and data-splitting choices.
+
+The calculations assume constant parameters and a well-mixed population.
+They do not include environmental variation, demographic randomness,
+age structure or time delays. The thresholds and extinction times are
+consequences of these model assumptions, rather than species-specific
+harvesting recommendations. The accompanying notebook runs the core threshold, basin, extinction and
+validation study with \texttt{--core-only}; sensitivity, yield optimisation
+and bottleneck asymptotic comparisons are outside this contribution.
+Shared numerical helpers and clean reference generation remain available
+to the other work packages.
+
+AI assistance from OpenAI ChatGPT/Codex was used for implementation,
+explanation, testing and documentation; its roles are recorded in the
+project AI-use log.

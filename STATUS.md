@@ -1,5 +1,7 @@
 # Project status
 
+**Current WP03 scope:** the notebook now runs a core-only threshold/basin/extinction/validation study, with numbered 3.1–3.6 explanations, a trajectories-only bottleneck and the existing reference handoff. The WP03 LaTeX section is an editable draft; other sections and the blank template ZIP are unchanged. See [WP03 core handoff](docs/WP03_CORE_NOTEBOOK.md).
+
 PR #11 integrates reviewed WP01–WP03 source fixes and shared numerical conventions. PR #5 combines this with Prem's current WP04–WP05 PR #10 into a portable notebook/data/figure candidate: The previous 511-test handoff and two isolated kernel runs passed; the refreshed source includes Prem PR #10 `00393cd` with verified reporting fixes (301 source tests; 531 integrated tests including four direct residual parity cases and six Colab export regressions). Legacy status denotes training completion; optimizer convergence is reported separately. Human understanding, reviews, the final Overleaf report and presentation remain separate requirements.
 
 <!-- team-sync:status:start -->

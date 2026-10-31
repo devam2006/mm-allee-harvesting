@@ -1,5 +1,7 @@
 # WP03 — Collapse thresholds, basins and numerical reference
 
+**Current delivery scope, 1 November 2026:** Devam approved a core-only notebook/report: thresholds, basins, extinction integral, numerical validation, qualitative bottleneck and reference data. Sensitivity/MSY/margins and bottleneck asymptotic exposition are omitted. Shared helpers and historical studies remain available. See [the current handoff](../WP03_CORE_NOTEBOOK.md). This supersedes older scope/status prose below; human review remains pending.
+
 <!-- team-sync:owner:start -->
 **Owner:** @devam2006. See [team.json](../../team.json) for the current choice.
 <!-- team-sync:owner:end -->
