@@ -22,9 +22,10 @@
     "executed_code_cells": 32,
     "errors": 0,
     "wall_seconds": 26.62,
-    "sha256": "08ee7d79fbbd23654051bacb9e3c24f32b41f0116f104473a7dea297a3d90ce9",
+    "sha256": "9abaf419dda7c79ae86760aa54172399b9e0c7c97a53fdcab5cb2e65752daffb",
     "png_outputs": 15,
-    "anonymous_public_download": true
+    "anonymous_public_download": true,
+    "execution_provenance": "Real saved outputs retained from the identical 32 code-cell sources and runtime after a Markdown-only user revision"
   },
   "figures": {
     "png_eps_pairs": 17,
@@ -78,9 +79,9 @@
     "sha256": "de23a1a2a6a389458816df8e87446a94babe5f8ff64dc9e4621447a2d17aae08"
   },
   "colab_export": {
-    "bytes": 82395,
+    "bytes": 82217,
     "largest_code_cell_characters": 2634,
-    "public_notebook_commit": "d8058231039068f1d3db7048d15a6af0ac10e29b",
+    "public_notebook_commit": "0d2680ca1ed0164144b818c7fe5a5ee75148efc3",
     "public_asset_commit": "774d3d2773e219e21a9859aa4d621a4988b7552d",
     "runtime_bytes": 1547835,
     "anonymous_http": 200,
@@ -99,5 +100,13 @@
     "wall_seconds": 29.37,
     "external_http_disabled": true,
     "uses_local_runtime_zip": true
+  },
+  "final_user_markdown": {
+    "changed_cells": 6,
+    "change": "Colab-friendly math delimiters only",
+    "code_sources_unchanged": true,
+    "runtime_pin_unchanged": true,
+    "exact_source_rebuild": true,
+    "public_commit": "0d2680ca1ed0164144b818c7fe5a5ee75148efc3"
   }
 }

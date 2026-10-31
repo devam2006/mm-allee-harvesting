@@ -17,7 +17,7 @@ All 15 figures appear as outputs when their cells run.
 
 ## Version and checks
 
-- Public notebook commit: `d8058231039068f1d3db7048d15a6af0ac10e29b`.
+- Public notebook commit: `0d2680ca1ed0164144b818c7fe5a5ee75148efc3`.
 - Public asset commit: `774d3d2773e219e21a9859aa4d621a4988b7552d`.
 - Runtime: `runtime/wp01-wp05-aa68d518ae054ca6.zip`; its full SHA-256 and
   source-file inventory are in `artifacts/notebook_runtime/manifest.json`.
@@ -72,3 +72,14 @@ python scripts/package_notebook_delivery.py --notebook PATH_TO_EXECUTED_COLAB_NO
 
 Public availability and machine checks do not replace the four human reviews,
 owner agreement on shared contracts, final Overleaf work or presentation.
+
+## Final Markdown from Devam
+
+The attached `project_colab_markdown_fixed.ipynb` is the final notebook text.
+Six WP03 Markdown cells use `$...$` / `$$...$$` in place of `\(...\)` /
+`\[...\]`. The 32 code-cell sources, cell order/IDs and pinned runtime are
+identical. Every changed Markdown string is exactly the delimiter conversion
+of its prior text, so the equations and interpretation are unchanged.
+The WP03 source fragment was updated and regenerates the attached notebook
+exactly. Existing real outputs are retained from the identical tested code;
+training was not repeated for this documentation-only update.
