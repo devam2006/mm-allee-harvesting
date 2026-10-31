@@ -93,3 +93,16 @@ Deliver future command `python experiments/wp02/run.py --config configs/wp02.jso
   is maintained separately. No human understanding or rehearsal is certified.
 - **Explain:** proportional harvest falls with biomass but does not remove the
   Allee recovery barrier. Why does returning effort to zero fail below A?
+
+### Final notebook additions
+
+Added explicit total/mean catch formulas, a six-row dimensional comparison table
+including yield and basin boundary, and a four-row history/recovery table with
+years and refinement errors. The full 36-row CSV remains available. Source:
+`notebooks/sections/02_model_b_history.ipynb`; assembled notebooks (`notebooks/project.ipynb`,
+`notebooks/wp01_wp03.ipynb` and `notebooks/wp01_wp03_standalone.ipynb`) and
+`report/sections/02_model_b_history.tex` updated.
+Apply these six WP02 cells to the final small Colab notebook; Devam owns final
+publication/runtime packaging. Local handoff: `results/project_colab_wp02_updated.ipynb`
+uses the final integration snapshot with only WP02 cells replaced. Other five-package
+code was not rerun here; the local combined classical notebook was verified.

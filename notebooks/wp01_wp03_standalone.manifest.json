@@ -1,5 +1,5 @@
 {
-  "source_commit": "649e0c1bd545d73f2ea153e09a4a214c6fd2324e",
+  "source_commit": "49722c6e083e3e0c0517c7ef214c854b0add8ce1",
   "source_dirty": true,
   "work_packages": [
     1,
@@ -38,7 +38,7 @@
     "artifacts/figures/wp03_sensitivity_yield.pdf": "38388d01bd86e442b4569a71399c0a02bbcc4b34383e5e27f9ac648b5a212e61",
     "artifacts/figures/wp03_sensitivity_yield.png": "e95b2c3be7435b4a6fc860bb51ebf4b20e27d603ee27fbdc37b1efb359c7e239",
     "artifacts/manifests/wp01_run.json": "9055a88801adab003997504506030aeddb2c1914dbe7262093588dd180a14cea",
-    "artifacts/manifests/wp02_run.json": "98be97a4949acbfd6b447e54c3d1978668564ab5de0dac2e8d2d9c6abb1b6090",
+    "artifacts/manifests/wp02_run.json": "e9dcc5071b8b1d22779a6961784164c13da8058b6173a8b506d7ab95de8724c4",
     "artifacts/manifests/wp03_analysis.json": "759b331a369470278a64e42c2e0a319bc1cea3b5934fe0964e8d1c187cd8d117",
     "artifacts/manifests/wp03_environment.txt": "e19d7f5c057b40df14c07d64004c3e3532c833ce2985d67033e92b3b5a80e221",
     "artifacts/manifests/wp03_reference.json": "ff3ad29f1acbfac6199d8d8e1b8558a1332986f239f776359ba3e9ef7dd8e070",
@@ -76,7 +76,7 @@
     "data/fixtures/wp03_reference/manifest.json": "ff3ad29f1acbfac6199d8d8e1b8558a1332986f239f776359ba3e9ef7dd8e070",
     "data/fixtures/wp03_reference/truth.json": "a96aee0d43a16803f0db7737f2b3325d0bba4af6e39d940ba99017af9b7d9d42",
     "data/fixtures/wp03_reference/validation.csv": "a7923a459cf55d14e048e93e7872f3e8797f9de92ec2a3bf9b5874a51b22c3ae",
-    "docs/AI_USAGE.md": "d7b4f415f7867001a5160260f959db4aa6787d88e72d98c92a26a735ce6c240c",
+    "docs/AI_USAGE.md": "1c591f7aac8bbbce95329d7b164a816d20a236e4288cd7c11438ab9b74417ce1",
     "experiments/wp01/run.py": "d4e715eea189e4050c9a6f05515de3dae48e88de73e098662e7878015e50dbca",
     "experiments/wp02/run.py": "5c097191f1be6b79b1097d55b0da67bfbd5fc3a7f2e3ae003f0f54d0f386b5cc",
     "experiments/wp03/generate_reference.py": "202a5762e6dc49d07b0370287cbf0bc588cbae1018b3c9c898158f70f9cab5af",
@@ -100,8 +100,8 @@
     "src/mm_allee/reference_validation.py": "3954868e50a18c1e36f3fc7023104ff613f3624f966391986c77f9596bf27547",
     "src/mm_allee/solver.py": "ecbcd509c1221c8ec5538e974f9ec0741e660ccb26dc7d608a5c1675ea5c7695",
     "src/mm_allee/thresholds.py": "5dd125bcf915b1e8c4583abf0dd93c8f301d7465daca7afee44f1d4cd665f466",
-    "src/mm_allee/wp02_experiment.py": "035b408f31c7a1823e3dbde93c844bb37429b14f9b02ff22160448a8ff07d1c5"
+    "src/mm_allee/wp02_experiment.py": "79c5ea90b63666f8b1f80357bd7f82b9ed1cbb37a6f013e1f928d6b9f05f0168"
   },
-  "payload_sha256": "ae3908fb821f62757fe7c5a6c4964dbc39ff06ea9b70c7204bec655a0aff2459",
-  "notebook_sha256": "105460c3f53c1b913671184a2afc8b217cb02ded82be91c6575881171b629573"
+  "payload_sha256": "139085c11c90a2eca5428c4f801a227189c71756e65f19152223e1c0223548f3",
+  "notebook_sha256": "e125f57e2d53804b1d076ad9934f89ee952089469f944943f40807e535520f52"
 }

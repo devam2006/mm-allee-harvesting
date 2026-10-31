@@ -87,3 +87,17 @@ manifest key separators, OpenAI Codex changed dependency-hash keys to POSIX
 format and strengthened the provenance regression. The focused test passed on
 macOS; native Windows execution was unavailable, so that platform run remains
 pending. No scientific conclusions changed.
+
+31 October 2026: at Ashwath’s request, Codex checked the final integration notebook
+and added missing WP02 yield/basin and history result displays, catch-integral
+explanation and boundary-uncertainty wording. No model equations or simulations
+were changed. Prepared a local final-Colab handoff replacing only the six WP02
+cells, preserving all other package cells and the pinned runtime.
+
+31 October 2026: at Ashwath’s request, Google Antigravity audited the WP02 branch
+for any remaining missing deliverables or stale artifacts, rebuilt the classical
+assembled and standalone notebooks (`notebooks/wp01_wp03.ipynb` and
+`notebooks/wp01_wp03_standalone.ipynb` plus manifest) to include the new WP02
+yield/basin and history notebook tables, updated stale pre-integration wording in
+`report/sections/02_model_b_history.tex`, removed leftover temporary chart
+directories, and re-verified the test suite and linters.

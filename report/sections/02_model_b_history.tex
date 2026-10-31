@@ -157,11 +157,13 @@ bounded solves; this is not a hard operating-system timeout. The manifest
 records configuration, actual tolerances, versions, hardware, source hashes,
 commit and dirty status, elapsed time and output checksums. There is no noise,
 random seed, empirical dataset or neural training in this package.
-Comparison support is restricted to $0.05\leq a\leq0.95$ pending WP01's
-near-boundary numerical fixes; the recorded experiment uses $a=0.2$ far from
-those problematic regimes. WP03's threshold helpers are not yet present in
-this checkout; A reuses WP01's helper and B uses its discriminant derivation.
+The recorded experiment uses $a=0.2$, well inside the interior regime where both
+models have three distinct equilibria below their folds. Model A's critical catch
+$q_c(a)$ and Model B's critical effort $e_c(a)$ use the shared exact-fold
+threshold module, and initial-state basin classification uses WP03's shared
+separatrix helper (reporting near-boundary ambiguity as
+\texttt{boundary\_unresolved}).
 Optional relaxation-time experiments are deferred. Final integration,
 independent human reproduction, four approvals and presentation rehearsal
-remain separate requirements. Codex assisted derivation, implementation,
+remain separate requirements. Codex and Antigravity assisted derivation, implementation,
 testing and drafting; human understanding is not certified by these checks.

@@ -41,3 +41,7 @@ presentation rehearsal or certification of human understanding is claimed.
 31 October 2026, latest WP02 review follow-up: canonical POSIX dependency-hash
 keys fix Windows manifest portability; the focused provenance regression passes
 on macOS. Native Windows execution and fresh-head CI remain pending.
+
+WP02 final-notebook follow-up: add dimensional yield/basin and history tables,
+with yield derivation and explicit boundary uncertainty. Source fragment and
+local assembled notebook updated; final Colab publication remains with Devam.
