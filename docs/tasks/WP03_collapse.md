@@ -70,6 +70,14 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
 
 ## Current handoff
 
+- **Colab entry-point fix:** the small public `project_colab.ipynb` replaces the
+  multi-megabyte encoded code cell for browser use. It downloads a pinned,
+  checksum-verified runtime (or uses the copy in the handoff ZIP). Anonymous
+  retrieval and a fresh 32-code-cell run passed; all 531 tests passed. Public
+  hosting was explicitly requested by Devam; scientific code/results are
+  unchanged. See `docs/COLAB_QUICKSTART.md` for the public notebook and rebuild
+  steps. Private development history/reviews are not part of the public snapshot.
+
 - **Latest reporting-fix update:** PR #5 now incorporates Prem's PR #10
   `00393cd` with verified validation-loss and L-BFGS reporting fixes. All ten
   source regression tests and 301 source tests passed; the integrated suite

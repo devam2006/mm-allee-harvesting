@@ -1,9 +1,11 @@
 # Downloadable notebook, data and figures
 
 Download and extract [mm-allee-notebook-data-figures.zip](mm-allee-notebook-data-figures.zip).
-Open its root `project.ipynb` in Jupyter and run all cells. This executed notebook
-embeds the source/config/data/evidence it needs; no checkout or data download is
-required. Install the scientific Python dependencies listed in its first cell.
+Open the small `project_colab.ipynb` in Colab, or the executed `project.ipynb` in
+Jupyter. The runtime ZIP beside it provides local code/data; a notebook opened
+alone downloads the identical fixed snapshot from public GitHub. No private
+repository access or Google Drive mount is needed. Install the scientific Python
+dependencies listed in the first cell if they are missing.
 
 The ZIP includes 17 PNG/EPS figure pairs, available vector PDFs, six clean
 synthetic CSVs, 54 reconstructed observation scenarios, readable source and
@@ -24,3 +26,5 @@ python scripts/package_notebook_delivery.py --notebook PATH_TO_EXECUTED_NOTEBOOK
 
 The companion `.manifest.json` records the source revision, notebook and ZIP
 hashes. `SHA256SUMS.json` inside the ZIP covers every other archived file.
+
+[Open directly in Colab](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb). This is the small browser entry point; the older encoded export is retained separately.

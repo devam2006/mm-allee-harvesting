@@ -8,8 +8,8 @@
     "WP04_WP05_PR10": "00393cd78057e8b16c50698521f0a91ed341fb12"
   },
   "full_suite": {
-    "passed": 525,
-    "seconds": 53.52,
+    "passed": 531,
+    "seconds": 55.6,
     "environment": "existing Python 3.14.3 scientific/JAX environment; no fresh dependency install"
   },
   "classical_notebook": {
@@ -18,16 +18,13 @@
     "wall_seconds": 20.49
   },
   "final_notebook": {
-    "executed_code_cells": 27,
+    "format": "small public-runtime Colab/Jupyter notebook",
+    "executed_code_cells": 32,
     "errors": 0,
-    "wall_seconds": 29.53,
-    "sha256": "de23a1a2a6a389458816df8e87446a94babe5f8ff64dc9e4621447a2d17aae08"
-  },
-  "extracted_zip_notebook": {
-    "executed_code_cells": 27,
-    "errors": 0,
-    "wall_seconds": 28.56,
-    "no_repository_checkout_required": true
+    "wall_seconds": 26.62,
+    "sha256": "08ee7d79fbbd23654051bacb9e3c24f32b41f0116f104473a7dea297a3d90ce9",
+    "png_outputs": 15,
+    "anonymous_public_download": true
   },
   "figures": {
     "png_eps_pairs": 17,
@@ -73,5 +70,27 @@
     "recorded_pinn_errors_or_abnormal_exits": 0,
     "independent_full_sweep_rerun": false,
     "prem_ci": "https://github.com/devam2006/mm-allee-harvesting/actions/runs/41137292297"
+  },
+  "previous_embedded_notebook": {
+    "executed_code_cells": 27,
+    "errors": 0,
+    "wall_seconds": 29.53,
+    "sha256": "de23a1a2a6a389458816df8e87446a94babe5f8ff64dc9e4621447a2d17aae08"
+  },
+  "colab_export": {
+    "bytes": 82395,
+    "largest_code_cell_characters": 2634,
+    "public_notebook_commit": "c4abf90f10472c056853f42f9fd21fdbcb21c62e",
+    "public_asset_commit": "774d3d2773e219e21a9859aa4d621a4988b7552d",
+    "runtime_bytes": 1547835,
+    "anonymous_http": 200,
+    "export_regression_tests": 6,
+    "live_browser_memory_benchmark": false
+  },
+  "previous_extracted_embedded_notebook": {
+    "executed_code_cells": 27,
+    "errors": 0,
+    "wall_seconds": 28.56,
+    "no_repository_checkout_required": true
   }
 }

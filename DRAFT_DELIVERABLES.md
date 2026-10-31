@@ -1,9 +1,10 @@
 # Notebook, dataset and figure handoff (PR #5)
 
-The active deliverable is now the standalone five-package notebook and its companion archive under `deliverables/`. The editable LaTeX report is maintained in Overleaf; the old repository report/slide previews are historical and are not rebuilt by this task.
+The active deliverable is the small five-package Colab/Jupyter notebook and its companion archive under `deliverables/`; the runtime is hosted publicly and included locally in the archive. The editable LaTeX report is maintained in Overleaf; the old repository report/slide previews are historical and are not rebuilt by this task.
 
-- `notebooks/project.ipynb`: readable assembled notebook.
-- `notebooks/project_standalone.ipynb`: single-file notebook with source, configs, synthetic data and evidence embedded; standard scientific dependencies required.
+- `notebooks/project_colab.ipynb`: small recommended Colab/Jupyter entry point using a fixed public snapshot.
+- `notebooks/project.ipynb`: readable assembled checkout notebook.
+- `notebooks/project_standalone.ipynb`: larger legacy embedded export; use the small Colab entry point for browser use.
 - `deliverables/mm-allee-notebook-data-figures.zip`: executed portable notebook, readable source, synthetic datasets, tables/provenance and EPS/PNG figures.
 - `docs/END_TO_END_INTEGRATION.md`: measured checks and the verified WP05 reporting fixes and remaining review requirements.
 - `docs/DRAFT_SOURCES.md`: exact source PR/commit ledger.

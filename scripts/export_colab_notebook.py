@@ -303,6 +303,13 @@ def export_notebook(manifest, asset_ref, target):
     target = Path(target)
     target.parent.mkdir(parents=True, exist_ok=True)
     nbformat.write(notebook, target)
+    subprocess.run(
+        [sys.executable, "-m", "ruff", "format", str(target)],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    notebook = nbformat.read(target, as_version=4)
     print(
         json.dumps(
             {

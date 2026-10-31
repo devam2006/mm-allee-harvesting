@@ -1,10 +1,10 @@
 # Five-package notebook, data and figure handoff
 
-This PR #5 branch combines classical PR #11 with Prem's current WP04/WP05 integration. Use `notebooks/project_standalone.ipynb` or download the notebook/data/figures archive under `deliverables/`. The notebook is self-contained with its source and synthetic evidence; standard scientific Python dependencies are required. Read `docs/END_TO_END_INTEGRATION.md` for measured checks and the verified reporting fixes and remaining human review requirements. The report is maintained separately in Overleaf; no repository LaTeX assembly is requested.
+Open the small [Colab notebook](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb), connect a CPU runtime and Run all. It downloads a fixed, checksum-verified public snapshot of the code and synthetic data. No Drive mount or private-repository access is needed. `notebooks/project_colab.ipynb` is the same small entry point; the download ZIP includes its runtime for offline Jupyter use. The larger embedded `project_standalone.ipynb` is retained as a legacy offline export. Read `docs/COLAB_QUICKSTART.md` for the entry points and measured checks. The report remains in Overleaf.
 
 # MM project: harvesting under a strong Allee effect
 
-**This is the evolving final-materials draft branch.** Start with [DRAFT_DELIVERABLES.md](DRAFT_DELIVERABLES.md) for the partial report, notebook, editable PowerPoint, previews, source ledger and update commands. WP03 is populated; the other scientific sections still await reviewed contributions. This branch is not ready for submission.
+**This is the five-package integration candidate.** [DRAFT_DELIVERABLES.md](DRAFT_DELIVERABLES.md) lists the current notebook/data/figure handoff and remaining human reviews. Older repository report/slide previews are historical; collaborators maintain the report directly in Overleaf.
 
 **Approved title:** Harvesting under a Strong Allee Effect: Collapse Thresholds, Hysteresis and Comparison of Constant-Yield vs Proportional-Effort Harvesting, with Physics-Informed Neural Network (PINN) Forward and Inverse Analysis
 

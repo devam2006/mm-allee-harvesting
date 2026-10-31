@@ -7,6 +7,14 @@ by the agent. The report is maintained in Overleaf, not assembled here.
 
 ## Reporting-fix review, 31 October 2026
 
+**Latest entry-point update:** the browser-friendly notebook is now
+`notebooks/project_colab.ipynb` and is published in the public companion repo.
+The former 5.2-million-character encoded code cell is replaced by a small
+checksum-verified public runtime loader. The new public-download notebook
+passed **32 cells, zero errors, 26.62 seconds**, and the full suite passed
+**531 tests**. See [Colab quickstart and exact versions](COLAB_QUICKSTART.md).
+The older 27-cell embedded-export timings below remain historical evidence.
+
 Prem added `7b502cc` (runtime fixes and ten regression tests), followed by
 `00393cd` (refreshed 54-fit evidence and scientific wording). All ten reporting
 regressions and the full 301-test source suite passed independently; both
