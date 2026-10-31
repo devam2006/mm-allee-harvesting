@@ -38,8 +38,17 @@ lies inside the collocation domain, so it is physics-supported prediction.
 
 The small Colab notebook is rebuilt from the owned fragments, preserving all
 six of Devam's WP03 Markdown delimiter changes. The public runtime snapshot
-must be refreshed to carry the WP02 source/provenance corrections. Legacy
-embedded notebooks are also regenerated with consistent manifests.
+has been refreshed to carry the WP02 source/provenance corrections. Legacy
+embedded notebooks are regenerated with consistent manifests. The legacy
+exporter now writes canonical LF bytes before hashing, preventing Windows/Git
+newline conversion from invalidating its checksum records.
+
+Four WP01 callouts retain their colored HTML headings, but their equations and
+algorithm steps are moved into ordinary Markdown below the headings. The math
+text is unchanged. This avoids relying on math parsing inside raw HTML. All
+Markdown cells use `$...$` / `$$...$$`, contain no legacy math delimiters or
+tab characters, and have balanced dollar delimiters. No live Colab browser
+render or browser-memory benchmark is claimed.
 
 ## Verification
 
@@ -50,7 +59,23 @@ Ashwath's tables ran all 32 code cells without errors in a fresh kernel
 The refreshed source passed **531 tests in 211.88 seconds** on Windows, before
 the subsequent two Markdown-only Prem cells were imported. Source/tests/configs
 are unchanged by that import. Lint, formatting and ownership checks pass.
-Final refreshed-runtime verification is recorded below after it runs.
+The refreshed notebook then passed a real fresh-kernel run using its anonymous
+public download path: **32 code cells, zero errors, 47.45 seconds**, with 15 PNG
+figure outputs. Its six-row comparison and four-row history tables render as
+Markdown outputs. The notebook has 75 cells and is **86,677 bytes**, with a
+largest code cell of 2,634 characters and no encoded bootstrap payload.
+
+- Runtime source checkpoint: `87bea768e798e826c39c9776541a3e3ef183175d` (clean).
+- Public immutable asset commit: `b0c6f278a5bff74dda2341cea3b0823c018c21de`.
+- Runtime: `runtime/wp01-wp05-1aa5283ac899d954.zip`, 1,547,948 bytes / 146 files.
+- SHA-256: `1aa5283ac899d954ec3dc1115fd533e6d3824cec01518c45df210752d5472e17`.
+- Both regenerated legacy payload inventories and notebook checksums validate.
+
+The public repository's main notebook and release ZIP intentionally remain
+the earlier published version; only the new immutable runtime and matching
+readable resources were published for this integration candidate. Its final
+public notebook and ZIP publication are deferred until the remaining owner
+updates have been integrated.
 
 ## Handoff
 

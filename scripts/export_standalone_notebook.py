@@ -140,7 +140,8 @@ print("Restored bundled source and synthetic data:", ROOT)
     nbformat.validate(nb)
     target = Path(target)
     target.parent.mkdir(parents=True, exist_ok=True)
-    nbformat.write(nb, target)
+    # Hash the same LF bytes Git stores on every platform, including Windows.
+    target.write_text(nbformat.writes(nb).rstrip("\n") + "\n", encoding="utf-8", newline="\n")
     manifest = target.with_suffix(".manifest.json")
     manifest.write_text(
         json.dumps(

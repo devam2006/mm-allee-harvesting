@@ -1,5 +1,5 @@
 {
-  "source_commit": "1c93b4095f4ddea0916a96bec50e4af19da858c6",
+  "source_commit": "87bea768e798e826c39c9776541a3e3ef183175d",
   "source_dirty": true,
   "work_packages": [
     1,
@@ -76,7 +76,7 @@
     "data/fixtures/wp03_reference/README.md": "6aae8d2a7cbc3c5dc459b2cdaa084d0cf979b1e5486b45db050b2003780908de",
     "data/fixtures/wp03_reference/truth.json": "a96aee0d43a16803f0db7737f2b3325d0bba4af6e39d940ba99017af9b7d9d42",
     "data/fixtures/wp03_reference/validation.csv": "a7923a459cf55d14e048e93e7872f3e8797f9de92ec2a3bf9b5874a51b22c3ae",
-    "docs/AI_USAGE.md": "5b529460adfcbf6647172073b728a26d6978e255c44cd9e1ee5d5b10be616155",
+    "docs/AI_USAGE.md": "c03f9c91ed360343e16314c730f5a660200a1b1269835ac6feb278f3eca6a413",
     "experiments/wp01/run.py": "d4e715eea189e4050c9a6f05515de3dae48e88de73e098662e7878015e50dbca",
     "experiments/wp02/run.py": "5c097191f1be6b79b1097d55b0da67bfbd5fc3a7f2e3ae003f0f54d0f386b5cc",
     "experiments/wp03/generate_reference.py": "202a5762e6dc49d07b0370287cbf0bc588cbae1018b3c9c898158f70f9cab5af",
@@ -108,6 +108,6 @@
     "src/mm_allee/validation.py": "380544c733d7bed6679a4ef4b4cbf6bdd26ac50c9ae0491641a30bf866c6c7c4",
     "src/mm_allee/wp02_experiment.py": "79c5ea90b63666f8b1f80357bd7f82b9ed1cbb37a6f013e1f928d6b9f05f0168"
   },
-  "payload_sha256": "2a8166354b154a558fea057898ce48359a13e70eb9d32875cc56e50cd5b33f26",
-  "notebook_sha256": "5cc8245c8505a0e1a16bd7a209cbe603a5371095a3d13d73f56f92c24824cdb9"
+  "payload_sha256": "d0fa772f314800d6169447b790ce6ffb6d860467b7f2bf06f9f9e909dd321ea3",
+  "notebook_sha256": "2f70d4789ffa9f01578dcefb6383b61d36c786d30284a177e5860a81153eda12"
 }

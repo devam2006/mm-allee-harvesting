@@ -1,7 +1,7 @@
 # Notebook, dataset and figure handoff (PR #5)
 
 **Current integration update:** reviewed WP01 notebook text from PR #12 and
-WP02 notebook/provenance changes from PR #9 are being incorporated here. See
+WP02 notebook/provenance changes from PR #9 are included here. See
 `docs/CLASSICAL_REFRESH.md`. Prem's latest notebook wording from PR #10 is also
 included. Rohan's remaining updates and the final ZIP
 rebuild remain pending. The tracked/public ZIP downloads below are earlier

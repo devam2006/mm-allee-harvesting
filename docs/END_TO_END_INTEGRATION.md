@@ -1,5 +1,13 @@
 # Five-package notebook integration
 
+**Current draft refresh:** WP01 PR #12 text, WP02 PR #9 `cba9051` notebook and
+Windows provenance updates, and Prem PR #10 `a0cbbc9` result/domain wording are
+included. The refreshed source passed 531 tests; the new small notebook ran
+32 code cells with zero errors via its new public runtime in 47.45 seconds.
+See [exact versions and Markdown checks](CLASSICAL_REFRESH.md). Existing ZIPs
+and the public main notebook remain earlier snapshots until final packaging.
+No later independent Rohan changes or historical training sweeps are claimed.
+
 The integration combines classical PR #11 (`649e0c1`, including current WP01
 `b83bba8`, WP02 `879b110`, WP03 `16a05ce`) with Prem's WP04/WP05 PR #10
 `00393cd78057e8b16c50698521f0a91ed341fb12`. Source PRs remain open for human review. No PR was merged or approved

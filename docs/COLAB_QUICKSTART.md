@@ -1,5 +1,22 @@
 # Open and run the project
 
+## Current draft integration candidate
+
+PR #5 now includes the reviewed WP01/WP02 notebook updates and Prem PR #10
+`a0cbbc9` wording. Use `notebooks/project_colab.ipynb` from this branch for that
+candidate. It is 86,677 bytes and pins public runtime commit
+`b0c6f278a5bff74dda2341cea3b0823c018c21de`, SHA-256
+`1aa5283ac899d954ec3dc1115fd533e6d3824cec01518c45df210752d5472e17`.
+The new public-download path passed 32 code cells without errors in 47.45 s.
+Markdown math and table syntax were checked; the finalized WP03 cells are
+unchanged. See [refresh evidence](CLASSICAL_REFRESH.md).
+
+The public main notebook and release links below are **earlier published
+snapshots**. They will be refreshed with the final ZIP after the remaining
+owner updates; the new immutable runtime is already public for this candidate.
+
+## Earlier published download
+
 [Download the final notebook + EPS-only ZIP](https://github.com/devam2006/mm-allee-notebook-runtime/releases/download/notebook-eps-v1/mm-allee-final-notebook-eps.zip). This minimal download contains one notebook and 17 EPS figures only; the notebook fetches its public runtime on first run. The earlier full support archive described below remains separate.
 
 [**Open the small notebook in Google Colab**](https://colab.research.google.com/github/devam2006/mm-allee-notebook-runtime/blob/main/project.ipynb).
