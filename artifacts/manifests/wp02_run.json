@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "run_id": "wp02-20261031T111202Z",
-  "timestamp_utc": "2026-10-31T11:12:02.635320+00:00",
+  "run_id": "wp02-20261031T133308Z",
+  "timestamp_utc": "2026-10-31T13:33:08.378417+00:00",
   "config": {
     "schema_version": 1,
     "budget_seconds": 120,
@@ -57,7 +57,7 @@
     },
     "seeds": []
   },
-  "git_sha": "649e0c1bd545d73f2ea153e09a4a214c6fd2324e",
+  "git_sha": "8960fbfdca915803d982a2eb32bde4528a975683",
   "git_dirty": true,
   "hardware": "macOS-14.6-arm64-arm-64bit / arm64",
   "python": "3.12.0",
@@ -92,7 +92,7 @@
     "src/mm_allee/model_b.py": "978eb2ee9fa5b078d1827359c7851c43264b63d217f3d1c547e0cc07fd37b98a",
     "src/mm_allee/history.py": "406ad06c87b2133854d3809e44d458e7b05fc6b5a37de837efb59c2219d55f37",
     "src/mm_allee/comparison.py": "3fa08bb08f067340a3a40c615aef5bfc02db0fd076bedbb92acff0e06018cac6",
-    "src/mm_allee/wp02_experiment.py": "035b408f31c7a1823e3dbde93c844bb37429b14f9b02ff22160448a8ff07d1c5"
+    "src/mm_allee/wp02_experiment.py": "79c5ea90b63666f8b1f80357bd7f82b9ed1cbb37a6f013e1f928d6b9f05f0168"
   },
   "summary": [
     {
@@ -156,7 +156,7 @@
       "max_refinement_event_tau_error": 0
     }
   ],
-  "elapsed_seconds": 1.4647617080008786,
+  "elapsed_seconds": 1.395816708998609,
   "output_sha256": {
     "wp02_b_branches.eps": "1592589dedd77b4061fecacc259618a0aefb75a53da4e91202cf63dd7170698c",
     "wp02_b_branches.pdf": "a87471b5e8ef263b7115f81113815b15b237916351d974c8a762c3ae24b05b01",

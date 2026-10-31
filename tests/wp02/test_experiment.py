@@ -28,6 +28,7 @@ def test_experiment_outputs_and_provenance(tmp_path):
         if name.endswith(".csv"):
             assert b"\r\n" not in (tmp_path / name).read_bytes()
     assert result["config"]["solver"] == config["solver"]
+    assert all("\\" not in name for name in result["source_sha256"])
     for dependency in ("thresholds.py", "collapse.py"):
         name = f"src/mm_allee/{dependency}"
         assert (

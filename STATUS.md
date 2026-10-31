@@ -37,3 +37,7 @@ skip; all three classical experiments and the combined notebook execute.
 blocker. Raghav reproduced/approved WP02 at `879b110`; fresh review of the updated
 head and the other required approvals remain pending. No main merge, final
 presentation rehearsal or certification of human understanding is claimed.
+
+31 October 2026, latest WP02 review follow-up: canonical POSIX dependency-hash
+keys fix Windows manifest portability; the focused provenance regression passes
+on macOS. Native Windows execution and fresh-head CI remain pending.

@@ -151,7 +151,8 @@ def run_experiment(config, output, root):
         ]
     ]
     manifest["source_sha256"] = {
-        str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() for p in source_paths
+        p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in source_paths
     }
 
     def budget():

@@ -81,3 +81,9 @@ It reran tests, all three classical experiments and the real combined notebook,
 regenerated WP02 artifacts/portable notebook, and updated evidence/handoff.
 421 full-suite tests passed (one optional Torch skip); no human approval,
 understanding, rehearsal or main merge was supplied by the agent.
+
+31 October 2026: after the latest PR #9 review identified Windows-specific
+manifest key separators, OpenAI Codex changed dependency-hash keys to POSIX
+format and strengthened the provenance regression. The focused test passed on
+macOS; native Windows execution was unavailable, so that platform run remains
+pending. No scientific conclusions changed.

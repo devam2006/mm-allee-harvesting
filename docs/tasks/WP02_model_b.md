@@ -74,12 +74,16 @@ Deliver future command `python experiments/wp02/run.py --config configs/wp02.jso
   corrected WP01 `b83bba8`, WP03 `16a05ce`, and WP02 `879b110`. Shared thresholds
   and basin uncertainty now agree in the combined tree. Corrected stale fold
   wording, reused the shared RK45 minimum and recorded new dependency hashes.
+  The latest review's Windows provenance issue is fixed by writing dependency
+  hash keys with POSIX separators and asserting the format in the regression.
 - **Evidence:** full suite 421 passed / one optional Torch skip; all three default
   classical experiments succeed; combined 43-cell notebook executes in a fresh
-  kernel. WP02 rerun took 1.465 s within its 120-second budget; extinction times
+  kernel. WP02 rerun took 1.396 s within its 120-second budget; extinction times
   and recovery conclusions are unchanged. Detailed named evidence and commands:
   [WP02 validation](WP02_validation.md). Curated provenance records source hashes
   and dirty development state honestly.
+- **Latest fix evidence:** the focused provenance test passes on macOS; native
+  Windows execution is unavailable in this environment.
 - **Next step:** review the updated #9 diff and CI; request all four teammates'
   latest-head reviews. Raghav's reproduction/approval at `879b110` is recorded
   separately from the new changes. A non-author human performs any main merge

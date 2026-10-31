@@ -24,6 +24,15 @@ are still required; no PR has been merged into main.
 - Regenerate WP02 evidence and the portable classical notebook; replace publishing
   blockers and the PR template with actual evidence.
 
+## Portability follow-up (31 October 2026)
+
+The latest review found that dependency hashes used native `Path` string formatting,
+which yields backslash keys on Windows while the provenance test expects stable
+slash-separated names. The manifest now serializes keys with
+`Path.relative_to(root).as_posix()`, and the regression asserts that all source
+hash keys contain no backslashes while checking both shared dependency hashes.
+The focused test was rerun on macOS; a native Windows run was unavailable here.
+
 ## Scientific evidence
 
 Config: configs/wp02.json; manifest: artifacts/manifests/wp02_run.json (source hashes and dirty development state recorded). Deterministic CPU run, 120-second budget; no neural training or empirical observations.
@@ -66,6 +75,11 @@ checks below/at/above-fold roots and stability for both models;
 uncertainty contract. `test_unsupported_rtol_is_rejected_before_creating_output`
 checks early rejection, and `test_experiment_outputs_and_provenance` checks the
 new dependency hashes.
+
+Portability follow-up command:
+`.venv/bin/python -m pytest tests/wp02/test_experiment.py::test_experiment_outputs_and_provenance -q`;
+result: passed on macOS. Windows path normalization is covered by the explicit
+forward-slash assertion, but this checkout did not run on Windows.
 
 Raghav reported independent reproduction of 40 WP02 tests and the default
 experiment on `879b110`, and approved that snapshot. This is not approval of
