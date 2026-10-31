@@ -1,6 +1,250 @@
 \section{Collapse thresholds, extinction and basins}
-\textbf{SCAFFOLD\_ONLY:} Threshold derivations; finite versus asymptotic extinction; quadrature and event validation; basin maps; synthetic reference provenance.
+\label{sec:collapse}
+All examples below are synthetic, under a deterministic, well-mixed population
+with constant parameters, no age structure or delays, $r>0$, $0<A<K$ and
+nonnegative harvest. Let $g(N)=rN(1-N/K)(N/A-1)$. Setting
+$x=N/K$, $\tau=rt$, $a=A/K$, $q=H/(rK)$, $e=h/r$ gives
+\[
+x'=G(x)-q\quad(\mathrm A),\qquad x'=G(x)-ex\quad(\mathrm B),
+\qquad G(x)=-x^3/a+(1+a)x^2/a-x .
+\]
+Here prime means differentiation with respect to dimensionless time $\tau$.
 
-Replace this template with derivations, algorithms, labelled figures/tables, interpretation, limitations and verified references from WP03.
+\subsection{Critical controls from calculus}
+Differentiation gives $G'(x)=[-3x^2+2(1+a)x-a]/a$.
+Write $d=\sqrt{1-a+a^2}$. The minus stationary point $(1+a-d)/3$
+lies below $a$; the plus stationary point
+$x_*=(1+a+d)/3$ lies in $(a,1)$ and has $G''(x_*)=-2d/a<0$.
+Consequently
+\[
+q_c=G(x_*),\quad
+N_*=\frac{K+A+\sqrt{K^2-KA+A^2}}{3},\quad H_c=rKq_c .
+\]
+For B, a positive equilibrium satisfies $e=P(x)=(1-x)(x/a-1)$.
+Since $P'(x)=(1+a-2x)/a$ and $P''=-2/a$, its maximum is at
+$(1+a)/2$, giving
+\[
+e_c=\frac{(1-a)^2}{4a},\qquad h_c=\frac{r(K-A)^2}{4AK}.
+\]
+The class logistic maximum is instead $1/4$ at $x=1/2$,
+so $H_{c,\mathrm{logistic}}=rK/4$. Equal $r,K$ do not calibrate these
+different production functions. Also $H$ has population/time units while
+$h$ has inverse-time units; their numerical values cannot be compared directly.
 
-The reference integration uses SciPy solve\_ivp\cite{scipy_solve_ivp}.
+For $r=0.7$, $K=100$, $A=20$, the example gives
+$N_*=70.55050463$, $H_c=36.75966303$, $h_c=0.56$ and
+$H_{c,\mathrm{logistic}}=17.5$ in declared model units.
+Bounded numerical maximisation checks both critical controls for six
+$a$ values from $0.05$ to $0.95$; see \texttt{wp03\_thresholds.csv}.
+
+\subsection{Basins and exact critical cases}
+For $0<q<q_c$, A has two positive roots $x_-<x_+$ in $(a,1)$.
+The signs of $G-q$ are negative, positive and negative on the three intervals:
+the lower root is unstable and the upper root stable. The negative cubic root
+is excluded from the population domain. For B the positive roots are
+\[
+x_\pm=\frac{1+a\pm\sqrt{(1-a)^2-4ae}}{2},
+\qquad f_B'(0)=-(1+e)<0 .
+\]
+For numerical evaluation as $a\to0$, compute $x_+$ first and use the
+quadratic root product $x_-=a(1+e)/x_+$ to avoid cancellation in the minus
+formula. At the computed fold, return the repeated root $(1+a)/2$ explicitly.
+At either positive fold the roots coalesce. Although the derivative is zero,
+the vector field is negative on both sides locally: the double root is
+semistable, attracting from above and departing from below.
+
+\begin{center}\small
+\begin{tabular}{p{0.18\linewidth}p{0.36\linewidth}p{0.36\linewidth}}
+\toprule
+Control & A: constant yield & B: effort\\
+\midrule
+Zero & Below $a$ approaches zero; above $a$ tends to 1
+& Same positive-state basins; zero stable\\
+Below fold & Below $x_-$ hits zero; above $x_-$ tends to $x_+$
+& Below $x_-$ approaches zero; above tends to $x_+$\\
+At fold & Below $x_*$ hits zero; above approaches $x_*$
+& Below double root approaches zero; above approaches double root\\
+Above fold & Every finite positive start hits zero
+& Every positive start approaches zero\\
+\bottomrule
+\end{tabular}
+\end{center}
+Exact initial equilibria remain there in every row. A with $q>0$ has
+$f_A(0)=-q$: zero is not an equilibrium; initial zero records immediate
+boundary termination. At $q=0$ and for B, zero is an equilibrium.
+
+The classifier uses sign arguments, not a finite solver horizon. Exact
+floating matches to returned roots are recognised. Non-exact starts within
+$2\,10^{-12}$ dimensionless population units of an unstable or semistable
+boundary are labelled unresolved. Controls are not merged by a fold tolerance:
+adjacent representable controls below and above the computed cliff remain
+distinct. These are finite-precision conventions, not measurement uncertainty.
+WP01/WP02 retain ownership of their full equilibrium/stability presentations.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{wp03_basins}
+\caption{Synthetic analytical basin grids. Solid black curves are basin
+boundaries, dashed curves upper positive equilibria, dotted vertical lines folds.
+A decline under positive yield reaches zero in finite time; B decline is
+asymptotic. The exact equilibrium lines and thin zero-harvest column also
+require the classification table; the colour grid has finite resolution.
+The colour regions meet exactly at the fold, which is drawn as a line.}
+\end{figure}
+
+\subsection{Extinction quadrature and numerical checks}
+On a reaching-zero A path, separation gives
+\[
+\tau_{\rm ext}=\int_0^{x_0}\frac{du}{q-G(u)},\qquad
+t_{\rm ext}=\tau_{\rm ext}/r=\int_0^{N_0}\frac{dN}{H-g(N)}.
+\]
+Classify before integrating. For a subcritical reaching-zero start, the
+denominator is continuous and strictly positive on $[0,x_0]$, giving finite
+time. For $q>q_c$, $G(x)\le q_c$ for all $x\ge0$ additionally gives
+$\tau_{\rm ext}\le x_0/(q-q_c)$. An intervening equilibrium is a pole and
+makes this extinction formula inapplicable. With $q=0$, smoothness and
+uniqueness exclude a positive state arriving at the zero equilibrium in
+finite time. The same argument applies to B; no B cutoff time is claimed
+as exact extinction.
+
+Near a subcritical basin boundary, factor the cubic as
+$(x-x_n)(x_--x)(x_+-x)/a$, where $x_n<0$.
+For the difficult upper portion of the integral, the substitution
+$u=\log[x_-/(x_--x)]$ removes the vanishing factor and avoids cancellation.
+At the computed fold, put $s=x_*-x_0>0$ and $d=\sqrt{1-a+a^2}$.
+Partial fractions give an elementary evaluation of the same integral:
+\[
+\tau_{\rm ext}=\frac{a x_0}{d s x_*}
++\frac{a}{d^2}\log\left(1+\frac{d x_0}{s(d-x_*)}\right).
+\]
+This avoids missed endpoint contributions for starts extremely close below
+the fold. Its method is recorded as \texttt{fold\_closed\_form}, with no
+invented quadrature-error estimate. Root rounding remains a separate source
+of uncertainty near a basin boundary. For a subcritical start approaching
+$x_-$ from below, $d\tau_{\rm ext}/dx_0=1/[q-G(x_0)]
+\sim1/[f'_A(x_-)(x_--x_0)]$: input/root rounding is amplified as the gap
+shrinks, so extra reported digits do not imply extra physical accuracy.
+
+SciPy RK45 uses the Dormand--Prince 5(4) pair: shared stage slopes produce
+two estimates, their difference controls local error, and the fifth-order
+value advances the state\cite{scipy_solve_ivp}. The wrapper stops at the first
+downward zero event for positive-yield A and includes the event endpoint.
+No post-event zero tail is passed to the original ODE. Output times do not
+prescribe internal adaptive steps. Default reference tolerances are
+$10^{-9}$ relative, $10^{-11}$ absolute, maximum dimensionless step $0.1$.
+
+The 427 initial-state/control evaluations retain explicit outcome labels;
+a blank time means no finite extinction or unresolved classification, not
+zero or a finite-horizon estimate. Six representative finite paths, including
+the fold from below, are checked by the separated integral (quadrature or the
+fold expression above), RK45 at relative tolerances
+$10^{-8}$ and $10^{-10}$, and DOP853 at $10^{-12}$. The latter integrates the
+independently expanded polynomial $-q-x+(1+a)x^2/a-x^3/a$.
+Acceptance is $|\Delta\tau|\le2\,10^{-7}+5\,10^{-7}\tau_{\rm ext}$;
+the largest observed discrepancy is below $4.6\,10^{-8}$.
+QUADPACK's error output is an estimate, not a rigorous bound\cite{scipy_quad}.
+Tests additionally cover several $a$ values, physical units, exact logistic
+solutions and deliberate corruption of the production RHS.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{wp03_extinction}
+\caption{A extinction time versus initial state and catch in declared model
+units; vertical axes are logarithmic. Gaps mean no finite extinction,
+equilibrium or unresolved boundary; initial zero has time zero and is omitted.
+The dashed line on the right is $H_c$. Times grow near a basin boundary and
+decrease with catch along a fixed reaching-zero initial state.}
+\end{figure}
+
+\subsection{Bottleneck above the fold}
+Set $q=q_c+\delta$, $\delta>0$, and $y=x-x_*$. The cubic expansion is exact:
+\[
+q-G(x)=\delta+\beta y^2+y^3/a,\qquad \beta=d/a>0.
+\]
+For a fixed start above $x_*$ and a terminal state below it, the leading
+passage contribution follows from
+\[
+\int\frac{dy}{\delta+\beta y^2}
+=\frac{\arctan(y\sqrt{\beta/\delta})}{\sqrt{\beta\delta}},
+\qquad \tau_{\rm ext}\sim\frac{\pi}{\sqrt{\beta\delta}}
+\quad(\delta\downarrow0).
+\]
+This is passage after the positive equilibria disappear, distinct from local
+relaxation toward a stable equilibrium. A fixed start below $x_*$ does not
+cross this bottleneck and need not have this leading divergence.
+At the fold itself, a start above approaches algebraically:
+$y'\simeq-\beta y^2$ gives $y\simeq y_0/(1+\beta y_0\tau)$.
+A start below still reaches zero.
+
+The substitution $y=\sqrt{\delta/\beta}\tan\theta$ resolves the full
+near-fold integral, with transformed integrand
+$[\sqrt{\beta\delta}(1+(y/d)\sin^2\theta)]^{-1}$.
+At $x_0=1.1$, the example's measured
+$\tau_{\rm ext}\sqrt{\delta}$ rises from $1.36535$ at $\delta/q_c=0.1$
+to $1.46542$ at $10^{-4}$, approaching the predicted $1.46756$.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{wp03_bottleneck}
+\caption{Synthetic supercritical A trajectories and bottleneck divergence.
+Both axes on the right are dimensionless and logarithmic. The dashed
+small-$\delta$ expression is a leading asymptotic, not an exact finite-$\delta$
+fit. All trajectories terminate at their zero event.}
+\end{figure}
+
+\subsection{Optional sensitivity and sustainable yield}
+Holding the other dimensional parameters fixed, $g_N(N_*)=0$ removes
+the derivative of $N_*$ from $dH_c$:
+\[
+H_{c,r}=H_c/r,\quad
+H_{c,K}=rN_*^2(N_*/A-1)/K^2,\quad
+H_{c,A}=-rN_*^2(1-N_*/K)/A^2.
+\]
+Since $h_c=\tfrac r4(K/A-2+A/K)$,
+\[
+h_{c,r}=h_c/r,\quad h_{c,K}=\tfrac r4(1/A-A/K^2),\quad
+h_{c,A}=\tfrac r4(-K/A^2+1/K).
+\]
+Elasticity is $(p/C)\partial C/\partial p$. For the example, the
+$(r,K,A)$ elasticities are $(1,2.39564,-1.39564)$ for $H_c$ and
+$(1,1.5,-1.5)$ for $h_c$. Central differences check the partials;
+population-scale homogeneity makes the last two elasticities sum to 1
+and 0 respectively. An $a$ sweep at fixed $r,K$ is a different experiment.
+
+For A the stable positive branch has yield approaching the supremum $H_c$,
+at the semistable fold with zero control margin.
+For B, $Y(h)=hN_+(h)=g(N_+(h))$. Since $N_*>(K+A)/2$, the
+production-maximising state is on its stable upper branch. Hence
+\[
+h_{\rm MSY}=g(N_*)/N_*<h_c,\qquad Y_{\rm MSY}=H_c.
+\]
+The example gives $h_{\rm MSY}=0.5210404$ and effort margin
+$1-h_{\rm MSY}/h_c=0.0695707$. Independent bounded maximisation
+checks this interior optimum\cite{scipy_bounded}. The initial population
+must still lie above the unstable root.
+
+At $N_0=90$, illustrative policies A at $H=0.8H_c$ and B at its MSY
+give population margins $N_0-N_-=36.1954$ and $40.5505$, with control
+margins $20\%$ and $6.957\%$. Their initial realised catches differ;
+these separate examples do not establish a universal risk ranking.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{wp03_sensitivity_yield}
+\caption{Optional dimensional elasticities and B upper-branch yield.
+The interior MSY is distinct from the semistable effort cliff.
+Yield uses declared population/time units. Each elasticity holds the other
+dimensional parameters fixed.}
+\end{figure}
+
+\subsection{Reproduction, handoff and limitations}
+The versioned WP03 experiment regenerates the same tables and figures used
+here and in the notebook; manifests record config, versions and source/file
+hashes. The early reference handoff remains six cases and 606 clean synthetic
+points, with known conditions separate from unknown evaluation truth.
+WP05 owns observation selection, noise, frozen splits, inverse fitting,
+baseline and held-out evaluation; WP04 supplies the neural engine.
+No field-data or species-specific validation is claimed.
+
+The submission audit lists unfinished group sections and missing final
+artifacts/metadata. Group packaging waits for the other work packages,
+reviews and reproduction; this section does not certify their completion.
+AI assistance: OpenAI ChatGPT/Codex for implementation, exposition, testing
+and documentation, recorded in the project acknowledgement log.
+Devam's detailed learning review remains pending.

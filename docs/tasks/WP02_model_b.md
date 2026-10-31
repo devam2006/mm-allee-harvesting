@@ -46,21 +46,63 @@ Deliver future command `python experiments/wp02/run.py --config configs/wp02.jso
 
 ## Acceptance tests
 
-- [ ] Zero RHS at zero for B for several efforts; derivative at zero negative. Positive equilibrium residuals and discriminant cases below/at/above threshold, including `e=0`.
-- [ ] Stable/unstable/semistable labels agree with signs and local numerical perturbations. Compare to WP01's conventions.
-- [ ] Matched harvest protocol checks equality of initial realised rates in dimensional units; threshold-normalised protocol is explicitly separate.
-- [ ] Schedule times strictly ordered; state carried continuously at ordinary segment boundaries, with no hidden restart at down-ramp.
-- [ ] Extinct A run stays at declared absorbing zero after shutdown; B zero remains zero, and no unlabelled intervention creates recovery.
-- [ ] Restocking introduces exactly the documented jump; above-threshold restart can reach the populated branch when such a branch exists.
-- [ ] Two ramp speeds reported, with appropriate integration-tolerance checks; conclusions do not rely on one arbitrary schedule.
+- [x] Zero RHS at zero for B for several efforts; derivative at zero negative. Positive equilibrium residuals and discriminant cases below/at/above threshold, including `e=0`.
+- [x] Stable/unstable/semistable labels agree with signs and local numerical perturbations. Compare to WP01's conventions.
+- [x] Matched harvest protocol checks equality of initial realised rates in dimensional units; threshold-normalised protocol is explicitly separate.
+- [x] Schedule times strictly ordered; state carried continuously at ordinary segment boundaries, with no hidden restart at down-ramp.
+- [x] Extinct A run stays at declared absorbing zero after shutdown; B zero remains zero, and no unlabelled intervention creates recovery.
+- [x] Restocking introduces exactly the documented jump; above-threshold restart can reach the populated branch when such a branch exists.
+- [x] Two ramp speeds reported, with appropriate integration-tolerance checks; conclusions do not rely on one arbitrary schedule.
 - [ ] If slowing added: analytical local relaxation agrees with small perturbation decay away from the fold and units are correct.
 
 ## Handoff and done
 
-- [ ] Reproducible command/config, two paired figures, comparison table, report/notebook section and manifests.
-- [ ] Explicit statement of history dependence versus closed-loop hysteresis; no claim of automatic ecological recovery.
+- [x] Reproducible command/config, two paired figures, comparison table, report/notebook section and manifests.
+- [x] Explicit statement of history dependence versus closed-loop hysteresis; no claim of automatic ecological recovery.
 - [ ] Slides assembled from all members, 25+5 timing rehearsed, final source/PDF placed in bundle.
 - [ ] Other member reproduces; four approvals; AI/citations/status updated.
 - [ ] Owner can explain B zero stability, roots, fair risk comparisons and why restocking is necessary after collapse.
 
 **Presentation:** 5–10 min: B geometry, fair A/B risk comparison, ramp/history and restocking. Give WP03 the transition from history to the quantitative collapse threshold.
+
+
+## Current handoff
+
+- **Owner / branch / PR:** @AshChan07; `codex/wp02/model-b-history`;
+  [PR #9](https://github.com/devam2006/mm-allee-harvesting/pull/9).
+- **Review follow-up:** fast-forwarded integration PR #11 at `649e0c1`, preserving
+  corrected WP01 `b83bba8`, WP03 `16a05ce`, and WP02 `879b110`. Shared thresholds
+  and basin uncertainty now agree in the combined tree. Corrected stale fold
+  wording, reused the shared RK45 minimum and recorded new dependency hashes.
+  The latest review's Windows provenance issue is fixed by writing dependency
+  hash keys with POSIX separators and asserting the format in the regression.
+- **Evidence:** full suite 421 passed / one optional Torch skip; all three default
+  classical experiments succeed; combined 43-cell notebook executes in a fresh
+  kernel. WP02 rerun took 1.396 s within its 120-second budget; extinction times
+  and recovery conclusions are unchanged. Detailed named evidence and commands:
+  [WP02 validation](WP02_validation.md). Curated provenance records source hashes
+  and dirty development state honestly.
+- **Latest fix evidence:** the focused provenance test passes on macOS; native
+  Windows execution is unavailable in this environment.
+- **Next step:** review the updated #9 diff and CI; request all four teammates'
+  latest-head reviews. Raghav's reproduction/approval at `879b110` is recorded
+  separately from the new changes. A non-author human performs any main merge
+  after the project review requirements are met.
+- **Pending:** four current approvals, final group-slide assembly and real
+  rehearsal; optional slowing analysis deferred. The group's Overleaf report
+  is maintained separately. No human understanding or rehearsal is certified.
+- **Explain:** proportional harvest falls with biomass but does not remove the
+  Allee recovery barrier. Why does returning effort to zero fail below A?
+
+### Final notebook additions
+
+Added explicit total/mean catch formulas, a six-row dimensional comparison table
+including yield and basin boundary, and a four-row history/recovery table with
+years and refinement errors. The full 36-row CSV remains available. Source:
+`notebooks/sections/02_model_b_history.ipynb`; assembled notebooks (`notebooks/project.ipynb`,
+`notebooks/wp01_wp03.ipynb` and `notebooks/wp01_wp03_standalone.ipynb`) and
+`report/sections/02_model_b_history.tex` updated.
+Apply these six WP02 cells to the final small Colab notebook; Devam owns final
+publication/runtime packaging. Local handoff: `results/project_colab_wp02_updated.ipynb`
+uses the final integration snapshot with only WP02 cells replaced. Other five-package
+code was not rerun here; the local combined classical notebook was verified.

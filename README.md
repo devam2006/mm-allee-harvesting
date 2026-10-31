@@ -1,3 +1,7 @@
+# WP01–WP03 integration preview
+
+This branch combines the reviewed classical packages, their follow-up fixes and a shared threshold/basin contract. Run `notebooks/wp01_wp03_standalone.ipynb` without a repository checkout, or use the readable source notebook `notebooks/wp01_wp03.ipynb` here. The integrated five-package notebook/data/figure handoff belongs to PR #5; the LaTeX report is maintained separately in Overleaf.
+
 # MM project: harvesting under a strong Allee effect
 
 **Approved title:** Harvesting under a Strong Allee Effect: Collapse Thresholds, Hysteresis and Comparison of Constant-Yield vs Proportional-Effort Harvesting, with Physics-Informed Neural Network (PINN) Forward and Inverse Analysis
@@ -26,9 +30,15 @@ If you already chose a task, add **“I chose Task 3 (WP03)”**, changing the n
 
 The repo is private: the agent needs an authorised connection or your local checkout; the link alone does not grant access.
 
+**WP03 numerical handoff:** [verified clean RK45 references for A/B](docs/WP03_RK45_HANDOFF.md), with generator, small CSVs and numerical evidence. WP05 owns noisy observations, splits and inverse fitting. Task 3's analysis is implemented on this branch; Devam's understanding review remains pending.
+
 **Working manually?** Choose a task below, read its plain-language introduction and checklist, then use the setup guide. Read the [scientific conventions](docs/SCIENTIFIC_CONTRACT.md) for common equations and the [interfaces](docs/INTERFACES.md) when connecting your code to another task.
 
 Whichever way you work, choose tasks with the group and record the choices in [team.json](team.json); the five GitHub handles are already listed there. For project work, make changes on a branch, request **all other four members as PR reviewers**, and merge only after four approvals and passing checks: [workflow](CONTRIBUTING.md). Owner-authorised repository setup and task-assignment administration do not need four approvals. Your task includes code, tests, figures, a report section, a notebook section and a contribution to the final [integration](docs/INTEGRATION.md).
+
+**Task 3 results and reproduction:** [thresholds, extinction, basins and optional sensitivity/MSY](docs/WP03_ANALYSIS.md). The early [clean RK45 data handoff](docs/WP03_RK45_HANDOFF.md) remains available for Tasks 4/5.
+
+**Understand Task 3:** [start with the plain-language WP03 guide](https://github.com/devam2006/mm-allee-harvesting/blob/wp03/collapse-analysis/docs/WP03_EXPLAINED.md), covering the basics, all implemented analyses, numerical methods, actual outputs and presentation questions.
 
 ## Five work packages
 

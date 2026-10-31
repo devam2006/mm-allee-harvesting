@@ -1,4 +1,169 @@
 \section{Model B, comparison and harvesting history}
-\textbf{SCAFFOLD\_ONLY:} B roots/stability; fair A/B comparisons; up/down ramp with state carry-over; explicit restocking; no invented automatic recovery.
+\label{sec:wp02}
+\subsection{Proportional harvesting and steady populations}
+Model B removes biomass at rate $hN$, so the realised catch decreases when the
+population decreases. For example, $h=0.05\,\mathrm{year}^{-1}$ gives a catch of
+$5$ tonnes/year at $N=100$ tonnes and $1$ tonne/year at $N=20$ tonnes.
+These are illustrative quantities, not observations of a particular stock.
+With the scaling of Section~1, the equation is
+\[
+ f_B(x)=\frac{dx}{d\tau}=x\left[(1-x)(x/a-1)-e\right],\qquad e=h/r.
+\]
+Zero is always an equilibrium. Nonzero equilibria satisfy
+$x^2-(1+a)x+a(1+e)=0$, giving
+\[
+ x_\pm=\frac{1+a\pm\sqrt{(1-a)^2-4ae}}{2},\qquad
+ e_c=\frac{(1-a)^2}{4a},\qquad h_c=re_c.
+\]
+For $0\leq e<e_c$, the factorisation
+$f_B(x)=-x(x-x_-)(x-x_+)/a$ gives the phase-line signs
+$-,+,-$ on $(0,x_-)$, $(x_-,x_+)$ and $(x_+,\infty)$.
+Thus $x_-$ is unstable and separates the initial populations tending to zero
+from those tending to $x_+$. The upper state is stable.
+At zero, $f'_B(0)=-1-e<0$, so zero attracts from the physical side.
+At $e=e_c$, $x_-=x_+=(1+a)/2$ and
+$f_B(x)=-x[x-(1+a)/2]^2/a$: the root attracts from above and repels from below.
+It is semistable, not stable merely because its derivative vanishes.
+For $e>e_c$ only zero remains. At $e=0$ the three equilibria are $0,a,1$.
+The quantitative basin and extinction analysis belongs to WP03; these signs
+provide the equilibrium interface used here, without a second collapse solver.
 
-Replace this template with derivations, algorithms, labelled figures/tables, interpretation, limitations and verified references from WP02.
+The implementation returns records with population, derivative, multiplicity,
+one-sided signs, stability and residual. The control field is $e$, not WP01's
+$q$, to preserve the distinction between effort and yield. The smaller root
+uses $a(1+e)/x_+$ to avoid subtractive cancellation. Only exact equality to the
+computed $e_c$ is labelled critical; distinct representable controls retain
+their topology. If the roots cannot be separated at floating-point precision,
+the code raises an error rather than silently merging them.
+\begin{figure}[htbp]
+\centering\includegraphics[width=.8\linewidth]{wp02_b_branches}
+\caption{Model B equilibria at $a=0.2$. Solid branches are stable, the dashed
+branch is unstable, and the diamond marks the semistable fold. Zero stays stable
+on both sides of the critical effort. Analytical, synthetic model analysis.}
+\end{figure}
+
+\subsection{Two explicit comparison protocols}
+$H$ has units biomass/time whereas $h$ has units inverse time, so equality of
+their numerical values is not a fair comparison. We use the same initial
+population, $r$, $K$ and (for A/B) $A$, under two distinct protocols:
+\begin{enumerate}
+\item Equal initial realised catch: $H=hN_{\rm ref}$ with
+$N_{\rm ref}=N_0$. We set $H=\alpha H_c^{A}$, then obtain $h$ from the matching
+condition. The logistic baseline also uses this same $H$.
+\item Equal fraction of each threshold:
+$H_A/H_c^{A}=h/h_c=H_L/H_c^{L}=\alpha$, where $H_c^{L}=rK/4$.
+This matches distance to the respective critical control, not initial catch.
+\end{enumerate}
+The recorded grid uses $r=0.5\,\mathrm{year}^{-1}$, $K=1000$ tonnes,
+$A=200$ tonnes. Initial populations satisfy $N_0/K\in\{0.15,0.4,0.9\}$ and
+$\alpha\in\{0.5,1.2\}$. The observation horizon is $\tau=30$ (60 years).
+The CSV separates the theoretical long-term outcome, determined from the
+phase line, from events actually observed during this horizon. A blank basin
+boundary means no positive equilibrium, not a zero threshold.
+
+For $N_0=900$ tonnes and $\alpha=0.5$, the measured comparison is:
+\begin{center}\small
+\begin{tabular}{llrrr}
+\toprule
+Protocol & Model & Initial catch & Basin boundary & Final biomass\\
+ & & tonnes/year & tonnes & tonnes\\\midrule
+Initial catch & A & 131.28 & 416.14 & 920.90\\
+Initial catch & B & 131.28 & 281.17 & 918.83\\
+Initial catch & Logistic & 131.28 & none & 0.00\\
+Threshold fraction & A & 131.28 & 416.14 & 920.90\\
+Threshold fraction & B & 180.00 & 317.16 & 882.84\\
+Threshold fraction & Logistic & 62.50 & 146.45 & 853.55\\\bottomrule
+\end{tabular}
+\end{center}
+The logistic baseline collapses in the first protocol because the common catch
+exceeds its own critical value, 125 tonnes/year. This does not show that Allee
+growth is universally safer: equal $r,K$ does not equalise production curves,
+and the additional Allee factor can increase growth at high densities.
+For the first protocol, the mean catches over 60 years are 131.28, 134.00 and
+103.35 tonnes/year for A, B and logistic, respectively. The latter includes
+harvest shutdown after extinction. B's total catch is integrated numerically;
+A/logistic catch equals $H$ times the pre-extinction duration. Mean catch always
+divides by the complete observation horizon. No universal risk ranking is claimed.
+
+\subsection{Harvesting history, collapse and restocking}
+We use a declared staircase schedule with 12 upward increments to $1.3$ times
+the critical control, a 12-unit peak hold and 12 downward increments back to
+zero. The initial zero-control interval and each non-peak ramp interval have
+dwell $d=1$ or $3$ in dimensionless time. After the downward ramp there is a
+15-unit zero-control recovery hold and a final 20-unit hold. Starting at $x=1$,
+we carry each segment's terminal population into the next segment. Two rows at
+the same boundary time represent the left and right limits, not extra elapsed
+time. There is no hidden reset at the turning point.
+
+The unassisted and intervention runs share the entire schedule. The latter
+adds exactly $0.6$ to $x$ at the beginning of the final hold, at $\tau=51$ or
+$99$. Since the control is then zero, this takes the population above the
+unstable threshold $a=0.2$. This addition is an intervention, not spontaneous
+recovery or a change in the differential equation between interventions.
+A stops at the first downward zero event and thereafter has zero effective
+harvest and an absorbing zero population until any declared restocking.
+B is never reset to zero when small. From a positive start its exact solution
+does not hit zero in finite time. Its reported smallness time is the first
+sample at $x\leq10^{-6}$, dependent on sample spacing, not an exact event time.
+\begin{center}\small
+\begin{tabular}{lrrr}
+\toprule
+Model & Dwell $d$ & A extinction $\tau$ & First B sample $x\leq10^{-6}$\\\midrule
+A & 1 & 13.436601 & ---\\
+A & 3 & 34.612578 & ---\\
+B & 1 & --- & 20.4\\
+B & 3 & --- & 42.0\\\bottomrule
+\end{tabular}
+\end{center}
+At both speeds the unassisted population remains below the Allee threshold
+when harvesting ends, while the restocked run returns to $x\simeq1$.
+The faster ramp crosses its equilibrium critical level before A reaches zero;
+this finite passage delay is not a changed equilibrium threshold. Dwell-time
+changes alter transient times and total exposure, so these experiments are not
+an isolated causal estimate of ramp speed. They demonstrate history dependence
+and a recovery barrier, not a closed spontaneous hysteresis loop.
+\begin{figure}[p]
+\centering\includegraphics[width=\linewidth]{wp02_history}
+\caption{Synthetic histories at $a=0.2$. Top: prescribed control normalised by
+the model's threshold. Middle: population, including separately labelled
+restocking (triangles, addition $0.6K$). Bottom: unassisted realised catch.
+The population dotted line is $a$; it is the recovery threshold only at zero
+harvest, not the changing threshold during the ramp. Time is $\tau=rt$.
+Prescribed harvest and effective harvest differ after A's shutdown.}
+\end{figure}
+
+\subsection{Validation, reproducibility and limitations}
+The runner uses the shared NumPy models and event-aware RK45 solver.
+Default tolerances are relative $10^{-9}$, absolute $10^{-11}$ and maximum
+step $0.1$. Each restocking history is repeated with $10^{-11}$, $10^{-13}$
+and $0.05$, respectively. Across the four cases the largest sampled population
+difference is below $2\times10^{-9}$ and A event-time difference below
+$2\times10^{-9}$, inside the predeclared $2\times10^{-7}$ acceptance limits.
+These are absolute dimensionless error limits, far below the $0.2$ recovery
+threshold; they do not resolve relative accuracy of tiny B tails below the
+absolute tolerance. No quantitative ecological significance is attached to
+those tails. The B catch quadrature is separately checked by doubling the
+sample density. High-precision expanded polynomials, independent numerical
+maximisation, direct vector-field signs and perturbed trajectories test the
+analytical results rather than relying on a large test count alone.
+
+Reproduce from the repository root:
+\begin{verbatim}
+python experiments/wp02/run.py --config configs/wp02.json
+    --output results/wp02
+\end{verbatim}
+Use one command line (the line break above is for typesetting). A 120-second CPU budget is checked between
+bounded solves; this is not a hard operating-system timeout. The manifest
+records configuration, actual tolerances, versions, hardware, source hashes,
+commit and dirty status, elapsed time and output checksums. There is no noise,
+random seed, empirical dataset or neural training in this package.
+The recorded experiment uses $a=0.2$, well inside the interior regime where both
+models have three distinct equilibria below their folds. Model A's critical catch
+$q_c(a)$ and Model B's critical effort $e_c(a)$ use the shared exact-fold
+threshold module, and initial-state basin classification uses WP03's shared
+separatrix helper (reporting near-boundary ambiguity as
+\texttt{boundary\_unresolved}).
+Optional relaxation-time experiments are deferred. Final integration,
+independent human reproduction, four approvals and presentation rehearsal
+remain separate requirements. Codex and Antigravity assisted derivation, implementation,
+testing and drafting; human understanding is not certified by these checks.
