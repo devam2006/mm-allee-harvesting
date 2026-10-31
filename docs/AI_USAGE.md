@@ -8,6 +8,8 @@ The final report and notebook must acknowledge **every actually used platform an
 
 | 2026-10-19 | Devam (repository guidance requester; task unassigned) | OpenAI ChatGPT/Codex | Shared agent onboarding, Claude entry file, plain-language task introductions and teaching workflow | Official entry-file docs checked; links, import target and repository checks recorded in the onboarding PR | Agent onboarding/team-setup PR |
 
+| 2026-10-29 | Prem Mehta (`Prem-Mehta03`, WP04 owner) | Claude Code, Claude Sonnet 5.5 | Explained WP04, then implemented the JAX `pinn/{network,residual,train_forward}.py` (framework, architecture and optimiser split chosen by the owner), `experiments/wp04/run.py`, WP04 configs, tests, figures/table/manifest and the report/notebook section; also ran an exploratory diagnostic of the regular-case failures and an activation-selection experiment (tanh/swish/sigmoid) with settings chosen by the owner, and updated the shared docs and CI for the PyTorch-to-JAX change | Owner to rerun `pytest tests/wp04` and the smoke command, review derivations and results, and confirm they can explain them; agent's mutation checks are not a substitute | [PR #6](https://github.com/devam2006/mm-allee-harvesting/pull/6) |
+
 Add actual usage rows as work happens. Do not invent model identifiers when unknown. Important prompts or short summaries can be retained in PR descriptions without credentials or unrelated personal material.
 
 On 19 October 2026, Devam selected WP03. ChatGPT/Codex recorded the choice in `team.json`, regenerated ownership displays, clarified the task's calculus/ODE background and recorded Devam's report that collaborator invitations had been sent. This metadata update does not claim any WP03 scientific implementation or human understanding check.
@@ -46,3 +48,9 @@ reference configuration, added eight independent rejection/effective-tolerance
 checks, and recorded actual tests/reproduction evidence. Temporary WP02 code is
 a proposal, not a change to Ashwath's branch. No change to the mathematical fold
 convention, human approval, merge or human understanding is claimed.
+
+## WP05 ZIP submission, 30 October 2026
+
+Rohan's supplied `Rohan_RK45_Completed_Code.zip` reports **Antigravity AI Assistant** use for the PyTorch inverse engine, SciPy baseline, observation/noise/split utilities, tests, experiment runner/configs, report section and notebook. This is a submitted disclosure, not independent verification of the ZIP's completion or human-check claims. The upload preserves its WP05 code and curated outputs; final scientific evidence and owner understanding remain under review.
+
+At Devam's request, OpenAI ChatGPT/Codex imported the WP05 contribution on `wp05/rohan-inverse-validation`, inspected it against the task and existing PRs, prepared an evidence review and opened a PR from Devam's connected account on behalf of Rohan. Existing WP03 records were retained. The assembled notebook was regenerated from the current five fragments rather than replacing WP03's section with the older portable scaffold. Actual checks and limitations are in `docs/WP05_SUBMISSION_REVIEW.md`; no teammate approval or completed group integration is claimed.

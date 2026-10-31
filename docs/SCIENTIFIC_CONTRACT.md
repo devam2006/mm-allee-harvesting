@@ -78,7 +78,7 @@ An optional different B design may use multiple experiments with **known distinc
 
 ## 7. PINN evaluation contract
 
-- Forward loss uses initial condition and physics collocation points; disclose any supervised observations (that changes the experiment). Torch residual: `dx_dtau - f(x)`, retaining the computation graph.
+- Forward loss uses initial condition and physics collocation points; disclose any supervised observations (that changes the experiment). Autodiff residual: `dx_dtau - f(x)`, differentiating with respect to physical time (no detaching of trainable parameters).
 - Compare with independently generated, tighter-tolerance RK45/DOP853 reference points not used as supervised training labels. Evaluate A only up to its event; report event-time estimation separately if implemented.
 - Report RMSE, MAE, global relative L2 error and absolute error near zero. Pointwise percentage error is unstable near extinction and is not a primary metric.
 - Inverse runs fit only training observations. Validation selects hyperparameters/stopping; final test observations/time ranges remain untouched until freezing. Keep evaluation seeds independent of fitting noise seeds.

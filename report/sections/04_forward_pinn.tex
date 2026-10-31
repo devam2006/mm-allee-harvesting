@@ -1,4 +1,130 @@
 \section{Forward PINNs}
-\textbf{SCAFFOLD\_ONLY:} Differentiable network and residual; initial condition/physics loss; optimiser/collocation algorithm; both models and independent solver errors/runtime.
+\label{sec:forward_pinn}
 
-Replace this template with derivations, algorithms, labelled figures/tables, interpretation, limitations and verified references from WP04.
+\paragraph{Scope and labels.} All trajectories are \emph{synthetic} and dimensionless
+($x=N/K$, $\tau=rt$); no species-specific claim is made. The question is how well a small
+neural network that is given only the ODE and the initial condition reproduces the
+population, compared with a standard solver. The setting described here is the \emph{same} one used for the inverse
+problem of Section~\ref{sec:inverse_validation} (only the inverse-specific options differ).
+
+\subsection{Method}
+For Model A, $\dot x=G(x)-q$, and Model B, $\dot x=G(x)-ex$, with $G(x)=x(1-x)(x/a-1)$ and
+$\dot x=dx/d\tau$, write $\dot x=f(x)$. The network is a fully connected network with layer sizes
+$(1,32,32,1)$ in float64 (JAX) and the $\tanh$ activation.
+The initial condition is enforced \emph{exactly} by the hard embedding
+\begin{equation}
+\hat x(\tau)=x_0+s\,N(s;\theta),\qquad s=\tau/T,
+\end{equation}
+where $N$ is the network and $T$ a fixed constant, so $\hat x(0)=x_0$ for any weights $\theta$ and no
+initial-condition loss is needed. Automatic differentiation with respect to the physical time $\tau$ applies the chain
+rule $d\hat x/d\tau=T^{-1}\,d\hat x/ds$ (including the product rule on $s\,N(s)$). The residual and the only loss are
+\begin{equation}
+R(\tau)=\frac{d\hat x}{d\tau}-f(\hat x),\qquad
+\mathcal L(\theta)=\frac1n\sum_{i=1}^n R(\tau_i)^2 ,
+\end{equation}
+with $n=300$ collocation points, a fixed uniform grid on $[0,T]$ including both endpoints. The time input is only scaled by the fixed constant $T$
+(no centring or nonlinear input map).
+Training uses 3500 iterations: Adam (1000 iterations, learning rate $10^{-3}$, about $2/7$ of the budget) to move into a good region,
+then L-BFGS-B (2500 iterations, SciPy, using the exact JAX gradient, with the tolerance-based stop switched off so that the iteration budget is used in full)
+to converge. No solver
+solution is used as a label. For Model A, $T$ is the extinction time of the reference solution
+(a domain endpoint only), so the original residual is never evaluated on a post-extinction zero tail.
+For Model B, $T=10$.
+
+\subsection{Evaluation}
+Predictions are compared on a separate dense grid of 1001 points with DOP853
+($\mathrm{rtol}=10^{-12}$, $\mathrm{atol}=10^{-14}$), not used in training. We report RMSE, MAE, global relative
+$L^2$ error $\|\hat x-x_{\rm ref}\|_2/\|x_{\rm ref}\|_2$ (always given in scientific notation, never as a percentage),
+the maximum absolute error, the maximum absolute error over the times where $x_{\rm ref}<0.05$ (the near-zero error; undefined if the reference never goes below $0.05$), the number of negative predicted samples, and wall-clock time.
+A prediction containing NaN or infinity is never scored: it is labelled \emph{invalid} and has no error score (it can never count as accurate), and a run that raises an exception is recorded as \emph{failed} without stopping the sweep.
+A run is labelled \emph{inaccurate} if its relative $L^2$ error exceeds $5\times10^{-2}$, a threshold fixed
+before the final run. The classical baseline is the project RK45 wrapper, scored on the same grid.
+
+\subsection{How the setting was chosen}
+The setting was chosen in two steps, and the second corrected the first.
+\paragraph{Step 1: activation (learning rate $10^{-2}$).} Comparing tanh, swish and sigmoid at network learning rate $10^{-2}$ (seeds 0, 1, 42; 54 runs; rule fixed beforehand) gave swish 17/18 accurate, tanh 11/18 and sigmoid 10/18, and swish was adopted. This comparison varied the activation at only one learning rate, so it could not separate the effect of the activation from that of the learning rate.
+\paragraph{Step 2: joint study with the inverse problem.} A pre-registered study then varied the knobs that must be shared by the forward and the inverse problem (activation, width, network learning rate) and scored a candidate by (forward runs accurate of 18) + (inverse fits recovered of 18) on seeds 0, 1, 42. Width 64 was dropped after its first candidate was both slower and less accurate (score 23 against 28 for the same setting at width 32).
+\begin{center}\small
+\begin{tabular}{lccc}
+Candidate (width 32) & forward accurate (of 18) & inverse recovered (of 18) & score\\\hline
+tanh, lr $10^{-3}$ & 18 & 10 & 28\\
+swish, lr $10^{-3}$ & 17 & 11 & 28\\
+swish, lr $10^{-2}$ & 17 & 7 & 24\\
+tanh, lr $10^{-2}$ & 11 & 9 & 20\\
+\end{tabular}
+\end{center}
+The network learning rate is the dominant factor: $10^{-3}$ beats $10^{-2}$ for both activations (tanh forward 18/18 against 11/18). The two best candidates tie on the score; the tie-break fixed beforehand (lower median parameter error over the recovered inverse fits) selects tanh. On fresh seeds the two cannot be told apart with three seeds per set (both 18/18 forward), which does not establish equivalence; tanh is more precise when it recovers and faster, so tanh with learning rate $10^{-3}$ is the single setting used throughout. The selection used the same seeds as the final sweep, so the final-sweep accuracy is optimistic; the fresh-seed confirmation below is the unbiased evidence.
+
+\subsection{Results (tanh, $(1,32,32,1)$, lr $10^{-3}$, 300 points)}
+\paragraph{Final sweep, seeds 0, 1, 42 (18 PINN runs).} All 18 runs are accurate. Relative $L^2$ errors by case:
+\begin{center}\small
+\begin{tabular}{lccc}
+Case & seed 0 & seed 1 & seed 42\\\hline
+A regular & $2.0\times10^{-5}$ & $1.4\times10^{-5}$ & $1.8\times10^{-6}$\\
+A near-fold & $4.1\times10^{-3}$ & $2.1\times10^{-3}$ & $1.7\times10^{-5}$\\
+A subthreshold extinction & $7.4\times10^{-7}$ & $2.9\times10^{-7}$ & $7.3\times10^{-7}$\\
+B regular & $7.7\times10^{-6}$ & $5.2\times10^{-6}$ & $1.0\times10^{-6}$\\
+B near-fold & $5.2\times10^{-6}$ & $8.5\times10^{-7}$ & $5.4\times10^{-7}$\\
+B subthreshold decay & $2.2\times10^{-5}$ & $1.6\times10^{-5}$ & $6.6\times10^{-5}$\\
+\end{tabular}
+\end{center}
+The overall median is $6.4\times10^{-6}$ and the largest error is $4.1\times10^{-3}$ (A near-fold, the hardest case: collapse after a bottleneck). No run was invalid, failed or produced a non-finite loss. In every run L-BFGS stopped at its 2500-iteration limit (SciPy exit ``iteration limit reached'', not an abnormal line-search exit), so the iteration budget is binding; longer runs were not tried.
+\begin{itemize}
+\item \textbf{Near-zero error} (largest absolute error where $x_{\rm ref}<0.05$): A extinction $8.9\times10^{-8}$--$1.9\times10^{-7}$, B decay $7.3\times10^{-7}$--$2.6\times10^{-6}$, A near-fold $4.8\times10^{-6}$--$8.6\times10^{-3}$.
+\item \textbf{Negative samples.} Five of the 18 runs predict slightly negative populations near the zero limit: B decay seeds 1 and 42 (23 and 61 of 1001 samples), A extinction seeds 0 and 42 and A near-fold seed 42 (1 sample each).
+\item \textbf{Cost.} Every PINN run took $3.2$--$4.6$ s (including compilation); RK45 took $4$--$10$ ms with relative $L^2$ error of order $10^{-10}$--$10^{-9}$.
+On this scalar ODE the conventional solver is faster and more accurate by many orders
+of magnitude, so the value of the PINN here is as a method to be understood and as the engine for the inverse problem
+(Section~\ref{sec:inverse_validation}), not as a better solver.
+\end{itemize}
+
+\paragraph{Held-out confirmation, seeds 11, 22, 33.} The frozen design was run unchanged on seeds that were not used to select it. All 18 runs were accurate; relative $L^2$ errors by case: A regular $5.3\times10^{-6}$--$1.4\times10^{-5}$, A near-fold $1.8\times10^{-4}$--$2.3\times10^{-3}$, A extinction $1.4\times10^{-7}$--$7.9\times10^{-7}$, B regular $2.7\times10^{-6}$--$6.3\times10^{-6}$, B near-fold $2.9\times10^{-7}$--$1.9\times10^{-6}$, B decay $1.4\times10^{-5}$--$5.0\times10^{-5}$ (\texttt{artifacts/\allowbreak{}tables/\allowbreak{}wp04\_\allowbreak{}confirmation\_\allowbreak{}metrics.csv}). Four runs predict slightly negative populations near zero (1, 1, 51 and 77 of 1001 samples). Both seed sets give 36 of 36 accurate runs.
+
+\subsection{Reproducibility}
+Per-seed results depend on the platform and library version even with fixed seeds. Reviewers' independent reruns on Linux with newer libraries (Python 3.11, JAX 0.10.2) of the \emph{earlier} design (swish, learning rate $10^{-2}$) reproduced the counts (17/18 and 16/18 on seeds 0, 1, 42, 18/18 on seeds 11, 22, 33) but failed a different A near-fold seed than our run. The final tanh design has not been rerun by another member yet; the claim we make is therefore about counts, not about a particular seed. The exact versions behind every reported table (JAX, jaxlib, NumPy, SciPy, Matplotlib, Python, operating system) are recorded in the run manifests and in \texttt{artifacts/\allowbreak{}manifests/\allowbreak{}wp04\_\allowbreak{}forward\_\allowbreak{}requirements.txt} and \texttt{wp04\_\allowbreak{}confirmation\_\allowbreak{}requirements.txt}.
+
+\subsection{Diagnostic: why the regular cases failed with tanh, 100 points and learning rate $10^{-2}$}
+This is an \emph{exploratory} experiment (script \texttt{experiments/wp04/diagnose.py}, hypotheses written before running) performed on the \emph{earlier} design (tanh, 100 uniform points, learning rate $10^{-2}$, seeds 11, 22, 33), where
+both regular cases failed for most seeds despite a tiny training loss. It trains A regular and B regular with 10 seeds under five collocation designs and, besides the error
+against the reference, measures the ODE residual $|R|$ on a dense grid of 4001 times, \emph{between} the training points.
+\begin{center}\small
+\begin{tabular}{lccccc}
+Accurate runs out of 10 (tanh, lr $10^{-2}$) & U100 & U200 & U400 & P100 & U100\_long\\\hline
+A regular & 3 & 3 & 5 & 10 & 3\\
+B regular & 2 & 3 & 4 & 10 & 2\\
+\end{tabular}
+\end{center}
+U$n$: $n$ uniform points; P100: 100 points $\tau_i=T(i/99)^2$ clustered near $\tau=0$; U100\_long: U100 with 10000 instead of 2500 L-BFGS iterations.
+\begin{itemize}
+\item \textbf{Mechanism.} Every accurate run (45 of 100) has $\max|R|\le1.2\times10^{-3}$ on the dense grid and every failed run (55) has
+$\max|R|\ge8.4\times10^{-1}$, while 45 of the 55 failures had $\max|R|<10^{-1}$ at the training points. The loss at the training points cannot reveal
+these failures; a residual check on a denser grid separates all 100 runs.
+\item \textbf{Where they end.} Failures settle on spurious equilibria of the ODE: the unstable root (22 runs), zero (6), the unphysical negative root of the Model A polynomial
+(2) or elsewhere; 10 runs had not converged (all Model A, uniform grids).
+\item \textbf{Resolution near $\tau=0$ matters, not the point count.} Denser uniform grids help only modestly (U400: 5 and 4 of 10 accurate), but the same 100 points clustered
+near $\tau=0$ gave 10 of 10 in both cases (median relative $L^2$ $6.5\times10^{-6}$ for A and $5.3\times10^{-6}$ for B).
+\item \textbf{More L-BFGS iterations do not help} (U100\_long: 3 and 2 of 10): stalled runs reached other spurious solutions.
+\end{itemize}
+The final design (tanh, learning rate $10^{-3}$, 300 uniform points) does not show these failures: all 36 runs on 6 seeds are accurate. We did not isolate which of the changes (learning rate, number of points) removed them; the diagnostic's lesson stands regardless: a small training loss does not prove accuracy, and a residual check on a denser grid detects the failures that the training loss hides.
+\emph{Caveats:} two cases only; the clustered grid was chosen after seeing the failures and was not adopted; 10 seeds cannot exclude a failure
+rate up to about $25$--$30\%$; outcomes are sensitive to round-off (a grid differing by one rounding unit changed one failing seed's error from $7.6\times10^{-1}$ to $9.8\times10^{-1}$).
+
+\subsection{Limitations}
+One parameter set ($a=0.2$) per regime; three seeds in the final sweep (and three more in the confirmation), and the setting was selected on the first three; CPU timings from one machine (see manifest).
+For Model A the horizon $T$ is the extinction time computed by the reference solver, so the forward PINN does \emph{not} predict the extinction time itself: it is supplied, and only the path up to it is fitted.
+Why a lower learning rate removes the earlier regular-case failures was not isolated. The earlier swish-based sweep (learning rate $10^{-2}$, 17 of 18 accurate) and the earlier tanh, 100-point sweep (12 of 18) are kept for provenance in
+\texttt{wp04\_\allowbreak{}forward\_\allowbreak{}metrics\_\allowbreak{}swish\_\allowbreak{}lr1e-2\_\allowbreak{}seeds0-1-42.csv} and \texttt{wp04\_\allowbreak{}forward\_\allowbreak{}metrics\_\allowbreak{}n100\_\allowbreak{}tanh\_\allowbreak{}seeds11-22-33.csv}.
+Reproduce:
+\begin{verbatim}
+python experiments/wp04/run.py --config configs/wp04_final.json \
+    --output results/wp04 --artifacts artifacts
+\end{verbatim}
+
+\begin{figure}[ht]\centering
+\includegraphics[width=\textwidth]{wp04_forward}
+\caption{Synthetic forward PINN predictions (tanh, three seeds) versus DOP853 reference, Models A and B.}
+\end{figure}
+\begin{figure}[ht]\centering
+\includegraphics[width=\textwidth]{wp04_error_loss}
+\caption{Absolute error (top) and physics-loss history (bottom); the vertical line marks the Adam to L-BFGS hand-over.}
+\end{figure}

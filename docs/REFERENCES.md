@@ -6,7 +6,7 @@ Implementation primary sources (documentation checked during scaffold preparatio
 
 - [SciPy solve_ivp](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html): RK45, dense output, terminal events, tolerances and return fields.
 - [SciPy least_squares](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html): inverse ODE-fit baseline; read before implementation.
-- [PyTorch autograd](https://docs.pytorch.org/docs/stable/autograd.html) and [installation selector](https://pytorch.org/get-started/locally/): automatic differentiation and appropriate CPU/GPU installation.
+- [JAX automatic differentiation](https://docs.jax.dev/en/latest/automatic-differentiation.html) and [installation](https://docs.jax.dev/en/latest/installation.html): `grad`/`vmap` used by the PINN engine; CPU installation.
 - [GitHub protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches): review/status gates and plan availability.
 - [actions/checkout](https://github.com/actions/checkout) and [actions/setup-python](https://github.com/actions/setup-python): CI configuration.
 
