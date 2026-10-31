@@ -89,10 +89,11 @@
   "png_outputs": 17,
   "source_code_and_frozen_benchmark_unchanged": true,
   "artifact_sha256": {
-    "artifacts/figures/wp05_demo_clean_parameter_trajectory.eps": "286ea2a1ef5273ab6c5ed4133b8adae8fda732fc63c8b19819363e69ae7c11cd",
+    "artifacts/figures/wp05_demo_clean_parameter_trajectory.eps": "26452c5c9888cf3169db2f0db12ab9795532806b3c41cf04ff21c87ca09c6648",
     "artifacts/figures/wp05_demo_clean_parameter_trajectory.png": "ca1200190a362d9648d1a19f7590f8df7eaac51cbdcf66b55cba68ecbb32de20",
-    "artifacts/figures/wp05_demo_observations_1pct.eps": "c3e1f94cc77d4ca0ed5f7f5fd2f855a6d987ed689bc3cfe15ebee68694a9783e",
+    "artifacts/figures/wp05_demo_observations_1pct.eps": "fe095b1d1d61824e17b40b83f76f03f4f7644f028768643acaf1d19c971f4e28",
     "artifacts/figures/wp05_demo_observations_1pct.png": "2b729773ab5055015834402929f16574469ec3e22be1e4a41c605cd94d4b7426",
     "artifacts/tables/wp05_demo_clean_parameter_trajectory.csv": "818922ade1701392d3cc5cbbc0d00df468b5ecf9857dc2c4ba418d041a3770fd"
-  }
+  },
+  "curated_eps_newlines": "Canonical LF, matching committed Git blobs"
 }

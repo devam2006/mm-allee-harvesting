@@ -75,9 +75,12 @@ public figure resources and refreshed minimal ZIP.
 The notebook remains small: **95,322 bytes**, 68 cells / 29 code cells, largest
 code cell 6,668 characters. The current checksum-verified runtime pin is unchanged.
 The updated minimal ZIP has **20 files**: one notebook and **19 EPS figures**
-(the previous 17 plus the two new WP05 figures), **528,979 bytes**.
-SHA-256: `b5cf75c1dc6d3ab7c3a2da80bc62330293274dd56390f5592db9e009f079b712`.
+(the previous 17 plus the two new WP05 figures), **528,511 bytes**.
+SHA-256: `b9824926cec50a99ce0cc5b637399b8326606b133fef506ec37dd602b701315e`.
 The `notebook-eps-v3` release supersedes v2; older releases remain reproducible.
 
 All population data are synthetic. The blank Overleaf template, human reviews,
 report writing and presentation work are unchanged and separate.
+
+The two curated WP05 EPS exports use canonical LF newlines, so their manifest
+hashes match committed bytes on every platform. Figure content is unchanged.
