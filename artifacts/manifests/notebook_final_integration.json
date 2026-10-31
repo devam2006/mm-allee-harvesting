@@ -27,5 +27,10 @@
   "zip_files": 18,
   "eps_figures": 17,
   "data": "synthetic",
-  "human_approval": false
+  "human_approval": false,
+  "public_notebook_commit": "435575c8f54ba99d18499436414e51dea82e8aa3",
+  "public_archive_commit": "1c1568cc3fd4ff3c3f6b332e943722389070824d",
+  "public_release_tag": "notebook-eps-v2",
+  "public_release_asset_id": 695876720,
+  "anonymous_notebook_and_archive_bytes_verified": true
 }

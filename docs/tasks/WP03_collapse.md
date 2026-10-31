@@ -119,3 +119,5 @@ Implemented analysis command `python experiments/wp03/run.py --config configs/wp
   validation. No merge, scientific approval or final integration is claimed.
 
 - **Latest classical refresh:** PR #5 incorporates Raghav PR #12 notebook text (6deae94) and Ashwath PR #9 notebook/provenance fixes (cba9051); WP03 math delimiters and scientific source remain unchanged. See [refresh evidence](../CLASSICAL_REFRESH.md). Next: integrate the later Prem/Rohan updates, then rebuild the final notebook/EPS ZIP; current downloads are earlier snapshots.
+
+- **Final uploaded-notebook integration:** Prem/Rohan's supplied layout is now reconciled with the reviewed WP01–WP03 cells. The final notebook passed all 29 code cells in a fresh kernel (36.12 s), displayed 16 PNG outputs, and the full source suite passed 531 tests. Approved factual corrections preserve their formatting. Public notebook commit 435575c and notebook/EPS release notebook-eps-v2 were verified anonymously; see [final evidence](../FINAL_NOTEBOOK.md). The Overleaf template is still blank in every report body, including WP03. Human reviews and future full-report drafting remain separate.

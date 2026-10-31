@@ -66,3 +66,11 @@ All examples are synthetic. Curated long sweeps are recorded evidence, not
 silently retrained. Human scientific approvals remain separate. The Overleaf
 template is still blank in every report body, including WP03; this integration
 does not write or compile a report.
+
+## Published version
+
+Public notebook commit: `435575c8f54ba99d18499436414e51dea82e8aa3`.
+Public archive commit: `1c1568cc3fd4ff3c3f6b332e943722389070824d`.
+Release: `notebook-eps-v2`, asset ID 695876720. Anonymous downloads of the
+notebook and ZIP were verified byte-for-byte against the tested local files,
+including archive CRC, inventory and SHA-256. Version 1 remains unchanged.
