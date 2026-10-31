@@ -80,7 +80,7 @@
   "colab_export": {
     "bytes": 82395,
     "largest_code_cell_characters": 2634,
-    "public_notebook_commit": "c4abf90f10472c056853f42f9fd21fdbcb21c62e",
+    "public_notebook_commit": "d8058231039068f1d3db7048d15a6af0ac10e29b",
     "public_asset_commit": "774d3d2773e219e21a9859aa4d621a4988b7552d",
     "runtime_bytes": 1547835,
     "anonymous_http": 200,
@@ -92,5 +92,12 @@
     "errors": 0,
     "wall_seconds": 28.56,
     "no_repository_checkout_required": true
+  },
+  "extracted_zip_notebook": {
+    "executed_code_cells": 32,
+    "errors": 0,
+    "wall_seconds": 29.37,
+    "external_http_disabled": true,
+    "uses_local_runtime_zip": true
   }
 }

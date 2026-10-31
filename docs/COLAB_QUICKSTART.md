@@ -17,7 +17,7 @@ All 15 figures appear as outputs when their cells run.
 
 ## Version and checks
 
-- Public notebook commit: `c4abf90f10472c056853f42f9fd21fdbcb21c62e`.
+- Public notebook commit: `d8058231039068f1d3db7048d15a6af0ac10e29b`.
 - Public asset commit: `774d3d2773e219e21a9859aa4d621a4988b7552d`.
 - Runtime: `runtime/wp01-wp05-aa68d518ae054ca6.zip`; its full SHA-256 and
   source-file inventory are in `artifacts/notebook_runtime/manifest.json`.
@@ -28,6 +28,9 @@ All 15 figures appear as outputs when their cells run.
 - Full source suite: **531 passed in 55.60 seconds**, including six regressions
   for notebook/cell size, immutable refs, offline restoration, checksum
   rejection and archive path confinement.
+- The extracted delivery notebook passed a second fresh kernel with external
+  HTTP disabled: **32 code cells, zero errors, 29.37 seconds**, using only its
+  packaged runtime ZIP.
 - No live Firefox/Colab UI benchmark or browser RAM measurement is claimed.
   The Windows browser automation environment stopped UI control; the size
   budgets, anonymous retrieval and fresh-kernel execution were checked directly.
