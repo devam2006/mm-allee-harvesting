@@ -41,7 +41,7 @@ A fixed catch $H$ (tonnes/year) and an effort $h$ (per year) have different unit
 \end{enumerate}
 Use $r=0.5$ per year, $K=1000$ tonnes, $A=200$ tonnes and a starting population of $900$ tonnes. Follow the population for $60$ years. The logistic model from Section~\ref{sec:foundations} is included as a baseline.
 
-\textbf{Mean catch is total catch divided by 60 years.} Total catch is the area under the catch-rate curve, $\int_0^{60}hN(t)\,dt$ for B. For a fixed catch, harvesting stops at extinction. The mean includes the years after shutdown. Table~\ref{tab:wp02_compare} matches the notebook's compact comparison.
+\textbf{Mean catch is total catch divided by 60 years.} Total catch is the area under the catch-rate curve, $\int_0^{60}hN(t)\,dt$ for B. For a fixed catch, harvesting stops at extinction. The mean includes the years after shutdown. Table~\ref{tab:wp02_compare} gives the compact comparison.
 
 \begin{table}[htbp]
 \centering
@@ -63,7 +63,7 @@ Half of each limit & Logistic & 62.50 & 62.50 & Persists\\
 \end{tabular}
 \end{table}
 
-At the same starting catch, A and B persist but the logistic stock collapses: $131.28$ tonnes/year exceeds its maximum fixed catch of $125$ tonnes/year. At half of each model's limit, all three persist. This does \emph{not} prove that Allee growth is safer. The growth curves differ, and the conclusion depends on how the comparison is set up. The full experiment also includes lower starting populations and harvesting above the critical level; its complete results are saved in the notebook's comparison CSV.
+At the same starting catch, A and B persist but the logistic stock collapses: $131.28$ tonnes/year exceeds its maximum fixed catch of $125$ tonnes/year. At half of each model's limit, all three persist. This does \emph{not} prove that Allee growth is safer. The growth curves differ, and the conclusion depends on how the comparison is set up. The full experiment also includes lower starting populations and harvesting above the critical level.
 
 \subsection{Does the population recover when harvesting falls?}
 Start at $N=K$, increase harvesting in 12 steps to $1.3$ times its critical level, hold it there, then decrease it to zero. Carry the population forward at every step: never restart it at the turning point. Repeat with two dwell times, 1 and 3 scaled time units per ordinary step. After harvesting returns to zero, compare:

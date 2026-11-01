@@ -43,7 +43,7 @@ $(c_1,c_2,c_3)$. The parameters cannot, in general, be uniquely recovered from
 such a trajectory: Model B is \emph{structurally nonidentifiable} when all four
 parameters are unknown and effort is held fixed.
 
-The notebook gives an explicit counterexample:
+We observe an explicit counterexample:
 \begin{align}
 (r,A,K,h)_1&=(1.0,\,0.2,\,1.0,\,0.5),\\
 (r,A,K,h)_2&=(1.35,\,0.3,\,0.9,\,0.15).
@@ -112,7 +112,7 @@ time windows:
   \item \textbf{Held-out test:} 20 points, $6.48\leq t\leq 8.00$ (20\%).
   These observations remain untouched until the post-training evaluation.
 \end{itemize}
-The split counts and endpoints are printed by the notebook (Figure~\ref{fig:wp05_splits}).
+The split counts and endpoints are shown in the figure~\ref{fig:wp05_splits} below.
 
 \begin{figure}[ht]
 \centering
@@ -203,7 +203,7 @@ two-hidden-layer, 32-unit, $\tanh$ network and 300 collocation points as the
 clean demonstration. For this noisy run, validation-based checkpoint
 selection is enabled. The network and parameter learning rates are
 $10^{-3}$ and $5\times10^{-3}$, respectively; the physics weight is $0.5$;
-the Adam budget is up to 1200 epochs; the L-BFGS budget is 3000 iterations. The PINN uses seed 1011.
+the Adam budget is up to 1200 epochs; the L-BFGS budget is 3000 iterations. The PINN uses seeds 10,11.
 
 \begin{table}[ht]
 \centering
@@ -267,7 +267,7 @@ necessarily imply equally accurate parameter recovery. These results
 are one illustrative noisy fit, not a replacement for the multi-case
 benchmark in the next subsection.
 
-\subsection{Final sweep benchmark: 108 fits loaded from the recorded artifacts}
+\subsection{Final sweep benchmark: 108 fits}
 \label{sec:benchmark}
 
 The full benchmark contains 108 fits: 54 inverse-PINN fits and 54
