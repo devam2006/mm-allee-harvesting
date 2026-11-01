@@ -10,25 +10,25 @@
     },
     {
       "id": "member2",
-      "name": null,
+      "name": "Prem Mehta",
       "github": "Prem-Mehta03",
       "work_package": "WP04"
     },
     {
       "id": "member3",
-      "name": null,
+      "name": "Rohan Agrawal",
       "github": "rohanagrawal28",
       "work_package": "WP05"
     },
     {
       "id": "member4",
-      "name": null,
+      "name": "Ashwath Chandramouli",
       "github": "AshChan07",
       "work_package": "WP02"
     },
     {
       "id": "member5",
-      "name": null,
+      "name": "Raghav Singhal",
       "github": "RaghavSinghal15",
       "work_package": "WP01"
     }

@@ -62,7 +62,7 @@ Human-facing onboarding and a copyable first message are in [START_HERE.md](docs
 - **Owner-authorised setup exception:** Devam clarified on 19 October 2026 that repository setup and task-assignment administration do not need four teammate approvals. The owner or their agent can apply/merge these verified changes. Scientific implementation, experiment configurations, results and report/notebook/integration work still require the project review process. Never use a setup label to bypass reviews of project work.
 
 - Work only on the assigned package and its report/notebook/test files. Shared-interface changes need a focused PR and review from affected owners. Record interface decisions in docs/DECISIONS.md.
-- Reuse `mm_allee.models` and `mm_allee.solver`; do not copy model equations into notebooks or experiment scripts. Torch equations belong in `mm_allee.pinn` and require parity tests against NumPy functions.
+- Reuse `mm_allee.models` and `mm_allee.solver`; do not copy model equations into notebooks or experiment scripts. Autodiff (JAX) equations belong in `mm_allee.pinn` and require parity tests against NumPy functions.
 - The scaffold is not the final solution. Do not mark a work package complete because starter tests pass. Implement every core acceptance item, and list deferred extras explicitly.
 - For project work, use small task branches and PRs. The human member is PR author/assignee, and all other four humans review. Never self-approve, impersonate reviewers, auto-merge, force-push main or push project work directly to main. The setup exception above does not supply any scientific approval.
 - Never invent member names, numerical results, datasets, references, approvals or CI outcomes. Do not call synthetic data real observations.
@@ -77,7 +77,7 @@ Human-facing onboarding and a copyable first message are in [START_HERE.md](docs
 
 ## Implementation and handoff
 
-- Keep logic in `src/`; notebooks explain and invoke it. Use plain Python, NumPy/SciPy/Matplotlib and optional PyTorch. Avoid web services and unnecessary frameworks.
+- Keep logic in `src/`; notebooks explain and invoke it. Use plain Python, NumPy/SciPy/Matplotlib and optional JAX. Avoid web services and unnecessary frameworks.
 - Add meaningful deterministic tests, including edge cases and numerical convergence where appropriate. Slow training is a separate experiment with an explicit budget.
 - Follow the [required evidence for every task](docs/TESTING.md#required-evidence-for-every-task): map completed core claims to named tests/recorded experiments, use independent expectations, justify tolerances and expose missing coverage. Never substitute a large test count or a passing starter suite for the task's mathematical acceptance criteria.
 - Write plots to PNG + EPS with opaque fills. Commit only small curated outputs with provenance; ignore environments, bulk runs and weights.

@@ -1,0 +1,21 @@
+{
+  "purpose": "Blank layout only; all report bodies including WP03 are empty",
+  "original_overleaf_source_sha256": "26f8ca077601b960b42061705740855121c4205c7ec6d2b7ec85ec0cfc25bf5b",
+  "template_sha256": "7e511c3d924622b14d4efc782aac7d76e08df43124709da4197ececac98a9b58",
+  "template_bytes": 4480,
+  "files": 14,
+  "blank_work_packages": [
+    "WP01",
+    "WP02",
+    "WP03",
+    "WP04",
+    "WP05"
+  ],
+  "blank_shared_bodies": [
+    "abstract",
+    "introduction",
+    "assumptions",
+    "conclusions",
+    "acknowledgements"
+  ]
+}

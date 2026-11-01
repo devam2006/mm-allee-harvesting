@@ -1,25 +1,33 @@
-\documentclass[11pt,a4paper]{article}
-\usepackage[margin=25mm]{geometry}
-\usepackage{amsmath,amssymb,graphicx,booktabs,xcolor,xurl,hyperref}
-\hypersetup{hidelinks}
-\graphicspath{{../artifacts/figures/}}
-\title{Harvesting under a Strong Allee Effect: Collapse Thresholds, Hysteresis and Comparison of Constant-Yield vs Proportional-Effort Harvesting, with Physics-Informed Neural Network (PINN) Forward and Inverse Analysis}
-\author{Five authors to be filled after task selection}
-\date{Mathematical Modelling Group Project, 2026}
+% Main document: compile this file, never an individual section.
+% Overleaf settings: main document = main.tex; compiler = pdfLaTeX.
+\documentclass[12pt,a4paper]{article}
+\input{preamble}
+\title{Mathematical Modelling of Population Harvesting under a Strong Allee Effect\\[0.4em]
+\large Equilibria, Stability, Extinction and PINN Analysis}
+\author{Raghav Singhal \quad Ashwath Chandramouli \quad Devam Bhavsar\\
+Mehta Prem \quad Rohan Agrawal\\[0.5em]
+\small BITS Pilani, K K Birla Goa Campus\\
+\small Mathematical Modelling, Semester I, 2026--27}
+\date{November 2026}
 \begin{document}
 \maketitle
-\begin{abstract}
-\textbf{SCAFFOLD\_ONLY:} This is an editable structure. Replace with the actual problem, methods, measured results and limitations after all five tasks are complete. No completed scientific result is claimed here.
-\end{abstract}
+\input{abstract}
+\input{frontmatter}
 \input{sections/01_foundations}
+\FloatBarrier
 \input{sections/02_model_b_history}
+\FloatBarrier
 \input{sections/03_collapse}
+\FloatBarrier
 \input{sections/04_forward_pinn}
+\FloatBarrier
 \input{sections/05_inverse_validation}
-\section{Conclusions and limitations}
-\textbf{SCAFFOLD\_ONLY:} Summarise only supported analytical and numerical findings. State the synthetic-data limitation, inverse identifiability limitation and all relevant PINN failures.
-\section{Contributions and acknowledgements}
-\textbf{SCAFFOLD\_ONLY:} List five actual authors and their chosen task contributions. Consolidate actual AI platforms/roles from docs/AI\_USAGE.md and sources/data/figure acknowledgements. Every author must verify the final text.
+\FloatBarrier
+\input{sections/conclusions}
+\input{sections/acknowledgements}
 \bibliographystyle{plain}
 \bibliography{references}
+% Optional longer derivations may be added after the references:
+% \appendix
+% \input{sections/appendix}
 \end{document}

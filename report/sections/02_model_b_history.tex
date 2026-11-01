@@ -1,4 +1,89 @@
-\section{Model B, comparison and harvesting history}
-\textbf{SCAFFOLD\_ONLY:} B roots/stability; fair A/B comparisons; up/down ramp with state carry-over; explicit restocking; no invented automatic recovery.
+\section{Does a smaller catch prevent collapse?}
+\label{sec:wp02}
 
-Replace this template with derivations, algorithms, labelled figures/tables, interpretation, limitations and verified references from WP02.
+Model A takes a fixed amount each year. Model B takes a fraction of the population: a harvesting rate of $10\%$ per year removes $10$ tonnes per year from a $100$-tonne stock, but only $2$ tonnes per year from a $20$-tonne stock. We ask which populations can remain steady, how to compare the harvesting rules fairly, and whether reducing harvesting after collapse allows recovery. All examples here are synthetic, not observations of a real fish stock.
+
+\subsection{Steady populations under Model B}
+As in Section~\ref{sec:foundations}, $x=N/K$ is population relative to carrying capacity, $a=A/K$ is the Allee threshold, $\tau=rt$ is scaled time, and $e=h/r$ is harvesting effort. Model B is
+\begin{equation}
+\frac{dx}{d\tau}=x\left[(1-x)(x/a-1)-e\right].
+\end{equation}
+A steady population makes the right-hand side zero. One solution is $x=0$. For the other solutions, divide by $x$ and rearrange:
+\begin{equation}
+x^2-(1+a)x+a(1+e)=0,
+\qquad x_\pm=\frac{1+a\pm\sqrt{(1-a)^2-4ae}}{2}.
+\end{equation}
+The roots meet at the critical effort
+\begin{equation}
+e_c=\frac{(1-a)^2}{4a},\qquad h_c=re_c.
+\end{equation}
+\begin{itemize}
+\item \textbf{Below $e_c$:} the lower root $x_-$ is the recovery threshold and the upper root $x_+$ is stable. Starting below $x_-$ leads towards zero; starting above it leads towards $x_+$.
+\item \textbf{At $e_c$:} the roots meet. The steady state attracts from above but not from below; this is called \emph{semistable}.
+\item \textbf{Above $e_c$:} no positive steady population remains.
+\end{itemize}
+To see why, factor the equation as $f_B=-x(x-x_-)(x-x_+)/a$. Its signs on the three positive-population intervals are negative, positive and negative. Also $f'_B(0)=-(1+e)<0$, so zero stays stable even when harvesting stops.
+
+For example, with $a=0.2$ and $e=0.4$, the recovery threshold is about $0.317K$ and the stable population is about $0.883K$. Here $e_c=0.8$. Figure~\ref{fig:wp02_branches} shows how these steady populations change with effort.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.78\textwidth]{wp02_b_branches}
+\caption{Model B steady populations for $a=0.2$. Solid lines are stable; the dashed line is the recovery threshold. The diamond marks where the positive roots meet. Zero remains stable.}
+\label{fig:wp02_branches}
+\end{figure}
+
+\subsection{Compare harvesting fairly}
+A fixed catch $H$ (tonnes/year) and an effort $h$ (per year) have different units. We therefore use two comparisons:
+\begin{enumerate}
+\item \textbf{Same starting catch:} choose $H=hN_0$. Both models remove the same amount initially; Model B's catch then changes with population. For the example, set $H=H_c^A/2$ and give the logistic model this same catch.
+\item \textbf{Same fraction of the limit:} use half of each model's own critical harvesting level. This compares equal fractions of the harvesting limits, but the starting catches differ.
+\end{enumerate}
+Use $r=0.5$ per year, $K=1000$ tonnes, $A=200$ tonnes and a starting population of $900$ tonnes. Follow the population for $60$ years. The logistic model from Section~\ref{sec:foundations} is included as a baseline.
+
+\textbf{Mean catch is total catch divided by 60 years.} Total catch is the area under the catch-rate curve, $\int_0^{60}hN(t)\,dt$ for B. For a fixed catch, harvesting stops at extinction. The mean includes the years after shutdown. Table~\ref{tab:wp02_compare} matches the notebook's compact comparison.
+
+\begin{table}[htbp]
+\centering
+\caption{Synthetic comparison from $900$ tonnes over $60$ years. Catch rates are in tonnes/year; outcomes are the predicted long-term behaviour.}
+\label{tab:wp02_compare}
+\small
+\begin{tabular}{llrrl}
+\toprule
+Comparison & Model & Starting catch & Mean catch & Outcome\\
+\midrule
+Same starting catch & A & 131.28 & 131.28 & Persists\\
+Same starting catch & B & 131.28 & 134.00 & Persists\\
+Same starting catch & Logistic & 131.28 & 103.35 & Collapses\\
+\midrule
+Half of each limit & A & 131.28 & 131.28 & Persists\\
+Half of each limit & B & 180.00 & 176.61 & Persists\\
+Half of each limit & Logistic & 62.50 & 62.50 & Persists\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At the same starting catch, A and B persist but the logistic stock collapses: $131.28$ tonnes/year exceeds its maximum fixed catch of $125$ tonnes/year. At half of each model's limit, all three persist. This does \emph{not} prove that Allee growth is safer. The growth curves differ, and the conclusion depends on how the comparison is set up. The full experiment also includes lower starting populations and harvesting above the critical level; its complete results are saved in the notebook's comparison CSV.
+
+\subsection{Does the population recover when harvesting falls?}
+Start at $N=K$, increase harvesting in 12 steps to $1.3$ times its critical level, hold it there, then decrease it to zero. Carry the population forward at every step: never restart it at the turning point. Repeat with two dwell times, 1 and 3 scaled time units per ordinary step. After harvesting returns to zero, compare:
+\begin{itemize}
+\item \textbf{No intervention:} let the population evolve on its own.
+\item \textbf{Restocking:} add $0.6K=600$ tonnes, shown separately by the dashed population lines in Figure~\ref{fig:wp02_history}.
+\end{itemize}
+The peak hold lasts 12 scaled time units. After returning to zero harvest, wait 15 units before the addition, then follow both runs for another 20 units. One scaled time unit equals two years in this example.
+
+For A, reaching zero triggers harvest shutdown. For B, a positive population approaches zero without reaching it in finite time; $x\le10^{-6}$ is only a smallness marker, not an extinction event.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.94\textwidth]{wp02_history}
+\caption{Two synthetic harvesting schedules. Top: prescribed harvesting relative to its critical level. Middle: population without intervention (solid) and with restocking (dashed; triangles mark the addition). The dotted population line is $a=0.2$, the recovery threshold at zero harvest. Bottom: actual catch without intervention, including A's shutdown. Time is $\tau=rt$.}
+\label{fig:wp02_history}
+\end{figure}
+
+\paragraph{Main conclusion.} Reducing harvesting does not guarantee recovery. In both tested schedules, the unassisted populations remain near zero. Below the Allee threshold, natural growth is negative even without harvesting. Adding $600$ tonnes crosses the threshold and allows recovery towards $K$.
+
+This is \textbf{history dependence with a recovery barrier}, not a closed loop that recovers by itself. The slower schedule also means longer exposure to harvesting, so it does not isolate the effect of speed alone.
+
+\paragraph{Checks and limits.} Using tighter solver settings gives almost identical results. Very small populations and starting points close to the recovery threshold need care because numerical precision is limited. These are simplified examples, not predictions for a real fish stock, and they do not show that one harvesting model is always safer than the other.

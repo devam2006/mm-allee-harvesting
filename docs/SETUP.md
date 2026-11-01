@@ -35,10 +35,10 @@ WP04/WP05:
 
 ```bash
 python -m pip install -e ".[pinn]"
-python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+python -c "import jax; print(jax.__version__, jax.devices())"
 ```
 
-For a specifically CPU-only PyTorch wheel use the official install selector linked in `docs/REFERENCES.md`; do not install arbitrary CUDA packages. The PINN extra is separate so the three classical-analysis owners do not need Torch. No cloud inference keys or `.env` file are required.
+The PINN engine uses JAX on CPU in float64 (owner decision, see `docs/DECISIONS.md`); do not install GPU/CUDA builds. The PINN extra is separate so the three classical-analysis owners do not need JAX. No cloud inference keys or `.env` file are required.
 
 ## Verify
 

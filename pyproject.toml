@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mm-allee-harvesting"
 version = "0.1.0"
-description = "Five-task mathematical modelling project scaffold for strong-Allee harvesting"
+description = "Mathematical modelling of strong-Allee harvesting with numerical and PINN analysis"
 requires-python = ">=3.11"
 dependencies = ["numpy>=1.26,<3", "scipy>=1.12,<2", "matplotlib>=3.8,<4"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "ruff>=0.9,<1"]
 notebook = ["jupyterlab>=4,<5", "nbformat>=5.10,<6", "nbconvert>=7,<8", "ipykernel>=6,<8"]
-pinn = ["torch>=2.2,<3"]
+pinn = ["jax>=0.4.30,<1"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -20,7 +20,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-markers = ["pinn: optional Torch/autograd tests", "slow: opt-in long experiment checks"]
+markers = ["pinn: optional JAX/autodiff tests", "slow: opt-in long experiment checks"]
 addopts = "-ra"
 
 [tool.ruff]

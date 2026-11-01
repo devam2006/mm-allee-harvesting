@@ -1,5 +1,10 @@
 # Integration and final submission
 
+An evolving partial assembly now lives on `integration/final-deliverables-draft`.
+Read [its entry page](https://github.com/devam2006/mm-allee-harvesting/blob/integration/final-deliverables-draft/DRAFT_DELIVERABLES.md)
+for report/notebook/PowerPoint sources, previews, imported versions and refresh commands.
+It is dependent draft work, not merged final evidence. The WP03 learning guide remains on the WP03 branch.
+
 ## Schedule
 
 Presentation slot: **30 minutes including Q&A confirmed by the user on 19 October 2026**. Plan 25 min talk + 5 min Q&A, about 5 min speaking per member. Date/time: **not supplied**; record it in `team.json` and here. Course PDF deadlines remain unchanged: submission at least one week before the chosen slot; all presentations before 14 November 2026.
@@ -23,8 +28,8 @@ If the selected slot makes these targets impossible, compress internal milestone
 
 1. **WP01 + WP03 foundation PRs:** common units/RHS/root records, solver boundary policy, threshold conventions and reference-data schema. Small verified pieces merge first.
 2. **WP02/WP03 analysis PRs:** B branches, history, collapse/quadrature/basins, early synthetic fixtures. Classical analysis is a useful standalone milestone.
-3. **WP04 engine PR:** differentiable shared residual/network and short A/B runs; WP05 reviews extension hooks. WP05 can already build identifiability checks, observation splits and conventional fit in parallel.
-4. **WP04/WP05 evidence PRs:** frozen configs, seed-level metrics, failure cases and curated PNG/EPS figures. Both use WP03's references and one data schema.
+3. **WP04 engine PR (JAX; [PR #6](https://github.com/devam2006/mm-allee-harvesting/pull/6) open for review):** differentiable shared residual/network and short A/B runs; WP05 reviews the extension hooks (`train_forward(physical=..., tau=...)`, `NetworkConfig.activation`) and the PyTorch-to-JAX dependency change (see `DECISIONS.md`). WP05 can already build identifiability checks, observation splits and conventional fit in parallel.
+4. **WP04/WP05 evidence PRs** (WP04's forward evidence is in the engine PR: `configs/wp04_final.json`, `artifacts/*/wp04_*`): frozen configs, seed-level metrics, failure cases and curated PNG/EPS figures. Both use WP03's references and one data schema.
 5. **Integration PRs:** WP01 owner assembles LaTeX; WP05 owner assembles the notebook; WP02 owner assembles slides. Each integration PR still needs all other four reviews. WP03 owner reruns and packages only after these integrate.
 
 Different members can open independent PRs simultaneously. Avoid one giant last-day PR that combines five incompatible APIs. Each PR includes its report/notebook updates so explanations do not fall behind code.
@@ -43,6 +48,17 @@ jupyter nbconvert --to notebook --execute notebooks/project.ipynb --output proje
 ```
 
 WP05 owner checks section order, equations/algorithm Markdown before code, accessible colours, labelled axes, interpretations and a final limitations/disclosure cell. Code calls shared modules and reproducible configs. Choose a short but genuine A/B forward and inverse smoke budget for notebook execution; provide commands/manifests for longer sweeps. If loading curated final outputs, explain and supply their regeneration command—do not imply the notebook retrained them.
+
+## Current PR #5 scope (31 October 2026)
+
+At Devam's request, PR #5 now packages the executable standalone notebook,
+datasets, figures and source/provenance. Use
+`scripts/package_notebook_delivery.py`, not the report-gated submission script
+below. The final report is edited and compiled separately in Overleaf; legacy
+report/slides in this repository are historical previews. See
+[the measured E2E checks and remaining limitations](END_TO_END_INTEGRATION.md).
+The broader final-submission checklist below still applies to the group's
+eventual submission; it is not a gate for preparing this notebook handoff.
 
 ## One coherent report
 

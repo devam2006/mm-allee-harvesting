@@ -1,0 +1,48 @@
+% Shared packages and formatting; loaded once by main.tex.
+% Article structure follows the supplied Interface_PINNs example.
+% Keep model symbols in mathematics; do not redefine commands such as \a or \t.
+\usepackage[margin=22mm,top=24mm,bottom=25mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{ifpdf}
+\ifpdf
+  % Overleaf/pdfLaTeX converts EPS using epstopdf. Matching converted PDF
+  % companions may be added when figures are supplied.
+  % Update conversions automatically when an EPS source changes.
+  \usepackage{epstopdf}
+  \epstopdfsetup{update=true,suffix=-eps-converted-to}
+\fi
+\usepackage{booktabs,array}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\usepackage{iftex}
+\ifPDFTeX
+  \ifnum\pdfoutput=0
+    % Only the direct latex/dvips route needs the PostScript URL hooks.
+    \usepackage{breakurl}
+  \fi
+\fi
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Keep wide numeric tables within the text block without changing their content.
+\usepackage{etoolbox}
+\AtBeginEnvironment{table}{\setlength{\tabcolsep}{3pt}}

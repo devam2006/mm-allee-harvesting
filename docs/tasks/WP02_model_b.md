@@ -46,21 +46,69 @@ Deliver future command `python experiments/wp02/run.py --config configs/wp02.jso
 
 ## Acceptance tests
 
-- [ ] Zero RHS at zero for B for several efforts; derivative at zero negative. Positive equilibrium residuals and discriminant cases below/at/above threshold, including `e=0`.
-- [ ] Stable/unstable/semistable labels agree with signs and local numerical perturbations. Compare to WP01's conventions.
-- [ ] Matched harvest protocol checks equality of initial realised rates in dimensional units; threshold-normalised protocol is explicitly separate.
-- [ ] Schedule times strictly ordered; state carried continuously at ordinary segment boundaries, with no hidden restart at down-ramp.
-- [ ] Extinct A run stays at declared absorbing zero after shutdown; B zero remains zero, and no unlabelled intervention creates recovery.
-- [ ] Restocking introduces exactly the documented jump; above-threshold restart can reach the populated branch when such a branch exists.
-- [ ] Two ramp speeds reported, with appropriate integration-tolerance checks; conclusions do not rely on one arbitrary schedule.
+- [x] Zero RHS at zero for B for several efforts; derivative at zero negative. Positive equilibrium residuals and discriminant cases below/at/above threshold, including `e=0`.
+- [x] Stable/unstable/semistable labels agree with signs and local numerical perturbations. Compare to WP01's conventions.
+- [x] Matched harvest protocol checks equality of initial realised rates in dimensional units; threshold-normalised protocol is explicitly separate.
+- [x] Schedule times strictly ordered; state carried continuously at ordinary segment boundaries, with no hidden restart at down-ramp.
+- [x] Extinct A run stays at declared absorbing zero after shutdown; B zero remains zero, and no unlabelled intervention creates recovery.
+- [x] Restocking introduces exactly the documented jump; above-threshold restart can reach the populated branch when such a branch exists.
+- [x] Two ramp speeds reported, with appropriate integration-tolerance checks; conclusions do not rely on one arbitrary schedule.
 - [ ] If slowing added: analytical local relaxation agrees with small perturbation decay away from the fold and units are correct.
 
 ## Handoff and done
 
-- [ ] Reproducible command/config, two paired figures, comparison table, report/notebook section and manifests.
-- [ ] Explicit statement of history dependence versus closed-loop hysteresis; no claim of automatic ecological recovery.
+- [x] Reproducible command/config, two paired figures, comparison table, report/notebook section and manifests.
+- [x] Explicit statement of history dependence versus closed-loop hysteresis; no claim of automatic ecological recovery.
 - [ ] Slides assembled from all members, 25+5 timing rehearsed, final source/PDF placed in bundle.
 - [ ] Other member reproduces; four approvals; AI/citations/status updated.
 - [ ] Owner can explain B zero stability, roots, fair risk comparisons and why restocking is necessary after collapse.
 
 **Presentation:** 5–10 min: B geometry, fair A/B risk comparison, ramp/history and restocking. Give WP03 the transition from history to the quantitative collapse threshold.
+
+
+## Current handoff
+
+- **Owner / branch:** @AshChan07; `codex/wp02/model-b-history`. PR draft prepared in
+  local `pr-body.md`; remote fetch/push unavailable because Git HTTPS authentication
+  is not configured. The completed implementation is commit `f7d5956`. A push
+  attempt was also rejected by automatic approval review pending explicit upload
+  authorization to `devam2006/mm-allee-harvesting`. No remote work was published.
+  Do not merge without the four human reviews.
+- **Dependency:** this branch restores WP01 PR #3 in commit `9a1132a`. A PR against
+  main therefore includes that dependency; disclose it explicitly. WP01 numerical
+  edge cases remain upstream; comparison APIs exclude unsupported a values and
+  unresolved fold bands. WP03 helpers and final WP03–WP05 slide contributions are
+  absent from this checkout; their current remote state could not be verified.
+- **Implemented:** Model B roots/signs; two fair comparison protocols and logistic
+  calibration caveat; continuous staircase histories for A/B at two dwell times;
+  explicit absorbing A shutdown and separate restocking; reproducible synthetic
+  experiment; figures PNG/EPS/PDF, three CSV tables and provenance; report/notebook
+  section; three editable WP02 slides and five-minute script.
+- **Evidence:** 38 WP02 tests pass. Full suite: 204 passed, 1 optional Torch test
+  skipped (Torch unavailable). Ruff lint/format and team sync pass. Notebook
+  assembles to 34 cells and executes in a fresh kernel; sandbox denied configuration
+  writes and local kernel ports initially, then execution succeeded with temporary
+  config/cache paths and approved local networking. LaTeX compiles to 12 pages;
+  WP02 pages 7–11 inspected. Three slide renders inspected. Slide PDF is a raster
+  companion of those renders; the PPTX retains editable charts/table/text. Native
+  slide PDF export had a font-runtime error in the existing build attempt.
+- **Experiment:** `configs/wp02.json` records a 120-second CPU budget. Successful
+  deterministic run took about 1.4 seconds. A extinction tau = 13.436601 (dwell 1)
+  and 34.612578 (dwell 3); B first sampled x<=1e-6 at 20.4 and 42.0, never an exact
+  finite extinction claim. Unassisted runs do not recover; adding 0.6K at zero
+  harvest restores x approximately 1. Refinement errors below 2e-9.
+- **Next command:** `.venv/bin/python -m pytest tests/wp02 -q`, then
+  `.venv/bin/python experiments/wp02/run.py --config configs/wp02.json --output results/wp02`.
+  Authenticate GitHub locally to push and open the prepared PR; request
+  @devam2006, @Prem-Mehta03, @rohanagrawal28 and @RaghavSinghal15.
+- **Still pending:** other-member reproduction, affected-owner interface review,
+  four approvals, final five-person slide assembly and actual rehearsal. Optional
+  relaxation-time analysis deferred. Source hashes and dirty status identify the
+  development experiment; curated manifest does not claim a clean released run.
+- **Explain:** proportional harvesting reduces catch as biomass falls but does not
+  remove the Allee recovery barrier. Why does returning h to zero fail below A?
+  Human understanding and rehearsal have not been assessed or certified.
+
+## Integration follow-up, 31 October 2026
+
+40 WP02 tests passed. Removed the deleted WP01 constant import while keeping the conservative comparison exclusion local; reject unsupported tiny rtol before output; exported notebook provenance no longer requires Git. The older restored WP01 dependency is replaced by current WP01 only in the separate integration PR. The separate integration PR records current source heads, combined tests and notebook execution. The normal review process remains required.

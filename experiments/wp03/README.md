@@ -1,3 +1,13 @@
-# WP03 experiment entry point
+# WP03 experiments
 
-Unclaimed Task 3. The chosen owner implements `run.py` and its JSON configs as specified in `docs/tasks/`. No full experiment is implemented here yet. The script must accept `--config PATH --output PATH`, import shared package functions, remain import-safe, record manifests and generate the promised evidence.
+Owner: Devam. Main analysis:
+~~~bash
+python experiments/wp03/run.py --config configs/wp03.json --output results/wp03
+~~~
+Both thresholds/basins, 427 extinction evaluations, event checks, bottleneck, optional sensitivity/MSY, PNG/EPS outputs. Deterministic; the config declares the analysis budget.
+
+Early clean reference export:
+~~~bash
+python experiments/wp03/generate_reference.py --config configs/wp03_reference.json --output results/wp03-reference
+~~~
+Both accept --curate to refresh their small versioned evidence. No noise, splits or PINN fitting here. [Results, APIs, tests and handoff](../../docs/WP03_ANALYSIS.md).

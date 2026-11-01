@@ -1,0 +1,35 @@
+{
+  "source_commit": "cdaada83ee1f278688d018a0add392b69e018de2",
+  "source_dirty": false,
+  "source_dirty_excludes": [
+    "deliverables/"
+  ],
+  "executed_notebook_sha256": "9abaf419dda7c79ae86760aa54172399b9e0c7c97a53fdcab5cb2e65752daffb",
+  "runtime_bundle": {
+    "asset_commit": "774d3d2773e219e21a9859aa4d621a4988b7552d",
+    "bytes": 1547835,
+    "path": "runtime/wp01-wp05-aa68d518ae054ca6.zip",
+    "sha256": "aa68d518ae054ca684111e6b75941984b643a445897c14d1dd6a2e112d5303b4",
+    "source_commit": "9b8585418c4ab5ea43e9f8bbb029d80307db9edb",
+    "url": "https://raw.githubusercontent.com/devam2006/mm-allee-notebook-runtime/774d3d2773e219e21a9859aa4d621a4988b7552d/runtime/wp01-wp05-aa68d518ae054ca6.zip"
+  },
+  "executed_code_cells": 32,
+  "synthetic_observation_rows": 5454,
+  "figure_pairs": 17,
+  "work_packages": [
+    "WP01",
+    "WP02",
+    "WP03",
+    "WP04",
+    "WP05"
+  ],
+  "report": "Maintained separately in Overleaf",
+  "known_limits": [
+    "Legacy WP05 status converged denotes completed training; read lbfgs_outcome for optimizer convergence",
+    "Recorded final-sweep tables are not fresh reruns of all fits",
+    "Human review, presentation and final Overleaf report remain separate"
+  ],
+  "zip_sha256": "37e412898278429a1633ceb4db17b5b9a1e4252687c9ef26150a969f6e0fdee9",
+  "zip_bytes": 7969495,
+  "files": 235
+}

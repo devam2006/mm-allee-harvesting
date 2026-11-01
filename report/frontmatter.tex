@@ -1,0 +1,81 @@
+\section{Introduction and objectives}
+\label{sec:introduction}
+
+\subsection{Motivation}
+Many harvested populations, fish stocks in particular, have collapsed and then failed to come back even after fishing was reduced \cite{hutchings2004collapses}. One reason is the \emph{Allee effect}: when a population is small, its members do worse, for example because they find mates less easily, defend themselves less well against predators or lose the benefits of living in groups \cite{stephens1999consequences,courchamp2008allee}.
+If the effect is strong, there is a critical population size below
+which natural growth becomes negative. In the model studied here,
+we denote this Allee threshold by $A$
+\cite{dennis1989allee,courchamp2008allee}.
+
+
+Combine such a threshold with fishing and several practical questions follow. How much can be caught each year without risking collapse? How close to collapse is a given catch? Does it matter whether we catch a fixed amount or a fixed fraction of whatever is there? And if a stock has collapsed, does lowering the catch bring it back?
+
+This project answers these questions for two simple fishing rules, using mathematics first and computation second. We then ask a separate, more modern question: can a physics-informed neural network (PINN) \cite{raissi2019physics} solve the same equations, and can it recover unknown model parameters from noisy data? The answer to the second part turns out to be more mixed, and we report the failures as carefully as the successes.
+
+\subsection{Objectives}
+The report has five parts, each with a different goal.
+\begin{enumerate}
+\item \textbf{Foundations (Section~\ref{sec:foundations}).} Find the steady populations of a stock fished with a constant quota, decide which are stable, and locate the largest quota that still allows a steady population.
+\item \textbf{Proportional harvesting (Section~\ref{sec:wp02}).} Do the same for a fixed fishing effort, compare the two rules fairly, and test whether lowering the catch undoes a collapse.
+\item \textbf{Collapse (Section~\ref{sec:wp03}).} Compute the critical catch, the starting populations that lead to extinction, the time extinction takes, and why collapse can seem to arrive late.
+\item \textbf{Forward PINN (Section~\ref{sec:wp04}).} Train a small neural network to solve the equations without being shown any solution, and compare it with a standard numerical solver.
+\item \textbf{Inverse PINN (Section~\ref{sec:wp05}).} Estimate the unknown model parameters from noisy synthetic observations with a PINN and with ordinary curve fitting, and find out when the parameters can and cannot be recovered.
+\end{enumerate}
+
+\subsection{Assumptions, model and notation}
+\label{sec:model-definitions}
+We study one closed population that mixes well and has no age structure, no migration, no other species and no random fluctuations. Its size is $N(t)\ge 0$ at time $t$. All parameters are constant. The three growth laws we compare are
+\begin{align}
+\text{Logistic with constant catch:}\quad & \frac{dN}{dt}=rN\Bigl(1-\frac{N}{K}\Bigr)-H, \label{eq:logistic}\\
+\text{Model A (strong Allee, constant catch):}\quad & \frac{dN}{dt}=rN\Bigl(1-\frac{N}{K}\Bigr)\Bigl(\frac{N}{A}-1\Bigr)-H, \label{eq:modelA}\\
+\text{Model B (strong Allee, proportional effort):}\quad & \frac{dN}{dt}=rN\Bigl(1-\frac{N}{K}\Bigr)\Bigl(\frac{N}{A}-1\Bigr)-hN. \label{eq:modelB}
+\end{align}
+The extra factor $(N/A-1)$ is the strong Allee effect: growth is negative whenever $0<N<A$. Table~\ref{tab:notation} lists the symbols.
+
+\begin{table}[ht]
+\centering
+\caption{Symbols and units. A dimensionless version of each equation is used for all calculations (Section~\ref{sec:foundations}).}
+\label{tab:notation}
+\small
+\begin{tabular}{p{0.26\textwidth}p{0.36\textwidth}p{0.22\textwidth}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Unit}\\
+\midrule
+$N,\ t$ & population size, time & tonnes (or number), years\\
+$r$ & intrinsic growth rate & 1/time\\
+$K$ & carrying capacity & same as $N$\\
+$A$ & Allee threshold ($0<A<K$) & same as $N$\\
+$H$ & constant catch (quota) & $N$/time\\
+$h$ & fishing effort, a fraction removed per unit time & 1/time\\
+$x=N/K,\ \tau=rt$ & scaled population and scaled time & none\\
+$a=A/K,\ q=H/(rK),\ e=h/r$ & scaled threshold, quota and effort & none\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two conventions matter throughout. First, a fixed quota cannot be taken from an extinct stock, so a Model A or logistic run stops when the population reaches zero (we call this \emph{absorbing extinction}; continuing the equation would give negative populations). Second, under Model B the catch is proportional to the population, so a positive population never reaches exactly zero in finite time; it only decays towards it.
+
+
+\paragraph{About the numbers.}
+Every example in this report is \emph{synthetic}: we choose the
+parameters and generate the data by solving the equations.
+Nothing was measured from a real population, so our results
+describe the models rather than any particular species.
+
+Sections~\ref{sec:foundations} and~\ref{sec:wp02}
+use $r=0.5$, $K=1000$ and $A=200$ for their numerical
+examples. Section~\ref{sec:wp03} and the PINN experiments
+use $r=0.7$, $K=100$ and $A=20$.
+Both parameter sets have $a=A/K=0.2$, so their
+dimensionless critical harvesting rates agree.
+
+
+\paragraph{Use of AI.}
+AI tools assisted with parts of the mathematical explanations,
+implementation, testing and report preparation. The platforms
+and their roles are acknowledged in
+Section~\ref{sec:acknowledgements}.
+The numerical checks are described in the relevant sections,
+while the larger PINN experiments are reported using their
+recorded results rather than being rerun for this report.

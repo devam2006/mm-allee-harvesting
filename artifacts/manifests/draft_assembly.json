@@ -1,0 +1,22 @@
+{
+  "created_at_utc": "2026-10-28T14:40:36.324043+00:00",
+  "scope": "Partial group assembly; not final submission or human approval",
+  "dependency": "WP03 PR #4, 20fbd5b21844a94e81e021d1571fbed0f7b47379",
+  "checks": {
+    "isolated_venv_full_tests": "185 passed, 1 optional Torch skip",
+    "notebook": "21 cells; all 9 code cells passed in a fresh process; local Jupyter sockets unavailable",
+    "lint_format_team_sync_smoke": "passed",
+    "report": "7-page PDF compiled and visually checked; incomplete sections explicitly labelled",
+    "presentation": "9-slide editable PPTX; native table and three native charts; package/layout/font/import/data checks passed; PDF generated with LibreOffice",
+    "guide_placement": "Only on wp03/collapse-analysis, linked from this branch",
+    "scientific_source_changes": "None beyond inherited WP03 fixes",
+    "final_readiness": "14 blockers in this built local draft; final group environment, metadata and missing sections remain pending"
+  },
+  "files_sha256": {
+    "report/draft_report.pdf": "295f929db0db7b4ea9a172d9b5f0b9dcd4c9d627ae837a5ab46c853550c43ce0",
+    "presentation/draft_presentation.pptx": "5ac1b44db29657e16b3be16624f42117cd011ad5edc00a384245c13f919ca6ed",
+    "presentation/draft_presentation.pdf": "41622c6cd3fee52d94bdb75425ea7807320dcdc8fec6d987a99f1cb96809bf86",
+    "notebooks/project.ipynb": "98ccb37be7c750ac61431901c9252e2358f3617c7661814e7e95cf0a90797bd6",
+    "presentation/data/draft_results.json": "324ede308af5f477750b94d5154e79ea09028642f217a123d9880ad088ef4f7b"
+  }
+}

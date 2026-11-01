@@ -1,50 +1,111 @@
-# MM project: harvesting under a strong Allee effect
+# Mathematical Modelling of Population Harvesting under a Strong Allee Effect
 
-**Approved title:** Harvesting under a Strong Allee Effect: Collapse Thresholds, Hysteresis and Comparison of Constant-Yield vs Proportional-Effort Harvesting, with Physics-Informed Neural Network (PINN) Forward and Inverse Analysis
+**Equilibria, stability, extinction and PINN analysis** — a five-member Mathematical Modelling project at BITS Pilani, K K Birla Goa Campus.
 
-Private, five-person Mathematical Modelling project. Humans own and explain the work; AI agents assist with implementation, checking and writing. This repository starts as a **tested scaffold and work plan**, not a completed scientific project. See [STATUS.md](STATUS.md).
+A strong Allee effect means that a population below a critical size declines even without harvesting. We compare two harvesting policies, derive their survival thresholds, calculate extinction times, and assess physics-informed neural networks (PINNs) for solving the population equation and estimating its parameters. All examples and observations are **synthetic**.
 
-## Start here — with your coding agent or on your own
+## Start here
 
-**Using Codex, Claude Code or another coding agent?** Give it this repo and paste:
+- **[Run the final notebook in Google Colab](https://colab.research.google.com/github/devam2006/mm-allee-harvesting/blob/main/notebooks/project_colab.ipynb)** — connect a CPU runtime and choose **Runtime → Run all**.
+- **[Read/download the notebook](notebooks/project_colab.ipynb)** — this adopts the authors' final supplied notebook; its code matches the reviewed integration.
+- **[Read the report PDF](report/MM_Project_Report.pdf)** · **[Overleaf source ZIP](deliverables/MM_Project_Report.zip)** · **[Editable LaTeX source](report/main.tex)** · **[Report figures](report/figures/)** · **[Bibliography](report/references.bib)**.
+- **[Find a result and reproduce it](docs/REPRODUCIBILITY.md)** · **[Browse the synthetic data](data/README.md)** · **[Documentation index](docs/README.md)**.
 
-```text
-Read AGENTS.md. Help me choose a task if I have not chosen one.
-Explain my task with a small example, then help me implement it in stages
-while explaining the maths, code, tests and results. Prepare a PR for review.
+**Report review status:** the supplied Overleaf text is preserved. Prem's rewrite/confirmation of the forward-PINN report section (`report/sections/04_forward_pinn.tex`) remains pending. A successful build and numerical checks do not constitute his approval. Sections 1, 2, 3 and 5, the introduction, conclusions and acknowledgements are the supplied owner-edited text.
+
+The notebook's first loading cell uses the existing **[public code/data companion](https://github.com/devam2006/mm-allee-notebook-runtime)**. Its immutable runtime commit and SHA-256 are unchanged. No private-repository login, Drive mount or API key is required; internet is needed for the first download. The companion and its historical releases are retained as they are.
+
+## Models and mathematical results
+
+Let $N(t)$ be population, $r>0$ a growth-rate parameter, $K>A>0$ the carrying capacity and Allee threshold. Natural growth is
+
+$$g(N)=rN\left(1-\frac NK\right)\left(\frac NA-1\right).$$
+
+| Policy | Equation | Harvest units |
+|---|---|---|
+| **Model A: constant catch** | $dN/dt=g(N)-H$ | $H$: population/time |
+| **Model B: proportional effort** | $dN/dt=g(N)-hN$ | $h$: inverse time |
+
+Use $x=N/K$, $\tau=rt$, $a=A/K$, $q=H/(rK)$ and $e=h/r$. For A the critical catch is the maximum of total growth; for B the critical effort is the maximum of per-capita growth:
+
+$$x_* = \frac{1+a+\sqrt{1-a+a^2}}3,\qquad H_c=rKx_*(1-x_*)(x_*/a-1),\qquad h_c=\frac{r(K-A)^2}{4AK}.$$
+
+Below the positive critical control, an unstable lower equilibrium separates decline from persistence. At the fold the positive roots merge into a semistable equilibrium, attracting only from above. Above the critical control, collapse follows. Under positive constant catch A can reach zero in finite time; B approaches zero asymptotically. A simulations stop at the zero event. Returning harvesting to zero need not restore a population below the Allee threshold; restocking is a separate intervention.
+
+For the illustrative values $r=0.7$, $K=100$, $A=20$, we obtain $N_*=70.5505$, $H_c=36.7597$ and $h_c=0.56$. The logistic constant-catch reference is $rK/4=17.5$; equal $r,K$ do not imply equal production curves or a universal risk ranking.
+
+## Numerical and PINN findings
+
+- **Classical calculations:** threshold formulas are checked by independent numerical maximisation. Extinction quadrature is compared with two RK45 tolerances and an independently expanded-polynomial DOP853 solution. The recorded six-case maximum discrepancy is about $4.56\times10^{-8}$ in dimensionless time, not a universal error bound.
+- **Forward PINNs:** the recorded final and held-out seed sets each have 18/18 runs within the predeclared relative-$L^2$ threshold $5\times10^{-2}$ (36/36 combined). Recorded failures in earlier settings are retained. This result concerns the tested synthetic cases, not arbitrary parameters.
+- **Inverse benchmark:** at zero noise, every fitted parameter is within 5% in **10/18 PINN fits versus 18/18 ODE least-squares fits**. The full recorded benchmark has **108 fits** (54 per method), including three noise levels and three seeds. Good trajectory prediction does not guarantee parameter recovery.
+- **Identifiability:** a single fixed-effort B trajectory identifies at most three polynomial coefficient combinations, not all four unknown parameters. Main inverse runs fix independently known $K$ and disclose exact known initial population. Held-out observations inside the physics collocation interval are physics-supported prediction, not unseen-domain extrapolation.
+
+The notebook runs short demonstrations and reads the larger benchmark tables. The newer clean/1%-noise inverse demonstrations use their stated settings and are **not** replacements for the recorded 108-fit benchmark. Optimizer iteration-limit completion is distinct from tolerance convergence. See the [evidence map](docs/REPRODUCIBILITY.md).
+
+## Contributors
+
+| Contributor | Responsibility |
+|---|---|
+| Raghav Singhal | WP01: scaling, Model A equilibria, stability and root methods |
+| Ashwath Chandramouli | WP02: Model B, fair policy comparisons and harvesting history |
+| Devam Jatin Bhavsar | WP03: critical controls, basins, extinction, independent numerical checks and clean reference data |
+| Prem Mehta | WP04: forward PINNs and shared neural-network setting |
+| Rohan Agrawal | WP05: inverse PINNs, identifiability and validation |
+
+WP03's current presentation retains the core analysis and a qualitative bottleneck, with no sensitivity/MSY or bottleneck-asymptotic exposition. The notebook, report and integration are collective work.
+
+## Install and run locally
+
+Python **3.11+** is required. From the repository root:
+
+```bash
+python -m venv .venv
+# macOS/Linux:
+source .venv/bin/activate
+# Windows PowerShell instead:
+# .\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev,notebook,pinn]"
+jupyter lab notebooks/project_colab.ipynb
 ```
 
-If you already chose a task, add **“I chose Task 3 (WP03)”**, changing the number. Your agent should read the task brief itself and explain the relevant parts to you. It should help you learn as it builds. You can also ask for explanation only, hints while you code, or shorter implementation updates.
+For classical experiments only, `python -m pip install -e .` installs NumPy, SciPy and Matplotlib; add `.[pinn]` for JAX and `.[notebook]` for notebook tools. The self-loading Colab notebook prepares its own pinned runtime, while `notebooks/project.ipynb` runs the current local package. These two paths are intentionally distinct.
 
-**[New to the project? Start here](docs/START_HERE.md)** · **[Choose a task](docs/tasks/README.md)** · **[Set up Python](docs/SETUP.md)**
+```bash
+python -m pytest -q
+ruff check .
+ruff format --check .
+python scripts/assemble_notebook.py
+python experiments/wp03/run.py --config configs/wp03.json --output results/wp03-core --core-only
+```
 
-| Coding tool | Entry file |
+The [reproduction guide](docs/REPRODUCIBILITY.md) gives WP01–WP05 commands and identifies the longer CPU training runs. Recorded environment versions are in [artifacts/manifests](artifacts/manifests/); timings and learned weights can vary across platforms.
+
+## Repository map
+
+| Location | What to find |
 |---|---|
-| Codex | [AGENTS.md](AGENTS.md): the shared task, teaching and implementation playbook |
-| Claude Code | [CLAUDE.md](CLAUDE.md): imports the same playbook |
-| Other agents/chat tools | Ask them to open `AGENTS.md` explicitly after obtaining repository access |
+| [`notebooks/`](notebooks/) | Final Colab notebook, local assembled notebook and owned source sections |
+| [`report/`](report/) | Current report sources, bibliography, original EPS figures, compiled PDF and review status |
+| [`src/mm_allee/`](src/mm_allee/) | Shared models, thresholds, ODE solvers, inference and PINN implementation |
+| [`experiments/`](experiments/) | Reproduction/plotting entry points for every work package |
+| [`configs/`](configs/) | Recorded parameters, solver tolerances, seeds and training budgets |
+| [`data/fixtures/wp03_reference/`](data/fixtures/wp03_reference/) | Six clean synthetic reference CSVs and provenance |
+| [`artifacts/tables/`](artifacts/tables/) | Recorded comparison, accuracy, parameter and prediction tables |
+| [`artifacts/figures/`](artifacts/figures/) | Curated PNG/EPS plots; historical optional figures are labelled in the guide |
+| [`artifacts/manifests/`](artifacts/manifests/) | Configurations, environment information and checksums for saved results |
+| [`tests/`](tests/) | Mathematical, numerical, interface and notebook regression tests |
+| [`docs/`](docs/) | Scientific conventions, reproduction, references, validation and historical development records |
+| [`deliverables/`](deliverables/) | Notebook/EPS packages; version information is in the adjacent manifests |
 
-The repo is private: the agent needs an authorised connection or your local checkout; the link alone does not grant access.
+## Data, limitations, references and AI assistance
 
-**Working manually?** Choose a task below, read its plain-language introduction and checklist, then use the setup guide. Read the [scientific conventions](docs/SCIENTIFIC_CONTRACT.md) for common equations and the [interfaces](docs/INTERFACES.md) when connecting your code to another task.
+No field population dataset is used. Six clean trajectories are generated from the models; noisy observations, fixed splits and seeds are described in the [data guide](data/README.md). Evaluation truth is separate from fitting inputs. The models assume deterministic, well-mixed populations and constant parameters, without demographic/environmental randomness, age structure or delays. The calculations are not species-specific harvesting recommendations.
 
-Whichever way you work, choose tasks with the group and record the choices in [team.json](team.json); the five GitHub handles are already listed there. For project work, make changes on a branch, request **all other four members as PR reviewers**, and merge only after four approvals and passing checks: [workflow](CONTRIBUTING.md). Owner-authorised repository setup and task-assignment administration do not need four approvals. Your task includes code, tests, figures, a report section, a notebook section and a contribution to the final [integration](docs/INTEGRATION.md).
+The report's [bibliography](report/references.bib) and [source notes](docs/REFERENCES.md) identify ecological, mathematical and software sources. The authors collectively acknowledge **ChatGPT, OpenAI Codex, Claude Code and Antigravity AI Assistant** for explanation, implementation, experiments, checking, integration and writing support; see the [report disclosure](report/sections/acknowledgements.tex) and [AI-use log](docs/AI_USAGE.md). The authors remain responsible for the results and explanations.
 
-## Five work packages
-
-The original split overloaded the forward-PINN owner. Hysteresis moves to WP02; sensitivity and sustainable yield move to WP03. Each person owns one substantial analysis/computation package plus one integration responsibility. Suggested effort is roughly 18–22 focused hours each; revise after the first smoke run. These are estimates, not course requirements.
-
-| Task | Package and original items | Main deliverables | Integration responsibility |
-|---|---|---|---|
-| Task 1 | [WP01: foundations and Model A](docs/tasks/WP01_foundations.md), items 1, 2(A), 6(A), logistic recap | Nondimensionalisation, Model A equilibria/stability and branch plot, shared math interfaces | LaTeX report assembly and EPS audit |
-| Task 2 | [WP02: Model B and harvesting history](docs/tasks/WP02_model_b.md), items 2(B), 6(B), 7, 10; item 8 optional | B equilibria, fair comparisons, ramp/restocking experiment; slowing down if time permits | Slide assembly and rehearsal timing |
-| Task 3 | [WP03: collapse and numerical reference](docs/tasks/WP03_collapse.md), items 3, 4, 5; 9, 11 optional | Threshold derivations, extinction quadrature/event checks, basins, synthetic reference generator | Final reproduction run and submission packaging |
-| Task 4 | [WP04: forward PINNs](docs/tasks/WP04_forward_pinn.md), item 12 | Shared PyTorch PINN engine, both models, RK45 comparisons and error/runtime tables | Forward notebook section and shared PINN handoff |
-| Task 5 | [WP05: inverse PINNs and validation](docs/tasks/WP05_inverse_pinn.md), items 13, 14 | Identifiable inverse designs, noise study, held-out tests, collapse failure cases | Notebook assembly, data provenance and AI acknowledgements |
-
-Choose tasks with the group; record one distinct `work_package` (WP01–WP05) per person in `team.json`. Use `null` until a person chooses. The ownership display below is generated from that file; no task is preassigned by roster order. All five contribute references, AI-use records, report text, notebook explanations and their own presentation content.
-
-## Team and task owners
+<details>
+<summary>Contributor handles and detailed work-package notes</summary>
 
 <!-- team-sync:owners:start -->
 **Contributors:** @devam2006, @Prem-Mehta03, @rohanagrawal28, @AshChan07, @RaghavSinghal15
@@ -58,83 +119,4 @@ Choose tasks with the group; record one distinct `work_package` (WP01–WP05) pe
 | [WP05: Inverse PINNs](docs/tasks/WP05_inverse_pinn.md) | @rohanagrawal28 |
 <!-- team-sync:owners:end -->
 
-**When someone chooses:** update `team.json`, run `python scripts/sync_team.py`, and commit the updated JSON and docs together. This refreshes the README, task board, all five task briefs, status owners and presentation speakers. CI checks that they agree. Ownership appears on `main` after the owner applies or merges the administration update; no four-member review is needed for this setup step. Repository access is managed separately in GitHub Settings.
-
-## Model and scope
-
-Class baseline: `dN/dt = r N (1-N/K) - H`.
-
-Model A: `dN/dt = r N (1-N/K)(N/A-1) - H`.
-
-Model B: `dN/dt = r N (1-N/K)(N/A-1) - h N`, with `r>0`, `K>0`, `0<A<K`, `H,h>=0`.
-
-Use `x=N/K`, `tau=r*t`, `a=A/K`, `q=H/(r*K)`, `e=h/r`. The shared functions use these dimensionless variables. Dimensional inverse inference must use **fixed, recorded reference scales**, never unknown true parameters hidden in preprocessing.
-
-**Core:** foundations, stability, collapse thresholds, finite-time extinction, basins, branch diagrams, a correctly interpreted harvesting-history experiment, forward PINNs for A/B, inverse PINNs for A/B, noise and held-out validation. **Extras:** recovery slowing, threshold sensitivity and sustainable-yield safety margins. Extras must not delay core integration.
-
-Important scientific rules:
-
-- For `H>0`, zero is not an equilibrium of A. Stop the ODE at its first zero crossing; any subsequent zero segment explicitly means harvest shutdown and an absorbing extinction convention. For `H=0`, decline below A approaches zero asymptotically.
-- B approaches zero asymptotically from positive initial states. A small-population cutoff is not an exact finite extinction time.
-- A nonnegative harvest ramp up and down generally shows irreversible collapse/history dependence, **not a spontaneous closed recovery loop**. Show restocking as an explicit intervention.
-- Under B with a single fixed effort, all four of `r,A,K,h` are structurally nonidentifiable from `N(t)` alone. Fix an independently known parameter for the main inverse study. Explain this limitation, rather than claiming unique four-parameter recovery.
-- Synthetic trajectories must be labelled synthetic. No empirical species-specific conclusion is implied. PINNs are an evaluated advanced component, not presumed better than RK45.
-
-Derivations and boundary cases: [SCIENTIFIC_CONTRACT.md](docs/SCIENTIFIC_CONTRACT.md).
-
-## Repository layout
-
-| Path | Purpose |
-|---|---|
-| `src/mm_allee/` | Shared installable Python package; numerical and PINN modules stay separate |
-| `configs/` | Small versioned experiment configurations |
-| `experiments/wp01/` … `wp05/` | Reproducible command-line entry points owned by each member |
-| `tests/wp01/` … `wp05/` | Working scaffold checks, extended with each package's acceptance tests |
-| `docs/tasks/` | Five detailed assignments and handoff checklists |
-| `docs/` | Requirements, scientific/API/data contracts, testing and integration instructions |
-| `notebooks/sections/` | Five independently editable notebook fragments |
-| `notebooks/project.ipynb` | Single assembled executable submission notebook |
-| `report/sections/` | Five independently editable LaTeX sections |
-| `report/main.tex`, `references.bib` | Report entry point and bibliography |
-| `presentation/` | Shared timed outline and eventual editable slides |
-| `artifacts/figures/`, `tables/`, `manifests/` | Small curated, reviewed evidence committed deliberately |
-| `data/` | Provenance instructions; generated bulk data ignored |
-| `results/` | Local runs, checkpoints and logs; ignored |
-| `scripts/` | Smoke run, notebook assembly, roster-aware PR creation, submission packaging |
-| `.github/` | CI, issue and PR templates |
-
-## Quick start
-
-Python **3.11** is the team target. See [SETUP.md](docs/SETUP.md) for Windows PowerShell and Linux/macOS commands.
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev,notebook]"
-python -m pytest -q
-python scripts/smoke.py
-python scripts/assemble_notebook.py
-```
-
-WP04/WP05 additionally install `python -m pip install -e ".[pinn]"`. Nothing needs an API key. Run `ruff check .` and `ruff format --check .` before a PR. The [testing guide](docs/TESTING.md) distinguishes existing scaffold checks from still-required scientific validation.
-
-## Actual course deliverables
-
-The group has confirmed an **extension slot of 30 minutes including Q&A** (user confirmation, 19 October 2026), superseding the PDF's usual 10+5-minute slot for this project. Plan **25 minutes of presentation + 5 minutes Q&A**, about 5 speaking minutes per member. All five members must understand and explain the submission.
-
-- Editable LaTeX source, compiled PDF, bibliography and **EPS figure files**: 3 marks.
-- One executable Jupyter notebook, with detailed Markdown/equations/algorithms before code, labelled plots and interpretations: 2 marks.
-- Presentation and individual understanding: 5 marks.
-- Advanced methods such as PINNs may earn up to 5 bonus marks when mathematically explained and credibly validated; no automatic bonus.
-- Submit the report source, figures, PDF and notebook **at least one week before** the presentation. Presentations must finish **before 14 November 2026**. Topic/date/time approval is due **19 October 2026**; topic approval is already reported by the group, date/time are unrecorded here.
-
-[Submission checklist, ownership, integration order and relative deadlines](docs/INTEGRATION.md). [Course source PDF](docs/course/Mathematical_Modeling_project_instructions.pdf).
-
-## First team actions
-
-1. Confirm presentation date/time and record it in `docs/INTEGRATION.md`.
-2. Choose the five packages, update `team.json` and run `python scripts/sync_team.py`; the repo owner grants the other four accounts write access.
-3. Enable the available branch protections and review gates described in [REPOSITORY_ADMIN.md](docs/REPOSITORY_ADMIN.md). They are **not enabled by these files**.
-4. WP01/WP03 settle model/solver/data interfaces first; WP04 starts the shared PINN engine; WP05 develops its inverse design and data checks in parallel.
-5. Use the package-level checklists; a green scaffold CI is not a completed project.
+</details>

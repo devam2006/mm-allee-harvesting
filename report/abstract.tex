@@ -1,0 +1,31 @@
+
+\begin{abstract}
+We study population harvesting under a strong Allee effect,
+where a population below a certain size may continue to
+decline even without harvesting. Two harvesting methods
+are considered: constant harvesting (Model A) and
+proportional harvesting (Model B). We derive the equilibrium
+points, analyse their stability, and calculate the critical
+harvesting rates beyond which no positive equilibrium exists.
+We also examine how the initial population affects survival,
+calculate extinction times, and study delayed collapse near
+the critical harvesting rate. The effect of changing
+harvesting rates and restocking on population recovery is
+also investigated. Numerical results are checked using
+independent integration methods. We then apply
+Physics-Informed Neural Networks (PINNs) to solve the
+population equations and estimate unknown parameters from
+synthetic observations. For the forward problem, the PINN
+achieves relative $L^2$ errors ranging from
+$2.9\times10^{-7}$ to $4.1\times10^{-3}$, although
+conventional ODE solvers are considerably faster. For the
+inverse problem, the PINN recovers all three fitted parameters
+within $5\%$ of their true values in 10 out of 18
+noise-free runs, compared with 18 out of 18 for ODE
+least-squares fitting. We also study the effect of
+measurement noise and limitations of parameter estimation,
+including nonidentifiability in Model B when all four
+physical parameters are unknown. All experiments use
+synthetic data, and the results describe the mathematical
+models rather than any particular real-world population.
+\end{abstract}

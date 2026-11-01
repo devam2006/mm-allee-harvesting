@@ -1,0 +1,112 @@
+{
+  "scope": "WP01-WP05 notebook, synthetic data and figures; Overleaf report separate",
+  "source_heads": {
+    "WP01_PR8": "b83bba8c7f3c7d094d4439cf9b6d281a325ae4d0",
+    "WP02_PR9": "879b110b0b5bfac52840b6e2db5b6cf00cbec050",
+    "WP03_PR4": "16a05ce2f2c8eabfca7a95bcecf78dd7b5e190c8",
+    "classical_PR11": "649e0c1bd545d73f2ea153e09a4a214c6fd2324e",
+    "WP04_WP05_PR10": "00393cd78057e8b16c50698521f0a91ed341fb12"
+  },
+  "full_suite": {
+    "passed": 531,
+    "seconds": 55.6,
+    "environment": "existing Python 3.14.3 scientific/JAX environment; no fresh dependency install"
+  },
+  "classical_notebook": {
+    "executed_code_cells": 16,
+    "errors": 0,
+    "wall_seconds": 20.49
+  },
+  "final_notebook": {
+    "format": "small public-runtime Colab/Jupyter notebook",
+    "executed_code_cells": 32,
+    "errors": 0,
+    "wall_seconds": 26.62,
+    "sha256": "9abaf419dda7c79ae86760aa54172399b9e0c7c97a53fdcab5cb2e65752daffb",
+    "png_outputs": 15,
+    "anonymous_public_download": true,
+    "execution_provenance": "Real saved outputs retained from the identical 32 code-cell sources and runtime after a Markdown-only user revision"
+  },
+  "figures": {
+    "png_eps_pairs": 17,
+    "historical_wp05_pairs": 2,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "data": {
+    "synthetic": true,
+    "clean_trajectory_csvs": 6,
+    "reconstructed_scenarios": 54,
+    "reconstructed_rows": 5454
+  },
+  "classical_github_ci": {
+    "commit": "649e0c1bd545d73f2ea153e09a4a214c6fd2324e",
+    "core": "success",
+    "pinn": "success",
+    "url": "https://github.com/devam2006/mm-allee-harvesting/actions/runs/41132098743"
+  },
+  "limitations": [
+    "Legacy status converged denotes training completion; read optimizer.lbfgs_outcome separately",
+    "Full historical PINN sweeps audited but not independently rerun",
+    "Human approvals/understanding, interface decisions and final Overleaf/presentation remain pending"
+  ],
+  "previous_delivery": {
+    "head": "cfd734769c4c94307552652da62f1f490f0fad29",
+    "prem_source": "c84a0bf7c52c29661018d9bfa0df8b0fa69c93fa",
+    "full_suite_passed": 511,
+    "superseded_by": "Prem reporting fixes and refreshed notebook archive"
+  },
+  "reporting_review": {
+    "prem_source_tests_passed": 301,
+    "reporting_regressions_passed": 10,
+    "direct_forward_inverse_parity_cases": 4,
+    "parameter_rows_unchanged": 324,
+    "prediction_rows_error_values_unchanged": 108,
+    "recorded_pinn_iteration_limit_exits": 54,
+    "recorded_pinn_errors_or_abnormal_exits": 0,
+    "independent_full_sweep_rerun": false,
+    "prem_ci": "https://github.com/devam2006/mm-allee-harvesting/actions/runs/41137292297"
+  },
+  "previous_embedded_notebook": {
+    "executed_code_cells": 27,
+    "errors": 0,
+    "wall_seconds": 29.53,
+    "sha256": "de23a1a2a6a389458816df8e87446a94babe5f8ff64dc9e4621447a2d17aae08"
+  },
+  "colab_export": {
+    "bytes": 82217,
+    "largest_code_cell_characters": 2634,
+    "public_notebook_commit": "0d2680ca1ed0164144b818c7fe5a5ee75148efc3",
+    "public_asset_commit": "774d3d2773e219e21a9859aa4d621a4988b7552d",
+    "runtime_bytes": 1547835,
+    "anonymous_http": 200,
+    "export_regression_tests": 6,
+    "live_browser_memory_benchmark": false
+  },
+  "previous_extracted_embedded_notebook": {
+    "executed_code_cells": 27,
+    "errors": 0,
+    "wall_seconds": 28.56,
+    "no_repository_checkout_required": true
+  },
+  "extracted_zip_notebook": {
+    "executed_code_cells": 32,
+    "errors": 0,
+    "wall_seconds": 29.37,
+    "external_http_disabled": true,
+    "uses_local_runtime_zip": true
+  },
+  "final_user_markdown": {
+    "changed_cells": 6,
+    "change": "Colab-friendly math delimiters only",
+    "code_sources_unchanged": true,
+    "runtime_pin_unchanged": true,
+    "exact_source_rebuild": true,
+    "public_commit": "0d2680ca1ed0164144b818c7fe5a5ee75148efc3"
+  }
+}

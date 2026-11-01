@@ -2,7 +2,7 @@
 
 ## Existing checks versus project completion
 
-`python -m pytest -q` currently exercises the **scaffold**: scaling, B root/zero invariants, extinction stopping, error metrics, split rejection and the Model B coefficient ambiguity. Each of the five packages already has executable tests under its owned directory. These are a starting point, not a substitute for the additional acceptance tests listed in the five task briefs.
+`python -m pytest -q` exercises the shared scaffold plus the implemented **WP03 clean RK45 reference milestone**. WP03 adds exact-logistic, sampling/event, dimensional-scaling, independent-polynomial DOP853, refinement/quadrature, export/provenance and fault-detection checks, plus maxima, exact/near-fold basins, bottleneck asymptotics, sensitivity, MSY and readiness/publication checks. [Full evidence map](WP03_ANALYSIS.md). The other packages still have starter checks for scaling, B roots, metrics/autograd and split/identifiability invariants. This is not a substitute for the remaining scientific acceptance tests listed in each task brief.
 
 No unimplemented feature is marked as a fake passing test or hidden behind permanent xfail. When adding a feature, implement its acceptance tests in the same PR. `STATUS.md` remains not started/in progress until its core evidence exists.
 
@@ -39,7 +39,7 @@ python scripts/assemble_notebook.py
 python scripts/smoke.py
 ```
 
-CI `core` installs the classical + notebook/dev dependencies, checks style, runs the fast suite, assembles and executes the notebook. CI `pinn` installs CPU Torch and runs tests marked `pinn`; WP04 must add real residual/autograd and short optimiser tests before declaring the forward engine complete. The initial `pinn` job also checks import availability, so an empty optional selection cannot masquerade as trainer validation. Long training/convergence sweeps are experiments, not default unit tests.
+CI `core` installs the classical + notebook/dev dependencies, checks style, runs the fast suite, assembles and executes the notebook. CI `pinn` installs JAX (CPU) and runs tests marked `pinn`; WP04 must add real residual/autograd and short optimiser tests before declaring the forward engine complete. The initial `pinn` job also checks import availability, so an empty optional selection cannot masquerade as trainer validation. Long training/convergence sweeps are experiments, not default unit tests.
 
 ## Independent validation
 
