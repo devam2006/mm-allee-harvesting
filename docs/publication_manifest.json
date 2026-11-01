@@ -15,12 +15,12 @@
       "bytes": 511987
     },
     "deliverables/MM_Project_Report.zip": {
-      "sha256": "9c311323f21ec2fa3da0b24fac03796fe0d7831952e9c61ce9af3f66df9796f0",
-      "bytes": 699522
+      "sha256": "24eedf5f2ceb19457678b02e2c8100ea0b4ae359ad21d4e9c1ebe1a73e184f16",
+      "bytes": 700251
     },
     "report/MM_Project_Report.pdf": {
-      "sha256": "f203871bf37f1587eed80c1527b55fe3498279ba4b290d626fe78d0b115ad2a4",
-      "bytes": 1332010
+      "sha256": "69caba08c3b6fc5fab647bb2842cd0ad07e7a778bfcdc6e64d7a1848f3c55c0f",
+      "bytes": 1332008
     },
     "report/source/overleaf-latest.zip": {
       "sha256": "d329cebac674f77d5c68cdd06d43707ea743c47b8af060db9646cf002d7ab68b",
@@ -36,9 +36,10 @@
   },
   "report": {
     "pages": 32,
-    "owner_confirmation_pending": [
-      "WP04 report / Prem Mehta"
-    ],
-    "updated": "2026-11-01: sources synchronised with the newer Overleaf export (see report/README.md); built with pdfLaTeX/BibTeX (MiKTeX 25.12)"
+    "owner_confirmation_pending": [],
+    "updated": "2026-11-01: sources synchronised with the newer Overleaf export (see report/README.md); built with pdfLaTeX/BibTeX (MiKTeX 25.12)",
+    "owner_confirmed": {
+      "WP04 report / Mehta Prem": "2026-11-01; stated by the owner to the assistant, not a GitHub review"
+    }
   }
 }

@@ -1,6 +1,6 @@
 # Project status
 
-**Final public integration, 1 November 2026:** the professor-facing notebook adopts the supplied final Markdown with unchanged reviewed code. The complete supplied Overleaf report, EPS figures and compiled PDF are included; **Prem's Section 4 rewrite/confirmation remains pending**. Current navigation and reproduction instructions are in the top-level README and [publication checks](docs/FINAL_PUBLICATION.md). The complete suite passed 533 tests; the final 27-code-cell notebook ran with zero errors. The development entries and generated ownership table below are retained as a historical workflow record and do not supersede this publication status.
+**Final public integration, 1 November 2026:** the professor-facing notebook adopts the supplied final Markdown with unchanged reviewed code. The complete supplied Overleaf report, EPS figures and compiled PDF are included; **Section 4 was confirmed by its owner, Mehta Prem, on 1 November 2026 (owner's own statement, not a GitHub review)**. Current navigation and reproduction instructions are in the top-level README and [publication checks](docs/FINAL_PUBLICATION.md). The complete suite passed 533 tests; the final 27-code-cell notebook ran with zero errors. The development entries and generated ownership table below are retained as a historical workflow record and do not supersede this publication status.
 
 ## Earlier development records
 

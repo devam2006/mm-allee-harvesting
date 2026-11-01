@@ -11,7 +11,7 @@ A strong Allee effect means that a population below a critical size declines eve
 - **[Read the report PDF](report/MM_Project_Report.pdf)** · **[Overleaf source ZIP](deliverables/MM_Project_Report.zip)** · **[Editable LaTeX source](report/main.tex)** · **[Report figures](report/figures/)** · **[Bibliography](report/references.bib)**.
 - **[Find a result and reproduce it](docs/REPRODUCIBILITY.md)** · **[Browse the synthetic data](data/README.md)** · **[Documentation index](docs/README.md)**.
 
-**Report review status:** the supplied Overleaf text is preserved. Prem's rewrite/confirmation of the forward-PINN report section (`report/sections/04_forward_pinn.tex`) remains pending. A successful build and numerical checks do not constitute his approval. Sections 1, 2, 3 and 5, the introduction, conclusions and acknowledgements are the supplied owner-edited text.
+**Report review status:** the supplied Overleaf text is preserved. The owner of the forward-PINN report section (`report/sections/04_forward_pinn.tex`), Mehta Prem, confirmed it on 1 November 2026 (the owner's own statement, not a GitHub review). A successful build and numerical checks are not an approval. Sections 1, 2, 3 and 5, the introduction, conclusions and acknowledgements are the supplied owner-edited text.
 
 The notebook's first loading cell uses the existing **[public code/data companion](https://github.com/devam2006/mm-allee-notebook-runtime)**. Its immutable runtime commit and SHA-256 are unchanged. No private-repository login, Drive mount or API key is required; internet is needed for the first download. The companion and its historical releases are retained as they are.
 
