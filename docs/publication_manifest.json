@@ -3,16 +3,17 @@
   "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
   "inputs": {
     "notebook_sha256": "854bcf6b82f882612304765b34901b64d2b80b13b7311ad2cf9dc3c7c19adcdd",
-    "overleaf_sha256": "d329cebac674f77d5c68cdd06d43707ea743c47b8af060db9646cf002d7ab68b"
+    "overleaf_sha256": "d329cebac674f77d5c68cdd06d43707ea743c47b8af060db9646cf002d7ab68b",
+    "executed_notebook_sha256": "b3080546415ed3eccac8ed6f082cd527cf584d9f4451a56a2e9680406e641d03"
   },
   "outputs": {
     "notebooks/project_colab.ipynb": {
-      "sha256": "9899660f2d58d77623c08b46da6ff6f2eb2c670e706fdb4b9b9dd7ed549b6fb6",
-      "bytes": 97205
+      "sha256": "b3080546415ed3eccac8ed6f082cd527cf584d9f4451a56a2e9680406e641d03",
+      "bytes": 3186743
     },
     "deliverables/mm-allee-final-notebook-eps.zip": {
-      "sha256": "2585ad30e65fe945823617f362372729644b3cc8e96c3c9db5adac033605fcda",
-      "bytes": 511987
+      "sha256": "8d5b5dc37017ce1534a7a45daa019fc58099bb00680933fc718d4391b2bd4c9f",
+      "bytes": 2760289
     },
     "deliverables/MM_Project_Report.zip": {
       "sha256": "24eedf5f2ceb19457678b02e2c8100ea0b4ae359ad21d4e9c1ebe1a73e184f16",
@@ -32,7 +33,8 @@
     "code_cells": 27,
     "executed_code_cells": 27,
     "errors": 0,
-    "png_figures": 16
+    "png_figures": 16,
+    "note": "2026-11-01: project_colab.ipynb replaced by the executed submission notebook (saved outputs); cell sources unchanged"
   },
   "report": {
     "pages": 32,

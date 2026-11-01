@@ -6,7 +6,7 @@ Run commands from the repository root after `python -m pip install -e ".[dev,not
 
 The [final Colab notebook](../notebooks/project_colab.ipynb) runs classical studies and short PINN demonstrations, and loads saved long-study tables/figures. Its code is identical to the reviewed integration. The first cell restores the immutable runtime at public companion commit `6ff183adae6093c26e663dfac254d2c071ea06a0`, SHA-256 `def74213164d849f511f28c1ff8f581e87fef01ba67bb6b33c77934ff72ef64c`. The companion is unchanged by publication of the main project.
 
-`notebooks/project.ipynb` uses the locally installed package instead. Rebuild it with `python scripts/assemble_notebook.py`. Owned explanations/code are in `notebooks/sections/`; custom final introduction, setup heading and acknowledgements are adjacent Markdown files. The canonical notebook contains no saved bulk outputs; executing it produces all figures. Executed validation copies are ignored under `results/`.
+`notebooks/project.ipynb` uses the locally installed package instead. Rebuild it with `python scripts/assemble_notebook.py`. Owned explanations/code are in `notebooks/sections/`; custom final introduction, setup heading and acknowledgements are adjacent Markdown files. `project.ipynb` contains no saved bulk outputs; executing it produces all figures. The Colab notebook `project_colab.ipynb` is the executed submission copy with its saved outputs (same 63 cell sources as the earlier cleared version). Executed validation copies are ignored under `results/`.
 
 ## Classical experiments: quick CPU commands
 
