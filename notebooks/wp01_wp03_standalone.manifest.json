@@ -1,5 +1,5 @@
 {
-  "source_commit": "64c91b765b3c16d32012fcdf21f1185a7dfaa994",
+  "source_commit": "4bfcdfc529c02097920a2ec8b4afb9ac706fb5a9",
   "source_dirty": true,
   "work_packages": [
     1,
@@ -82,12 +82,12 @@
     "data/fixtures/wp03_reference/README.md": "6aae8d2a7cbc3c5dc459b2cdaa084d0cf979b1e5486b45db050b2003780908de",
     "data/fixtures/wp03_reference/truth.json": "a96aee0d43a16803f0db7737f2b3325d0bba4af6e39d940ba99017af9b7d9d42",
     "data/fixtures/wp03_reference/validation.csv": "a7923a459cf55d14e048e93e7872f3e8797f9de92ec2a3bf9b5874a51b22c3ae",
-    "docs/AI_USAGE.md": "bdae26fd7fc2d12a4d672bbecbc7a7e5031255d44f152c2dd7c39797f5895e05",
+    "docs/AI_USAGE.md": "55fb56287d979f5be33e50c79892617653fc0beec7044e19b4f1d6191e878a3f",
     "experiments/wp01/run.py": "d4e715eea189e4050c9a6f05515de3dae48e88de73e098662e7878015e50dbca",
     "experiments/wp02/run.py": "5c097191f1be6b79b1097d55b0da67bfbd5fc3a7f2e3ae003f0f54d0f386b5cc",
     "experiments/wp03/generate_reference.py": "202a5762e6dc49d07b0370287cbf0bc588cbae1018b3c9c898158f70f9cab5af",
     "experiments/wp03/run.py": "745e25c2efc41ce228dca3b59065f6dc3dda6bdc85a9dc5ff07de241f9dabea2",
-    "pyproject.toml": "4b551dff961fd819669eee4e9a492b803de2ade03ae0b03cfc95cd297f8ec841",
+    "pyproject.toml": "2a83fa62d83557a3590b292338eb5e17903c99f8d40c4b59e2058f3a82ca9277",
     "src/mm_allee/__init__.py": "b65690d61f03f0dee198f8cc69f6075cb78ed291fd8257d90934a38d9c3f2b92",
     "src/mm_allee/collapse.py": "00eeba90b9b8b50a3e2f46c5cd22a42518646b0b9cdfcbd65fa49eff39834cbb",
     "src/mm_allee/collapse_study.py": "78c971056104c7bed18a7095863496bb3e90274b83f282f4abc2eb55b6f71b84",
@@ -114,6 +114,6 @@
     "src/mm_allee/validation.py": "380544c733d7bed6679a4ef4b4cbf6bdd26ac50c9ae0491641a30bf866c6c7c4",
     "src/mm_allee/wp02_experiment.py": "79c5ea90b63666f8b1f80357bd7f82b9ed1cbb37a6f013e1f928d6b9f05f0168"
   },
-  "payload_sha256": "b536a0968dcf50c940c184591df551c32fdcfe4ba1a3aac476c5e774e8d28b49",
-  "notebook_sha256": "7b5c347a87b3ff38f9a93a8fde2d6aee35793c32688c1f85b46d764978328b37"
+  "payload_sha256": "5a56161ccae6442c914e771be61d22803b45607ce3d98e5fcbd6c6c01bde4cb7",
+  "notebook_sha256": "10c24c5832afe7b99c45f526aff262a40cd0b872c99603aa7782c9188351fb75"
 }

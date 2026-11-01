@@ -1,49 +1,33 @@
-\documentclass[11pt,a4paper]{article}
-\usepackage[margin=25mm]{geometry}
-\usepackage{amsmath,amssymb,graphicx,booktabs,xcolor,xurl,hyperref}
-\hypersetup{hidelinks}
-\graphicspath{{../artifacts/figures/}}
-\title{Harvesting under a Strong Allee Effect: Collapse Thresholds, Hysteresis and Comparison of Constant-Yield vs Proportional-Effort Harvesting, with Physics-Informed Neural Network (PINN) Forward and Inverse Analysis}
-\author{\texttt{RaghavSinghal15}, \texttt{AshChan07}, \texttt{devam2006}\\
-\texttt{Prem-Mehta03}, \texttt{rohanagrawal28}\\
-\small Author names await final confirmation}
-\date{Working draft, 28 October 2026}
+% Main document: compile this file, never an individual section.
+% Overleaf settings: main document = main.tex; compiler = pdfLaTeX.
+\documentclass[12pt,a4paper]{article}
+\input{preamble}
+\title{Mathematical Modelling of Population Harvesting under a Strong Allee Effect\\[0.4em]
+\large Equilibria, Stability, Extinction and PINN Analysis}
+\author{Raghav Singhal \quad Ashwath Chandramouli \quad Devam Bhavsar\\
+Mehta Prem \quad Rohan Agrawal\\[0.5em]
+\small BITS Pilani, K K Birla Goa Campus\\
+\small Mathematical Modelling, Semester I, 2026--27}
+\date{November 2026}
 \begin{document}
 \maketitle
-\begin{abstract}
-We compare fixed-catch and proportional-effort harvesting in a strong-Allee
-population model. The implemented classical analysis derives harvesting
-thresholds and initial-state basins, calculates finite A extinction times,
-and checks numerical references against independent methods. The example
-$r=0.7$, $K=100$, $A=20$ gives $H_c=36.75966303$ population/time and
-$h_c=0.56$ inverse time. These have different units and do not directly rank
-policy risk. \textbf{SCAFFOLD\_ONLY:} Full comparison/history and PINN
-forward/inverse evidence remain to be integrated; this is not the final report.
-\end{abstract}
+\input{abstract}
 \input{frontmatter}
 \input{sections/01_foundations}
+\FloatBarrier
 \input{sections/02_model_b_history}
+\FloatBarrier
 \input{sections/03_collapse}
+\FloatBarrier
 \input{sections/04_forward_pinn}
+\FloatBarrier
 \input{sections/05_inverse_validation}
-\section{Conclusions and limitations}
-The current classical results show that harvesting thresholds alone do not
-determine persistence: the initial population must also exceed its basin
-barrier. Positive fixed catch permits finite-time extinction, whereas B extinction
-paths from positive starts approach zero asymptotically. Near the fold,
-supercritical trajectories can spend a long time in a bottleneck before
-collapse. These statements concern the assumed deterministic model and
-synthetic examples. \textbf{SCAFFOLD\_ONLY:} Integrate the fair policy/history
-comparison, quantitative PINN evidence and failure cases before finalising
-the project's conclusions.
-\section{Contributions and acknowledgements}
-The task allocation is WP01: \texttt{RaghavSinghal15}; WP02:
-\texttt{AshChan07}; WP03: \texttt{devam2006}; WP04:
-\texttt{Prem-Mehta03}; WP05: \texttt{rohanagrawal28}.
-OpenAI ChatGPT/Codex assisted with repository preparation, WP03 implementation,
-exposition, checks and this working assembly, as recorded in the AI-use log.
-\textbf{SCAFFOLD\_ONLY:} Confirm actual author names and each member's
-contribution, verification and AI/source disclosures before submission.
+\FloatBarrier
+\input{sections/conclusions}
+\input{sections/acknowledgements}
 \bibliographystyle{plain}
 \bibliography{references}
+% Optional longer derivations may be added after the references:
+% \appendix
+% \input{sections/appendix}
 \end{document}

@@ -1,17 +1,28 @@
-# Harvesting under a Strong Allee Effect: Collapse Thresholds, Hysteresis and Comparison of Constant-Yield vs Proportional-Effort Harvesting, with Physics-Informed Neural Network (PINN) Forward and Inverse Analysis
+# Mathematical Modelling of Population Harvesting under a Strong Allee Effect: Equilibria, Stability, Extinction and PINN Analysis
 
-| Contribution | Names | ID|
-|---|---|---|
-|WP01|Raghav Singhal|2024ADPS0827G|
-|WP02|Ashwath Chandramouli|2024ADPS0853G|
-|WP03|Devam Jatin Bhavsar|2024ADPS0831G|
-|WP04|Mehta Prem Kalpesh|2024ADPS0851G|
-|WP05|Rohan Agrawal|2024ADPS0004G|
+## Project Overview
 
-**Running this notebook:** connect a CPU runtime in Colab, then choose **Runtime → Run all**. The setup automatically downloads the required code and synthetic data (about 1.57 MB), verifies their checksum and prepares the environment. Internet is required on first use; no Drive mount or API key is needed.
+In this project, we study how harvesting affects a population that follows the strong Allee effect. This means that if the population falls below a certain minimum size, it may continue to decline even without further harvesting.
 
-**Reproducibility resources:** [Code, synthetic data and references](https://github.com/devam2006/mm-allee-notebook-runtime). The notebook runs directly; familiarity with this supporting resource is not required.
+We use fishing as an example of harvesting, where the term *stock* refers to the population being studied, measured either by the number of individuals or by their total weight. *Catch* refers to the amount removed from the population per unit time.
 
-The notebook opens without large encoded code cells. Figures and demonstration results appear when their cells run. Most scientific packages are already available in Colab; only missing dependencies are installed. **Internet is needed on the first run**, unless the companion download's runtime ZIP is beside this notebook under `runtime/`.
+We consider two harvesting methods:
 
-**Reproduction:** the public snapshot is pinned to a commit and SHA-256. Keep those values unchanged to reproduce this version. Python 3.11+ and NumPy/SciPy/Matplotlib/IPython/JAX are required.
+- **Constant harvesting (Model A):** A fixed amount $H$ is removed per unit time, regardless of the current population size.
+- **Proportional harvesting (Model B):** The amount removed is $hN$, where $N$ is the current population and $h$ is the harvesting-rate coefficient, also called fishing effort. Thus, the catch decreases as the population becomes smaller.
+
+For example, if the population is 100 units, a constant harvest of 10 units per time unit remains unchanged even if the population decreases to 50. However, with proportional harvesting at $h=0.1$ per time unit, the catch decreases from 10 to 5 units per time unit.
+
+We study the equilibrium points, stability, collapse thresholds, and extinction behaviour of these models. We then use Physics-Informed Neural Networks (PINNs) to solve the equations and estimate unknown parameters from simulated observations. All data used in this project are synthetic.
+
+## Contributors
+
+| Section | Names                | ID            |
+| ------------ | -------------------- | ------------- |
+| 1         | Raghav Singhal       | 2024ADPS0827G |
+| 2         | Ashwath Chandramouli | 2024ADPS0853G |
+| 3         | Devam Jatin Bhavsar  | 2024ADPS0831G |
+| 4         | Mehta Prem Kalpesh   | 2024ADPS0851G |
+| 5         | Rohan Agrawal        | 2024ADPS0004G |
+
+**Running this notebook:** Open the notebook in Google Colab, connect to a CPU runtime, and select **Runtime → Run all**. The notebook automatically downloads the necessary Python code and synthetic data, runs the experiments, and displays the corresponding calculations, tables, and graphs. An internet connection is required for the initial setup, but no Google Drive connection or API key is needed. The source code, experimental data, and supporting documentation can be found in our [GitHub project repository](https://github.com/devam2006/mm-allee-harvesting).&#x20;

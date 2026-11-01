@@ -1,5 +1,5 @@
 {
-  "source_commit": "64c91b765b3c16d32012fcdf21f1185a7dfaa994",
+  "source_commit": "4bfcdfc529c02097920a2ec8b4afb9ac706fb5a9",
   "source_dirty": true,
   "work_packages": [
     1,
@@ -170,7 +170,7 @@
     "data/fixtures/wp03_reference/README.md": "6aae8d2a7cbc3c5dc459b2cdaa084d0cf979b1e5486b45db050b2003780908de",
     "data/fixtures/wp03_reference/truth.json": "a96aee0d43a16803f0db7737f2b3325d0bba4af6e39d940ba99017af9b7d9d42",
     "data/fixtures/wp03_reference/validation.csv": "a7923a459cf55d14e048e93e7872f3e8797f9de92ec2a3bf9b5874a51b22c3ae",
-    "docs/AI_USAGE.md": "bdae26fd7fc2d12a4d672bbecbc7a7e5031255d44f152c2dd7c39797f5895e05",
+    "docs/AI_USAGE.md": "55fb56287d979f5be33e50c79892617653fc0beec7044e19b4f1d6191e878a3f",
     "experiments/integration/noise_convergence.py": "5ffff961ad700aad1467f16900ed4dfff32a8139f212fb0fc5c510218d15d88a",
     "experiments/integration/shared_settings.py": "7ed51dbc68d379af689e4d7d8052d95329056da317d629f6fdde1e163f20d7bf",
     "experiments/wp01/run.py": "d4e715eea189e4050c9a6f05515de3dae48e88de73e098662e7878015e50dbca",
@@ -182,7 +182,7 @@
     "experiments/wp04/select_activation.py": "b2811deddc681244192600457d901495fcf08298c6dd32ee6bc8ccf7bf3cfc86",
     "experiments/wp05/__init__.py": "36da49a71a27aae43c7ec40237d39189bbb2caeedb48062112514297576409df",
     "experiments/wp05/run.py": "edfad33d0dff6b18dc6cabfa623ab18ba30d78c1f2841f44c73a4731fa772b0b",
-    "pyproject.toml": "4b551dff961fd819669eee4e9a492b803de2ade03ae0b03cfc95cd297f8ec841",
+    "pyproject.toml": "2a83fa62d83557a3590b292338eb5e17903c99f8d40c4b59e2058f3a82ca9277",
     "src/mm_allee/__init__.py": "b65690d61f03f0dee198f8cc69f6075cb78ed291fd8257d90934a38d9c3f2b92",
     "src/mm_allee/collapse.py": "00eeba90b9b8b50a3e2f46c5cd22a42518646b0b9cdfcbd65fa49eff39834cbb",
     "src/mm_allee/collapse_study.py": "78c971056104c7bed18a7095863496bb3e90274b83f282f4abc2eb55b6f71b84",
@@ -209,6 +209,6 @@
     "src/mm_allee/validation.py": "380544c733d7bed6679a4ef4b4cbf6bdd26ac50c9ae0491641a30bf866c6c7c4",
     "src/mm_allee/wp02_experiment.py": "79c5ea90b63666f8b1f80357bd7f82b9ed1cbb37a6f013e1f928d6b9f05f0168"
   },
-  "payload_sha256": "e07c7d556f4146d56412156b87259042a389f683d0f2af82597d881137b5cfb2",
-  "notebook_sha256": "bc99f6494c64f1560e878a585caaa67dc667dcd775047b0307cc0390ba58f54f"
+  "payload_sha256": "30cd272f00f55956c56148703db573c979074abfcfbe8c51b8a448d20bf58907",
+  "notebook_sha256": "0413d8f0c1477b0d79925875a6cbf98f2164bfa40fc917f3fdde9202b7cb276b"
 }

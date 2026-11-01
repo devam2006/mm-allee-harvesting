@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-01",
+  "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "inputs": {
+    "notebook_sha256": "854bcf6b82f882612304765b34901b64d2b80b13b7311ad2cf9dc3c7c19adcdd",
+    "overleaf_sha256": "d329cebac674f77d5c68cdd06d43707ea743c47b8af060db9646cf002d7ab68b"
+  },
+  "outputs": {
+    "notebooks/project_colab.ipynb": {
+      "sha256": "9899660f2d58d77623c08b46da6ff6f2eb2c670e706fdb4b9b9dd7ed549b6fb6",
+      "bytes": 97205
+    },
+    "deliverables/mm-allee-final-notebook-eps.zip": {
+      "sha256": "2585ad30e65fe945823617f362372729644b3cc8e96c3c9db5adac033605fcda",
+      "bytes": 511987
+    },
+    "deliverables/MM_Project_Report.zip": {
+      "sha256": "272ee90cab8e5027d0a648554392e3518b5aa91f446ea971186b9f1cfd84d0a5",
+      "bytes": 693057
+    },
+    "report/MM_Project_Report.pdf": {
+      "sha256": "cd9e815305e16ee535b672baf25f0c710044a94a932e0e446ec23ecfab020607",
+      "bytes": 824575
+    },
+    "report/source/overleaf-latest.zip": {
+      "sha256": "d329cebac674f77d5c68cdd06d43707ea743c47b8af060db9646cf002d7ab68b",
+      "bytes": 899072
+    }
+  },
+  "notebook": {
+    "cells": 63,
+    "code_cells": 27,
+    "executed_code_cells": 27,
+    "errors": 0,
+    "png_figures": 16
+  },
+  "report": {
+    "pages": 33,
+    "owner_confirmation_pending": [
+      "WP04 report / Prem Mehta"
+    ]
+  }
+}

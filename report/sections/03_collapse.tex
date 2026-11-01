@@ -1,304 +1,470 @@
-% Owner: Devam Bhavsar (WP03). Proposed replacement for sections/03_collapse.tex.
-% Core-scope notebook/report update on PR #5 baseline 2ab0cac; WP01/WP05 preserved.
-\section{Collapse Thresholds, Extinction and Basins}
-\label{sec:collapse}
 
-We now use the two harvesting models to answer three questions: how much
-harvesting can the population sustain, which initial populations survive,
-and how long extinction takes when collapse occurs.
-We assume a deterministic, well-mixed population with constant parameters,
-no age structure or time delays, and nonnegative harvesting. All numerical
-examples are synthetic; they do not describe observations of a particular species.
+\section{Critical Harvesting Rates and Extinction Analysis}
+\label{sec:wp03}
 
-The natural population growth rate under a strong Allee effect is
+In Sections~\ref{sec:foundations} and~\ref{sec:wp02}, we studied the
+equilibrium points and stability of Models A and B. We now calculate
+the critical harvesting rates, examine how the initial population
+affects survival, and determine the time to extinction when a
+population collapses. We also investigate slow decline near the
+critical harvesting rate.
+
+We use the dimensionless variables introduced earlier:
 \[
-g(N)=rN\left(1-\frac{N}{K}\right)\left(\frac{N}{A}-1\right),
-\qquad r>0,\quad 0<A<K.
+x=\frac{N}{K},\qquad
+\tau=rt,\qquad
+a=\frac{A}{K},\qquad
+q=\frac{H}{rK},\qquad
+e=\frac{h}{r}.
 \]
-Here $r$ is a growth-rate parameter, $K$ is the carrying capacity and $A$
-is the Allee threshold. Using the dimensionless variables
+The two harvesting models are
+\begin{align}
+\text{Model A:}\qquad x' &= G(x)-q,\\
+\text{Model B:}\qquad x' &= G(x)-ex,
+\end{align}
+where
 \[
-x=\frac{N}{K},\qquad \tau=rt,\qquad a=\frac{A}{K},\qquad
-q=\frac{H}{rK},\qquad e=\frac{h}{r},
+G(x)=x(1-x)\left(\frac{x}{a}-1\right),
+\qquad x'=\frac{dx}{d\tau}.
 \]
-the equations for constant harvesting (Model A) and proportional harvesting
-(Model B) become
-\[
-\frac{dx}{d\tau}=G(x)-q \quad\text{(A)},\qquad
-\frac{dx}{d\tau}=G(x)-ex \quad\text{(B)},\qquad
-G(x)=x(1-x)\left(\frac{x}{a}-1\right).
-\]
-In the population equations, $x'$ denotes $dx/d\tau$.
 
 \subsection{Critical Harvesting Rates}
 \label{sec:wp03-thresholds}
 
-For Model A, an equilibrium satisfies $G(x)=q$: natural growth must balance
-the fixed catch. The largest catch that can be balanced is therefore the
-maximum of $G(x)$ for $x\geq0$. Expanding and differentiating gives
+\paragraph{Model A: Constant harvesting.}
+At a positive equilibrium, natural growth balances the fixed
+catch: $G(x)=q$. The largest constant catch that can be balanced
+is therefore the maximum of $G(x)$ for $x\geq0$.
+Expanding and differentiating gives
 \[
 G(x)=-\frac{x^3}{a}+\frac{(1+a)x^2}{a}-x,
 \qquad
 G'(x)=\frac{-3x^2+2(1+a)x-a}{a}.
 \]
-Solving $G'(x)=0$ gives two stationary points,
+Setting $G'(x)=0$ gives
 \[
 x=\frac{1+a\pm\sqrt{1-a+a^2}}{3}.
 \]
-The smaller lies below $a$. The larger lies in $(a,1)$ and is the point of
-maximum growth. Writing $d=\sqrt{1-a+a^2}$, it is
+The larger stationary point lies between $a$ and $1$.
+Writing it as $x_*$, we have
 \[
-x_*=\frac{1+a+d}{3},\qquad G''(x_*)=-\frac{2d}{a}<0.
+x_*=\frac{1+a+\sqrt{1-a+a^2}}{3},
+\qquad
+G''(x_*)=-\frac{2\sqrt{1-a+a^2}}{a}<0.
 \]
-Thus the critical constant harvest and its corresponding population are
+Thus the critical constant catch is
 \begin{equation}
-q_c=G(x_*),\qquad H_c=rKq_c,\qquad
-N_*=\frac{K+A+\sqrt{K^2-KA+A^2}}{3}.
+q_c=G(x_*),\qquad H_c=rKq_c.
 \label{eq:wp03-critical-a}
 \end{equation}
-If $H>H_c$, harvesting exceeds natural growth at every population level,
-so there is no positive equilibrium. For $0<H<H_c$, positive equilibria
-exist, but survival still depends on the initial population.
+The corresponding population in the original units is
+\[
+N_*=Kx_*=
+\frac{K+A+\sqrt{K^2-KA+A^2}}{3}.
+\]
 
-For Model B, a positive equilibrium satisfies $G(x)=ex$. Dividing by
-$x>0$ gives
+\paragraph{Model B: Proportional harvesting.}
+At a positive equilibrium, $G(x)=ex$. Dividing by $x>0$ gives
 \[
-e=(1-x)\left(\frac{x}{a}-1\right)=P(x).
+e=\frac{G(x)}{x}
+=(1-x)\left(\frac{x}{a}-1\right)=P(x).
 \]
-We now maximise growth per individual rather than total growth.
-Since
+Here we maximise growth per unit population, rather than
+total growth. Since
 \[
-P'(x)=\frac{1+a-2x}{a},\qquad P''(x)=-\frac{2}{a}<0,
+P'(x)=\frac{1+a-2x}{a},
+\qquad P''(x)=-\frac{2}{a}<0,
 \]
-the maximum occurs at $x=(1+a)/2$. Substitution gives
+the maximum occurs at $x=(1+a)/2$. Hence
 \begin{equation}
-e_c=\frac{(1-a)^2}{4a},\qquad
+e_c=\frac{(1-a)^2}{4a},
+\qquad
 h_c=\frac{r(K-A)^2}{4AK}.
 \label{eq:wp03-critical-b}
 \end{equation}
-For $h>h_c$, there is no positive equilibrium and every positive initial
-population approaches zero.
 
-For the example $r=0.7$, $K=100$ and $A=20$, we obtain
+Above their respective critical harvesting rates, neither model
+has a positive equilibrium. Below these rates, positive
+equilibria exist, but the initial population still determines
+whether the population survives.
+
+For the numerical examples in this section, we use
+$r=0.7$, $K=100$ and $A=20$. We obtain
 \[
-N_*\approx70.5505,\qquad H_c\approx36.7597,\qquad h_c=0.56.
+N_*\approx70.55050,\qquad
+H_c\approx36.75966,\qquad h_c=0.56.
 \]
-The standard logistic model gives $H_{c,\mathrm{logistic}}=rK/4=17.5$.
-This is a reference calculation: using the same $r,K$ does not make the
-logistic and Allee growth functions identical. Also, $H$ has units of
-population per time, whereas $h$ has units of inverse time. Comparing their
-raw numerical values does not compare harvesting risk.
-We checked both dimensionless thresholds by numerical maximisation for
-$a=0.05,0.1,0.2,0.5,0.8,0.95$\cite{scipy_bounded}.
+For comparison, the standard logistic model with constant
+harvesting has $H_{c,\mathrm{logistic}}=rK/4=17.5$.
+However, the logistic and Allee models have different growth
+functions. The larger critical harvesting rate does not mean
+that populations with a strong Allee effect are always more
+resistant to collapse. Also, $H$ and $h$ have different
+units, so their numerical values cannot be compared directly.
+
+We checked the analytical thresholds by independently
+maximising the corresponding growth functions numerically.
 
 \subsection{Initial Population and Basins of Attraction}
 \label{sec:wp03-basins}
 
-A basin of attraction is the set of initial populations that approach the
-same long-term state. For Model A with $0<q<q_c$, there are two positive
-equilibria $x_-<x_+$, both between $a$ and $1$. The signs of $G(x)-q$ are
-negative below $x_-$, positive between the roots and negative above $x_+$.
-Thus $x_-$ is unstable and $x_+$ is stable. A start below $x_-$ declines
-to zero, while a start above it approaches $x_+$.
+Even below the critical harvesting rate, a population may
+collapse if its initial size is too small. A \emph{basin of
+attraction} is the set of initial populations that approach
+the same long-term state.
 
-Model B has the positive equilibria
+For Model A with $0<q<q_c$, there are two positive
+equilibria, $x_-<x_+$. The sign of $G(x)-q$ is negative
+below $x_-$, positive between the roots, and negative
+above $x_+$. Therefore $x_-$ is unstable and $x_+$
+is stable. A population starting below $x_-$ reaches
+zero, whereas a population starting above it approaches
+$x_+$.
+
+For Model B, the positive equilibria are
 \[
-x_\pm=\frac{1+a\pm\sqrt{(1-a)^2-4ae}}{2},\qquad 0\leq e<e_c.
+x_\pm=
+\frac{1+a\pm\sqrt{(1-a)^2-4ae}}{2},
+\qquad 0\leq e<e_c.
 \]
-Its smaller root is also the boundary between decline and persistence.
-Unlike Model A with positive catch, Model B has a stable zero equilibrium:
-if $f_B(x)=G(x)-ex$, then $f_B'(0)=-(1+e)<0$.
+The lower equilibrium is unstable and the upper one is
+stable. Model B also has a stable zero equilibrium:
+if $f_B(x)=G(x)-ex$, then
+\[
+f'_B(0)=-(1+e)<0.
+\]
 
-At the critical harvest, the two positive equilibria merge. This is called
-a fold. The merged population is $x_*$ for A and $(1+a)/2$ for B.
-The population decreases on both sides near this equilibrium. A start
-above it therefore approaches it, while a start below moves away toward
-zero. This one-sided attraction is called semistability; a zero derivative
-alone would not establish stability.
+At the critical harvesting rate, the two positive
+equilibria merge at a \emph{fold}. For Model A this
+occurs at $x_*$, and for Model B at $(1+a)/2$.
+The merged equilibrium attracts populations from
+above but not from below. This one-sided behaviour
+is called \emph{semistability}.
+
+Table~\ref{tab:basins} summarises the outcomes.
 
 \begin{table}[htbp]
-\centering\small
-\begin{tabular}{p{0.16\linewidth}p{0.37\linewidth}p{0.37\linewidth}}
+\centering
+\small
+\caption{Long-term outcomes for positive initial populations.
+For below-critical harvesting, the harvest is positive.
+A population starting exactly at an equilibrium remains there.}
+\label{tab:basins}
+\begin{tabular}{p{0.17\linewidth}p{0.36\linewidth}p{0.36\linewidth}}
 \toprule
-Harvest level & Model A & Model B\\
+\textbf{Harvesting} & \textbf{Model A} & \textbf{Model B}\\
 \midrule
-Zero & $0<x_0<a$: approaches zero; $x_0>a$: approaches $1$.
-& Same behaviour.\\
-Below critical & $0<x_0<x_-$: reaches zero; $x_0>x_-$: approaches $x_+$.
-& $0<x_0<x_-$: approaches zero; $x_0>x_-$: approaches $x_+$.\\
-At critical & $0<x_0<x_*$: reaches zero; $x_0>x_*$: approaches $x_*$.
-& Below the merged root: approaches zero; above it: approaches that root.\\
-Above critical & Every finite $x_0>0$ reaches zero.
+Zero
+& For $x_0<a$, approaches zero; for $x_0>a$, approaches $1$.
+& Same behaviour as Model A.\\
+Below critical
+& For $x_0<x_-$, reaches zero; for $x_0>x_-$, approaches $x_+$.
+& For $x_0<x_-$, approaches zero; for $x_0>x_-$, approaches $x_+$.\\
+At critical
+& Below the merged root, reaches zero; above it, approaches the merged root.
+& Below the merged root, approaches zero; above it, approaches the merged root.\\
+Above critical
+& Every finite $x_0>0$ reaches zero.
 & Every $x_0>0$ approaches zero.\\
 \bottomrule
 \end{tabular}
-\caption{Outcomes for positive initial populations. Below critical means
-positive harvest below the relevant model's threshold. An initial population
-exactly at any equilibrium remains there.}
-\label{tab:wp03-basins}
 \end{table}
 
-With no harvesting, $x_0=a$ remains at the Allee threshold and $x_0=0$
-remains zero. For Model A with $q>0$, however, $x'=-q$ at $x=0$; zero is a
-boundary at which we stop the physical solution, not an equilibrium of
-the original equation. A start at zero has extinction time zero.
+With zero harvesting, $x_0=a$ is also an equilibrium.
+For Model A with $q>0$, however,
+$G(0)-q=-q<0$: zero is a boundary at which we
+stop the physical solution, not an equilibrium of
+the original ODE. A population on a collapsing
+trajectory reaches this boundary in finite time.
+Under Model B, a declining positive population
+approaches zero asymptotically instead.
 
-Figure~\ref{fig:wp03-basins} shows the basins. They are classified using
-the signs of the equations, rather than the end of a finite simulation.
-Very close to an unstable or merged root, rounding can change the apparent
-outcome. The implementation labels non-exact starts within
-$2\times10^{-12}$ dimensionless population units of this boundary as
-unresolved. This numerical tolerance does not represent measurement error
-or change the critical harvesting rate.
+Figure~\ref{fig:wp03_basins} shows the basin diagrams.
+The blue regions show initial conditions leading to
+a positive equilibrium. The orange region in Model A
+shows finite-time extinction, while the yellow region
+in Model B shows asymptotic decline. The lower
+equilibrium separates collapse from persistence below
+the critical harvesting rate. We classify the basins
+from the signs of the equations rather than simply
+using the value at the end of a finite simulation.
+Conditions extremely close to an unstable or merged
+equilibrium are marked unresolved when rounding
+prevents a reliable classification.
 
-\begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_basins.eps}
-\caption{Basins for the synthetic example $a=0.2$. Each horizontal axis uses
-a fraction of its model's own critical harvest. Solid curves mark the lower
-equilibrium boundaries, dashed curves the upper equilibria, and dotted
-vertical lines the critical harvests. A reaches zero in finite time under
-positive catch; B approaches zero asymptotically. The finite-resolution
-colour grid should be read together with Table~\ref{tab:wp03-basins}.}
-\label{fig:wp03-basins}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{wp03_basins}
+\caption{Basins of attraction for Models A and B with $a=0.2$.
+The horizontal axis in each panel is the harvest divided by
+that model's critical rate; the vertical axis is the initial
+population $x_0=N_0/K$. Solid curves mark lower equilibria,
+dashed curves mark upper equilibria, and vertical dotted
+lines mark the critical harvesting rates.}
+\label{fig:wp03_basins}
 \end{figure}
 
 \subsection{Time to Extinction}
 \label{sec:wp03-extinction}
 
-For a Model A trajectory that reaches zero, $x'=-(q-G(x))$. Separating
-variables and integrating from $x_0$ to zero gives
+For a Model A trajectory that reaches zero, the
+extinction time follows from separation of variables:
+\[
+\frac{dx}{d\tau}=G(x)-q,
+\qquad
+\tau_{\mathrm{ext}}
+=\int_{x_0}^{0}\frac{dx}{G(x)-q}
+=\int_0^{x_0}\frac{du}{q-G(u)}.
+\]
+To express this in the original units, recall that
+\[
+x=\frac{N}{K},\qquad
+\tau=rt,\qquad
+q-G(x)=\frac{H-g(N)}{rK},
+\]
+where
+\[
+g(N)=rN\left(1-\frac{N}{K}\right)
+\left(\frac{N}{A}-1\right).
+\]
+Since $dx=dN/K$, the substitution gives
+\[
+\tau_{\mathrm{ext}}
+=r\int_0^{N_0}\frac{dN}{H-g(N)}.
+\]
+Thus the dimensional extinction time is
 \begin{equation}
-\tau_{\mathrm{ext}}=\int_0^{x_0}\frac{du}{q-G(u)},\qquad
-t_{\mathrm{ext}}=\frac{\tau_{\mathrm{ext}}}{r}
+t_{\mathrm{ext}}
+=\frac{\tau_{\mathrm{ext}}}{r}
 =\int_0^{N_0}\frac{dN}{H-g(N)}.
 \label{eq:wp03-extinction}
 \end{equation}
-This formula is used only after checking the basin. On a declining path
-that reaches zero under positive catch, the denominator stays positive
-over the whole interval. The integral is then finite. If an equilibrium
-lies in the interval, the denominator vanishes and the integral cannot
-be used as a finite extinction time.
 
-For $q>q_c$, we have $G(x)\leq q_c$ for every $x\geq0$. Hence
+This integral gives a finite extinction time only
+when the trajectory reaches zero without encountering
+an equilibrium. We therefore classify the initial
+condition before evaluating it. If an equilibrium
+lies along the path to zero, the denominator
+vanishes and the integral cannot be used to assign
+a finite extinction time.
+
+For $q>q_c$, we have $G(x)\le q_c$ for all $x\ge0$.
+Consequently,
 \[
-q-G(x)\geq q-q_c>0,\qquad
-\tau_{\mathrm{ext}}\leq\frac{x_0}{q-q_c}.
+q-G(x)\ge q-q_c>0,
+\qquad
+\tau_{\mathrm{ext}}\le\frac{x_0}{q-q_c}.
 \]
-This also proves finite extinction for every finite positive start above
-the critical catch. At $q=q_c$, starts below $x_*$ still reach zero,
-but starts above it approach $x_*$ instead.
+Every finite positive initial population therefore
+reaches zero in finite time for Model A above its
+critical constant catch. At $q=q_c$, a start below
+$x_*$ still reaches zero; a start above $x_*$
+approaches the merged equilibrium instead.
 
-Model B behaves differently. Its right-hand side is smooth and zero is
-an equilibrium. Uniqueness of solutions prevents a positive trajectory
-from arriving at that equilibrium in finite time. The same reasoning
-applies to Model A when $q=0$. A numerical time to a small positive cutoff
-would therefore measure near-extinction, not exact extinction, in these cases.
+For Model B, a positive trajectory cannot reach
+its zero equilibrium in finite time because the
+ODE is smooth and solutions are unique. The same
+holds for Model A when $q=0$. A numerical time
+to a small positive cutoff is not an exact
+extinction time in either of these situations.
 
-We evaluated \eqref{eq:wp03-extinction} numerically using quadrature
-\cite{scipy_quad}. Close to a basin boundary or the fold, the integrand
-can become sharply peaked. The implementation uses changes of variable
-near these points and an analytical expression at the fold. These methods
-evaluate the same separated integral. Quadrature error estimates do not
-include uncertainty from rounded equilibrium locations and are not rigorous
-error bounds.
-
-The extinction curves contain 427 initial-population/harvest evaluations.
-A missing finite time indicates an equilibrium, asymptotic decline,
-persistence or unresolved classification; it is not a time of zero.
-Figure~\ref{fig:wp03-extinction} shows that extinction can take much longer
-near a basin boundary. For a fixed initial population on a reaching-zero
-path, increasing the constant catch reduces the extinction time.
-
-\begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth]{wp03_extinction.eps}
-\caption{Model A extinction times for $r=0.7$, $K=100$, $A=20$, varying
-the initial population (left) and constant catch (right). Time is dimensional
-and both vertical axes are logarithmic. Gaps have no reported finite
-extinction time. Initial zero has time zero and is omitted from the log plot.
-The dashed line on the right marks $H_c$.}
-\label{fig:wp03-extinction}
-\end{figure}
+We evaluate the extinction-time integral using
+numerical quadrature \cite{scipy_quad}. Close to
+a basin boundary or the fold, its denominator
+can become small and the calculation requires
+care. Our implementation uses changes of variable
+near difficult points. These numerical estimates
+are checked independently below.
 
 \subsection{Numerical Method and Accuracy Checks}
 \label{sec:wp03-validation}
 
-We solved the population equation with SciPy's RK45 method, which uses
-the Dormand--Prince Runge--Kutta pair of orders five and four
-\cite{scipy_solve_ivp}. The difference between its two estimates controls
-the step size, and the fifth-order estimate advances the solution.
-Requested plotting times do not fix the internal solver steps.
-The reference settings are relative tolerance $10^{-9}$, absolute
-tolerance $10^{-11}$ and maximum dimensionless step $0.1$.
+We solve the population ODEs using SciPy's RK45
+method, based on the adaptive Dormand--Prince
+Runge--Kutta pair of orders five and four
+\cite{dormand1980family,scipy_solve_ivp}.
+The difference between the two estimates is used
+to adjust the step size. Our reference settings
+are relative tolerance $10^{-9}$, absolute
+tolerance $10^{-11}$ and maximum dimensionless
+step size $0.1$.
 
-For Model A with positive catch, a terminal event stops the solution at
-its first downward crossing of zero and includes the computed event point.
-We do not continue the original equation into negative populations or
-append a zero tail as if it solved that equation.
+For Model A under positive catch, the solver
+stops at the first downward crossing of zero.
+We do not continue the original ODE into
+negative populations.
 
-We checked six finite-extinction cases, including a start below the fold
-population at the critical catch. Each separated integral was compared
-with RK45 at relative tolerances $10^{-8}$ and $10^{-10}$, and with DOP853
-at $10^{-12}$. The corresponding absolute tolerances were $10^{-10}$,
-$10^{-12}$ and $10^{-14}$; all three integrations used maximum step $0.1$.
-For DOP853 we separately expanded the right-hand side as
-$-q-x+(1+a)x^2/a-x^3/a$.
-The acceptance condition was
+For six Model A extinction cases, we compare
+the separated integral with RK45 at two tolerances
+and with the independent DOP853 method. The cases
+cover harvesting below, at and above the critical
+rate, with initial populations chosen on
+extinction trajectories. We use the acceptance
+condition
 \[
-|\Delta\tau|\leq2\times10^{-7}
+|\Delta\tau|
+\le 2\times10^{-7}
 +5\times10^{-7}\tau_{\mathrm{ext}}.
 \]
-All six saved cases passed. The largest discrepancy from the integral
-was $4.56\times10^{-8}$ in dimensionless time. This supports numerical
-agreement for the tested cases; it is not a proof of accuracy for every
-parameter choice or a validation against field observations.
+Table~\ref{tab:event_checks} lists each case.
+Here $x_0=N_0/K$, and $q/q_c$ is the fraction
+of the critical constant catch.
 
-\subsection{Slow Decline Just Above the Critical Catch}
-\label{sec:wp03-bottleneck}
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Six Model A extinction-time checks.
+The largest difference is the maximum absolute
+difference between the quadrature result and
+the tested ODE integrations, in dimensionless time.}
+\label{tab:event_checks}
+\begin{tabular}{ccccc}
+\toprule
+$q/q_c$ & $x_0$ & $\tau_{\mathrm{ext}}$
+& $\max|\Delta\tau|$ & Tolerance\\
+\midrule
+0.25 & 0.10000 & 0.6198 & $2.3\times10^{-10}$ & $5.1\times10^{-7}$\\
+0.75 & 0.35769 & 0.9957 & $1.6\times10^{-9}$ & $7.0\times10^{-7}$\\
+1.00 & 0.56440 & 1.9303 & $6.4\times10^{-9}$ & $1.2\times10^{-6}$\\
+1.01 & 1.10000 & 19.9106 & $4.6\times10^{-8}$ & $1.0\times10^{-5}$\\
+1.05 & 1.10000 & 8.6537 & $3.8\times10^{-8}$ & $4.5\times10^{-6}$\\
+1.20 & 1.10000 & 4.0293 & $3.9\times10^{-8}$ & $2.2\times10^{-6}$\\
+\bottomrule
+\end{tabular}
+\end{table}
 
-Extinction need not happen quickly when $q$ is only slightly larger than
-$q_c$. Although no positive equilibrium remains, growth almost balances
-the constant catch near the former equilibrium population $x_*$. The net
-decline is small there, so the population can spend a long time in this
-region before falling to zero. This slow passage is called a bottleneck.
+All six cases passed, with the largest recorded
+difference approximately $4.56\times10^{-8}$
+in dimensionless time. This supports numerical
+agreement for the tested cases, rather than a
+global accuracy guarantee.
 
-Figure~\ref{fig:wp03-bottleneck} shows numerical trajectories for three
-catches just above the critical value, all starting at $x_0=1.1$ with
-$a=0.2$. Catches closer to the critical value produce longer delays.
-Each trajectory ends at its computed zero event. The apparently flat
-part of a short simulation must not be interpreted as permanent survival.
-We use this as a visual observation of the numerical solutions and do not
-fit or claim an asymptotic scaling law.
+Figure~\ref{fig:wp03_extinction} shows Model A
+extinction times for different initial populations
+and constant catches. In the left panel, the time
+grows as the starting population approaches the
+unstable equilibrium from below. Above that
+boundary, the population persists and there is
+no finite extinction time to plot.
 
-\begin{figure}[htbp]\centering
-\includegraphics[width=0.9\linewidth]{wp03_bottleneck_core.eps}
-\caption{Model A trajectories just above the critical catch, with $a=0.2$
-and $x_0=1.1$. Time and population are dimensionless. The dashed horizontal
-line marks the former fold population. Each curve ends at its zero event;
-closer-to-critical catches show longer delays before collapse.}
-\label{fig:wp03-bottleneck}
+The right panel fixes the initial population and
+varies the constant catch. For a population that
+reaches zero, a larger catch produces a shorter
+extinction time. When the initial population lies
+above the fold population, extinction occurs only
+for $H>H_c$, and the time can be very large just
+above this threshold. Both vertical axes are
+logarithmic. The underlying analysis contains
+427 records, including cases without a reported
+finite extinction time.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{wp03_extinction}
+\caption{Model A extinction time against initial population
+(left) and constant harvesting rate (right), with
+$r=0.7$, $K=100$ and $A=20$. Both vertical axes
+are logarithmic. Gaps indicate cases without a
+reported finite extinction time; the dashed line
+on the right marks $H_c$.}
+\label{fig:wp03_extinction}
 \end{figure}
 
-\subsection{Reference Data and Limitations}
-\label{sec:wp03-limitations}
+\subsection{Slow Decline Near the Critical Harvesting Rate}
+\label{sec:wp03-bottleneck}
 
-The numerical work also supplied an early clean reference set of six
-synthetic trajectories, with 606 sampled points in total. It covers regular
-persistence, decline or extinction, and near-critical behaviour in both
-models. The generator records parameter values, units and solver settings,
-and keeps evaluation truth separate from declared known conditions.
-This early reference set is distinct from WP05's later observation,
-noise and data-splitting choices.
+Extinction need not happen quickly when $q$ is only
+slightly larger than $q_c$. Although no positive
+equilibrium remains, natural growth almost balances
+the constant catch near the former equilibrium
+population $x_*$. The net decline is small there,
+so the population can spend a long time in this
+region before falling to zero. This slow passage
+is called a \emph{bottleneck}.
 
-The calculations assume constant parameters and a well-mixed population.
-They do not include environmental variation, demographic randomness,
-age structure or time delays. The thresholds and extinction times are
-consequences of these model assumptions, rather than species-specific
-harvesting recommendations. The accompanying notebook runs the core threshold, basin, extinction and
-validation study with \texttt{--core-only}; sensitivity, yield optimisation
-and bottleneck asymptotic comparisons are outside this contribution.
-Shared numerical helpers and clean reference generation remain available
-to the other work packages.
+Figure~\ref{fig:wp03_bottleneck} shows three
+trajectories starting at $x_0=1.1$, with
+$a=0.2$ and harvesting rates just above $q_c$.
+The closer the catch is to its critical value,
+the longer the delay. Each trajectory ends at
+its calculated zero event. We report this
+numerical behaviour without fitting a separate
+asymptotic scaling law.
 
-AI assistance from OpenAI ChatGPT/Codex was used for implementation,
-explanation, testing and documentation; its roles are recorded in the
-project AI-use log.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{wp03_bottleneck_core}
+\caption{Model A trajectories slightly above the
+critical constant catch, with $a=0.2$ and $x_0=1.1$.
+Time and population are dimensionless. The dashed
+line shows the population at the former fold.
+Each curve ends when the population reaches zero.}
+\label{fig:wp03_bottleneck}
+\end{figure}
+
+\subsection{Synthetic Reference Data and Limitations}
+\label{sec:reference}
+
+We also generated six clean synthetic reference
+trajectories using RK45. Each contains 101 sampled
+population values, giving 606 values in total.
+For each model, the three cases are regular
+persistence, behaviour near the critical harvesting
+rate, and decline or extinction. The Model A
+declining case reaches zero in finite time,
+whereas the Model B declining case approaches
+zero asymptotically.
+
+The generating parameters, initial populations
+and solver settings are recorded in the project
+configuration files. The six cases are named
+\texttt{a\_regular}, \texttt{a\_near\_fold},
+\texttt{a\_extinction}, \texttt{b\_regular},
+\texttt{b\_near\_fold} and \texttt{b\_decline}.
+All six passed comparisons with DOP853 and
+tighter-tolerance RK45 integrations.
+
+Figure~\ref{fig:wp03_reference} shows these
+reference trajectories. The complete data-generation
+scripts, configurations and numerical results
+are available in our
+\href{https://github.com/devam2006/mm-allee-harvesting}
+{GitHub project repository}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{wp03_rk45_reference}
+\caption{Six synthetic RK45 reference trajectories
+for Models A and B, showing regular persistence,
+near-critical behaviour and decline or extinction.}
+\label{fig:wp03_reference}
+\end{figure}
+
+These trajectories form an early numerical
+reference dataset. The forward PINN experiments
+use separately generated numerical reference
+solutions for evaluation, while the inverse
+experiments use their own observation, noise
+and data-splitting procedures. Any zero values
+stored after a Model A extinction event represent
+an absorbing extinction convention, not a
+continuation of the original ODE with constant catch.
+
+\paragraph{Main result.}
+Both the harvesting rate and initial population
+matter for survival. Positive constant harvesting
+can produce finite-time extinction, whereas
+declining positive populations under proportional
+harvesting approach zero asymptotically.
+Collapse can also be delayed near the critical
+constant harvesting rate.
+
+\paragraph{Limitations.}
+The calculations assume constant parameters
+and a well-mixed population, without environmental
+randomness, age structure or time delays. All
+trajectories are synthetic. The critical rates
+and extinction times are consequences of the
+specified models, not predictions for a
+particular real-world population.

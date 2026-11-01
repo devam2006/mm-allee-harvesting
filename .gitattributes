@@ -8,5 +8,8 @@
 *.pdf binary
 *.png binary
 *.eps -diff
+report/figures/*.eps -text
+# Preserve the final supplied heading's exact notebook cell whitespace.
+notebooks/colab_setup_heading.md whitespace=-blank-at-eof
 
 *.csv text eol=lf

@@ -257,6 +257,11 @@ def export_notebook(manifest, asset_ref, target):
     setup.metadata["cellView"] = "form"
     setup.metadata["jupyter"] = {"source_hidden": True}
     cells = [introduction, setup]
+    heading = ROOT / "notebooks/colab_setup_heading.md"
+    if heading.is_file():
+        cell = nbformat.v4.new_markdown_cell(heading.read_text(encoding="utf-8"))
+        cell.id = "OHbQMxz-wPYl"
+        cells.append(cell)
     for original in notebook.cells[1:]:
         cell = deepcopy(original)
         figures = []
@@ -290,6 +295,9 @@ def export_notebook(manifest, asset_ref, target):
         "with the reproducibility resources linked at the start. The report is maintained separately."
     )
     acknowledgements.id = "colab-reproduction-acknowledgements"
+    custom_acknowledgements = ROOT / "notebooks/colab_acknowledgements.md"
+    if custom_acknowledgements.is_file():
+        acknowledgements.source = custom_acknowledgements.read_text(encoding="utf-8")
     notebook.cells.append(acknowledgements)
     notebook.metadata["runtime_bundle"] = {
         "url": f"https://raw.githubusercontent.com/{PUBLIC_REPOSITORY}/{asset_ref}/{manifest['path']}",

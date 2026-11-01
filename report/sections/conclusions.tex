@@ -1,0 +1,45 @@
+\section{Conclusions and limitations}
+\label{sec:conclusions}
+
+\subsection{What we found}
+\paragraph{Analytical results.} For a stock fished with a fixed quota $H$, a strong Allee effect creates a pair of steady states, an unstable threshold and a stable upper state, which approach each other as the quota rises and merge at the critical catch $H_c=rKq_c$ (Section~\ref{sec:foundations}). As the quota approaches this limit, the gap between them, which is the stock's safety margin, shrinks like $\sqrt{q_c-q}$, so a stock fished close to the limit can be tipped into collapse by a very small shock. A fixed fraction of the stock (Model B) has an analogous critical effort $h_c=r(1-a)^2/(4a)$ (Section~\ref{sec:wp02}). The two rules must be compared in common units and with a stated calibration: with the same first-year catch the logistic stock collapsed in our example while both Allee stocks survived, but with equal fractions of their own thresholds all three survived, so no universal ranking follows.
+
+
+\paragraph{Collapse and recovery.}
+Reducing harvesting after a collapse does not necessarily
+restore the population. Once it has fallen below the
+Allee threshold, natural growth remains negative even
+without harvesting. Recovery may therefore require
+an intervention such as restocking the population above
+the relevant recovery threshold
+(Section~\ref{sec:wp02}).
+Section~\ref{sec:wp03} also showed how the initial
+population determines survival, how extinction times
+can be calculated, and why collapse may be delayed
+when constant harvesting is just above its critical rate.
+
+
+\paragraph{Forward PINN.} A small tanh network with the initial condition built in and a physics-only loss reproduced the solution of all six test cases to a relative $L^2$ error between $2.9\times10^{-7}$ and $4.1\times10^{-3}$ (36 of 36 runs accurate over two sets of seeds). It was much slower than a standard solver, which reaches about $10^{-10}$ in a few milliseconds, so for a single scalar equation the PINN is not the better tool (Section~\ref{sec:wp04}).
+
+\paragraph{Inverse PINN.} Using one shared setting for the forward and inverse problems, the PINN recovered every fitted parameter within $5\%$ in 10 of 18 clean fits, against 18 of 18 for ordinary least squares and 0 of 18 for the settings first tried (Section~\ref{sec:wp05}). Under noise, recovery was limited by the data themselves. Noise was not the reason some fits failed; the fits that did not converge came from validation-based checkpoint selection, and the remaining recovery failures were the poorly conditioned cases. The one provably impossible case, Model B with all four parameters unknown, was kept separate from these.
+
+\subsection{Lessons about method}
+\begin{itemize}
+\item A small training loss is not evidence of accuracy. The early forward PINNs had a small loss at the collocation points and a large error between them.
+\item A good trajectory fit does not guarantee good parameters. The inverse PINN fitted every training set to about $10^{-4}$ and still got some parameters wrong by $100\%$.
+\item Check convergence against what is achievable. Comparing the training error with the noise level exposed runs that had stopped without learning.
+\item A classical baseline should always be run. Here it was faster and more accurate than the PINN on every clean case.
+\end{itemize}
+
+\subsection{Limitations}
+\begin{itemize}
+\item All data are synthetic and generated from the same models that are fitted, so there is no model error and nothing here validates the models for a real species.
+\item The models are deterministic and unstructured. Random fluctuations, age structure, delays, spatial effects and changing parameters can all matter most near a threshold.
+\item The PINN studies use one parameter set per case and three seeds per setting. Differences between settings are therefore not statistically tested, and the choice of the informative-case threshold was made after seeing the results.
+\item In the inverse study $K$ and the starting population are assumed known and exact, which makes the problem easier than a field setting.
+\item The iteration budget of the L-BFGS phase was binding in every PINN run, and longer runs were not tried.
+\item Results depend on the platform and library versions (recorded in the run manifests), and the long sweeps are recorded evidence rather than re-run for this report.
+\end{itemize}
+
+\subsection{Future work}
+Natural next steps are to add random fluctuations and age structure to the model, to test other parameter values and more observations in the inverse problem, to try bounds or a different parametrisation to stop $r$ and $A$ collapsing together in the near-fold cases, and, if real data become available, to fit a real fishery with its provenance documented.
